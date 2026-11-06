@@ -1,5 +1,8 @@
 name: Probar en emulador
-on: { workflow_dispatch: {} }
+on:
+  workflow_dispatch:
+    inputs:
+      red_colgada: { default: 'no' }
 permissions: { contents: write }
 jobs:
   emu:
@@ -11,12 +14,15 @@ jobs:
           sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
       - env: { GH_TOKEN: '${{ github.token }}' }
         run: gh release download ultima -R ${{ github.repository }} -p MiTracker.apk
+      # Simula una red donde las conexiones a internet se quedan colgadas
+      - run: (nohup nc -lk 8899 >/dev/null 2>&1 &)
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
           target: google_apis
           arch: x86_64
           disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim ${{ inputs.red_colgada == 'si' && '-http-proxy http://127.0.0.1:8899' || '' }}
           script: |
             adb install -r MiTracker.apk
             adb logcat -c
