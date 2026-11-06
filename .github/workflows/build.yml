@@ -15,6 +15,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
       - run: npm ci || npm install
+      # registerPlugin vive en @capacitor/core; sin esto la app abre en blanco
+      - run: cp node_modules/@capacitor/core/dist/capacitor.js www/
       - run: npx cap sync android
       - name: Compilar
         working-directory: android
