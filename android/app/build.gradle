@@ -7,8 +7,9 @@ android {
         applicationId "com.ricardo.mitracker"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // ponytail: número de compilación de GitHub = versión; así cada APK nuevo actualiza encima del anterior
+        versionCode((System.getenv("GITHUB_RUN_NUMBER") ?: "1") as int)
+        versionName "1." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +17,21 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    // Llave fija: sin esto cada compilación firma con una llave distinta y Android
+    // rechaza instalar la actualización ("App no instalada").
+    // ponytail: llave en el repo porque no hay secretos configurados; muévela a un secreto de GitHub si el repo deja de ser personal
+    signingConfigs {
+        mitracker {
+            storeFile file('mitracker.jks')
+            storePassword 'e3dd823d446fb028efb5dacb6ab0f7cd'
+            keyAlias 'mitracker'
+            keyPassword 'e3dd823d446fb028efb5dacb6ab0f7cd'
+        }
+    }
     buildTypes {
+        debug { signingConfig signingConfigs.mitracker }
         release {
+            signingConfig signingConfigs.mitracker
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

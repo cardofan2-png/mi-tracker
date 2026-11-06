@@ -17,15 +17,18 @@ jobs:
       - run: npm ci || npm install
       # registerPlugin vive en @capacitor/core; sin esto la app abre en blanco
       - run: cp node_modules/@capacitor/core/dist/capacitor.js www/
+      - run: sed -i "s/__VERSION__/1.${{ github.run_number }}/g" www/index.html
       - run: npx cap sync android
       - name: Compilar
         working-directory: android
-        run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+        run: chmod +x gradlew && ./gradlew assembleRelease --no-daemon
       - name: Publicar descarga
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
-          cp android/app/build/outputs/apk/debug/app-debug.apk MiTracker.apk
+          F=MiTracker-v1.${{ github.run_number }}.apk
+          cp android/app/build/outputs/apk/release/app-release.apk $F
+          cp $F MiTracker.apk
           gh release delete ultima -y --cleanup-tag || true
-          gh release create ultima MiTracker.apk -t "Mi Tracker (última versión)" -n "Descarga MiTracker.apk en tu Android e instálala."
+          gh release create ultima $F MiTracker.apk --latest -t "Mi Tracker v1.${{ github.run_number }}" -n "Descarga $F en tu Android e instálala."
       - uses: actions/upload-artifact@v4
         with: { name: MiTracker-apk, path: MiTracker.apk }

@@ -97,7 +97,7 @@ svg{display:block}
 </style>
 </head>
 <body>
-<script>window.onerror=function(m,s,l){document.body.innerHTML='<div style="padding:24px;font:15px sans-serif">Error al iniciar Mi Tracker:<br><b>'+m+'</b> (línea '+l+')</div>';};</script>
+<script>window.onerror=function(m,s,l){document.body.innerHTML='<div style="padding:24px;font:15px sans-serif">Error al iniciar Mi Tracker (v__VERSION__):<br><b>'+m+'</b> (línea '+l+')</div>';};</script>
 <script src="capacitor.js"></script>
 <script type="application/json" id="st">{"v":3,"onb":false,"name":"","prof":{"sex":"M","age":40,"h":170,"act":1.2,"target":70,"rate":0.5},"tr":{"stage":"start","med":"","mg":"","freq":7},"worries":[],"meals":[],"water":{},"doses":[],"inv":{"n":0,"exp":""},"weights":[],"sym":[],"hc":{"on":false},"notif":true,"key":"","_t":0}</script>
 <script id="code">
@@ -466,7 +466,7 @@ function connCard(){
    '<hr style="border:0;border-top:1px solid #f0eef5;margin:14px 0">'+
    '<div class="row" style="margin-bottom:8px"><span style="font-size:26px">🦉</span><div class="f"><b>IA de Lumi</b><div class="mu">'+(S.key?'Activa':'Necesita tu clave de API de Anthropic')+'</div></div></div>'+
    '<form id="keyf" class="row"><input class="f" id="kin" type="password" placeholder="'+(S.key?'•••• guardada':'sk-ant-…')+'" autocomplete="off"><button class="btn sm" type="submit">Guardar</button></form>'+
-   '<div class="mu" style="font-size:12px;margin-top:6px">Créala en console.anthropic.com → API Keys. Se guarda solo en este teléfono. Cada consulta cuesta centavos de dólar.</div></div>';
+   '<div class="mu" style="font-size:12px;margin-top:6px">Créala en console.anthropic.com → API Keys. Se guarda solo en este teléfono. Cada consulta cuesta centavos de dólar.</div></div><div class="mu center" style="font-size:12px;margin-top:10px">Mi Tracker v__VERSION__</div>';
 }
 
 /* ---------- Modales ---------- */
