@@ -1,0 +1,14 @@
+{
+  "name": "mi-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "sync": "cap sync android" },
+  "dependencies": {
+    "@capacitor/android": "8.6.0",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/core": "8.6.0",
+    "@capacitor/local-notifications": "^8.0.0",
+    "@capgo/capacitor-health": "8.11.14"
+  },
+  "devDependencies": { "@capacitor/cli": "8.6.0" }
+}
