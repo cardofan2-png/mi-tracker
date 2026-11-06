@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mi Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style id="css">
 :root{--p:#5b2ed6;--p2:#7c5cf0;--pl:#ece7fd;--bg:#efeef5;--card:#fff;--tx:#17151f;--mu:#77738a;--ok:#22a861;--bad:#e5484d;--org:#f59e0b;--blue:#3b82f6}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -97,7 +97,12 @@ svg{display:block}
 </style>
 </head>
 <body>
-<script>window.onerror=function(m,s,l){document.body.innerHTML='<div style="padding:24px;font:15px sans-serif">Error al iniciar Mi Tracker (v__VERSION__):<br><b>'+m+'</b> (línea '+l+')</div>';};</script>
+<div id="boot" style="padding:40vh 24px 0;text-align:center;font:16px sans-serif;color:#77738a">Cargando Mi Tracker…</div>
+<script>
+function mtFail(msg){document.body.innerHTML='<div style="padding:24px;font:15px sans-serif">Mi Tracker v__VERSION__ no pudo iniciar.<br><br><b>'+msg+'</b><br><br><button onclick="try{localStorage.clear()}catch(e){};location.reload()" style="padding:14px 18px;border-radius:12px;border:0;background:#5b2ed6;color:#fff;font-size:15px">Borrar datos guardados y reintentar</button></div>';}
+window.onerror=function(m,s,l){mtFail(m+' (línea '+l+')');};
+setTimeout(function(){if(document.getElementById('boot'))mtFail('La app no terminó de cargar.');},10000);
+</script>
 <script src="capacitor.js"></script>
 <script type="application/json" id="st">{"v":3,"onb":false,"name":"","prof":{"sex":"M","age":40,"h":170,"act":1.2,"target":70,"rate":0.5},"tr":{"stage":"start","med":"","mg":"","freq":7},"worries":[],"meals":[],"water":{},"doses":[],"inv":{"n":0,"exp":""},"weights":[],"sym":[],"hc":{"on":false},"notif":true,"key":"","_t":0}</script>
 <script id="code">
