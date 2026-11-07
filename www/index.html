@@ -456,6 +456,7 @@ function fW(kg){return rW(kg)+' '+uW();}
 function fR(r){return U()?String(Math.round(r*LB*10)/10):String(r).replace('.',',');}
 function fH(cm){if(!U())return cm+' cm';var i=Math.round(cm/2.54);return Math.floor(i/12)+'′ '+(i%12)+'″';}
 var I18N={
+'Activa con tu Claude de claude.ai (sin clave)':['Active with your Claude from claude.ai (no key)','Ativa com seu Claude do claude.ai (sem chave)'],
 'Inteligencia artificial':['Artificial intelligence','Inteligência artificial'],'Activa con':['Active with','Ativa com'],'Elige la IA que tengas o prefieras':['Choose the AI you have or prefer','Escolha a IA que você tem ou prefere'],
 'Clave de API':['API key','Chave de API'],'compatible con OpenAI':['OpenAI-compatible','compatível com OpenAI'],'guardada':['saved','salva'],'Dirección (URL base)':['Address (base URL)','Endereço (URL base)'],
 'Modelo':['Model','Modelo'],'opcional':['optional','opcional'],'Probar':['Test','Testar'],'Probando…':['Testing…','Testando…'],'Consíguela en':['Get it at','Obtenha em'],
@@ -918,7 +919,7 @@ function vPerfil(){
 
 function aiCard(){
   var p=aiProv(),A=AIP[p],k=aiKey();
-  return '<h2>Inteligencia artificial</h2><div class="card"><div class="row" style="margin-bottom:10px"><span style="font-size:26px">🐱</span><div class="f"><b>IA de Mochi</b><div class="mu">'+(k?'✓ '+T('Activa con')+' '+A.n+' · '+esc(aiModel()):T('Elige la IA que tengas o prefieras'))+'</div></div></div>'+
+  return '<h2>Inteligencia artificial</h2><div class="card"><div class="row" style="margin-bottom:10px"><span style="font-size:26px">🐱</span><div class="f"><b>IA de Mochi</b><div class="mu">'+(k?'✓ '+T('Activa con')+' '+A.n+' · '+esc(aiModel()):llm?'✓ '+T('Activa con tu Claude de claude.ai (sin clave)'):T('Elige la IA que tengas o prefieras'))+'</div></div></div>'+
    '<div class="chips" style="margin-bottom:12px">'+Object.keys(AIP).map(function(q){return '<button class="chip'+(q===p?' on':'')+'" data-aip="'+q+'">'+AIP[q].n+'</button>';}).join('')+'</div>'+
    '<form id="keyf">'+field(T('Clave de API')+' · '+A.n+' ('+T(A.by)+')','<input id="kin" type="password" placeholder="'+(k?'•••• '+T('guardada'):A.ph)+'" autocomplete="off">')+
    (p==='otro'?field(T('Dirección (URL base)'),'<input id="kbase" value="'+esc(S.aib||'')+'" placeholder="https://api.deepseek.com/v1" autocomplete="off">'):'')+
