@@ -1,0 +1,20 @@
+name: Publicar versión web
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # La misma app, para abrirla en Chrome: https://cardofan2-png.github.io/mi-tracker/
+      - run: sed -i "s/__VERSION__/1.${{ github.run_number }}-web/g" www/index.html
+      - run: |
+          cd www
+          git init -q -b gh-pages
+          git add -A
+          git -c user.name=github-actions -c user.email=actions@github.com commit -qm "web ${{ github.sha }}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gh-pages

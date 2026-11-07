@@ -2,8 +2,16 @@
   "appId": "com.ricardo.mitracker",
   "appName": "Mi Tracker",
   "webDir": "www",
-  "android": { "allowMixedContent": false },
+  "android": {
+    "allowMixedContent": false
+  },
   "plugins": {
-    "LocalNotifications": { "smallIcon": "ic_stat_notify", "iconColor": "#5B2ED6" }
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_notify",
+      "iconColor": "#5B3DF5"
+    },
+    "CapacitorHttp": {
+      "enabled": true
+    }
   }
 }
