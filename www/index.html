@@ -456,6 +456,8 @@ function fW(kg){return rW(kg)+' '+uW();}
 function fR(r){return U()?String(Math.round(r*LB*10)/10):String(r).replace('.',',');}
 function fH(cm){if(!U())return cm+' cm';var i=Math.round(cm/2.54);return Math.floor(i/12)+'′ '+(i%12)+'″';}
 var I18N={
+'No reconocí esos alimentos. Escríbelos más simple (ej: 2 huevos y 1 arepa) o pon los números.':['I didn’t recognize those foods. Write them more simply (e.g.: 2 eggs and 1 arepa) or enter the numbers.','Não reconheci esses alimentos. Escreva de forma mais simples (ex.: 2 ovos e 1 arepa) ou coloque os números.'],
+'Sin una IA conectada no puedo leer la foto. Escribe qué es (ej: 2 arepas con queso) y lo calculo. Para que se analice sola, conecta una IA en Mi plan.':['Without a connected AI I can’t read the photo. Type what it is (e.g.: 2 arepas with cheese) and I’ll calculate it. To analyze photos automatically, connect an AI in My plan.','Sem uma IA conectada não consigo ler a foto. Escreva o que é (ex.: 2 arepas com queijo) e eu calculo. Para analisar sozinho, conecte uma IA em Meu plano.'],
 'Activa con tu Claude de claude.ai (sin clave)':['Active with your Claude from claude.ai (no key)','Ativa com seu Claude do claude.ai (sem chave)'],
 'Inteligencia artificial':['Artificial intelligence','Inteligência artificial'],'Activa con':['Active with','Ativa com'],'Elige la IA que tengas o prefieras':['Choose the AI you have or prefer','Escolha a IA que você tem ou prefere'],
 'Clave de API':['API key','Chave de API'],'compatible con OpenAI':['OpenAI-compatible','compatível com OpenAI'],'guardada':['saved','salva'],'Dirección (URL base)':['Address (base URL)','Endereço (URL base)'],
@@ -967,14 +969,64 @@ function vModal(){
 function estimate(desc){
   return llm.json('Estima la información nutricional de lo que comió una persona en Colombia: "'+desc.replace(/"/g,"'")+'". Si no dice cantidad, asume una porción típica. Suma todos los alimentos mencionados. Responde SOLO JSON: {"nombre":"descripción corta en '+({es:'español',en:'inglés',pt:'portugués'}[S.lang]||'español')+' con porciones","kcal":entero,"proteina_g":entero,"carbohidratos_g":entero,"grasas_g":entero,"fibra_g":entero}.',{modelTier:'default'});
 }
+
+/* ---------- Tabla propia de alimentos (funciona sin IA y sin internet) ----------
+   Valores aproximados por 100 g (o 100 ml): [kcal, proteína, carbohidratos, grasa, fibra], g = gramos por unidad/porción.
+   Referencia: valores típicos de tablas USDA FoodData Central. */
+var FOODS=[
+ [/huevo|egg|ovo/,143,12.6,0.7,9.5,0,50],[/clara/,52,11,0.7,0.2,0,33],
+ [/pechuga|pollo|chicken|frango/,165,31,0,3.6,0,150],[/\bres\b|carne|beef|bistec|lomo/,250,26,0,15,0,150],[/cerdo|pork|porco|chuleta/,242,27,0,14,0,150],
+ [/atun|tuna|atum/,116,26,0,1,0,120],[/salmon/,208,20,0,13,0,150],[/pescado|tilapia|fish|peixe|mojarra/,128,26,0,2.7,0,150],
+ [/chorizo/,455,24,2,38,0,70],[/salchicha|sausage|salsicha/,300,12,3,27,0,50],[/jamon|\bham\b|presunto/,145,21,1.5,6,0,20],
+ [/arroz|rice/,130,2.7,28,0.3,0.4,150],[/pasta|espagueti|spaghetti|macarron|fideo/,158,5.8,31,0.9,1.8,180],
+ [/arepa/,230,5,42,4,3,80],[/pandebono/,330,9,40,15,1,60],[/bunuelo/,360,9,40,18,1,60],[/empanada/,280,7,30,15,2,90],
+ [/\bpan(es)?\b|bread|toast|tostada|\bpao\b/,265,9,49,3.2,2.7,30],[/tortilla|wrap/,300,8,50,7,3,50],[/avena|oat|aveia/,389,16.9,66,6.9,10.6,40],
+ [/\bpapas?\b|potato|batata/,87,1.9,20,0.1,1.8,150],[/yuca|mandioca|cassava/,160,1.4,38,0.3,1.8,150],[/platano|plantain/,122,1.3,32,0.4,2.3,150],
+ [/frijol|frisol|bean|feijao/,127,8.7,23,0.5,6.4,150],[/lenteja|lentil|lentilha/,116,9,20,0.4,7.9,150],
+ [/aguacate|avocado|abacate/,160,2,8.5,14.7,6.7,100],[/banano|banana|guineo/,89,1.1,23,0.3,2.6,120],[/manzana|apple|maca/,52,0.3,14,0.2,2.4,180],
+ [/naranja|orange|laranja/,47,0.9,12,0.1,2.4,150],[/mandarina|tangerine/,53,0.8,13,0.3,1.8,90],[/fresa|strawberr|morango/,32,0.7,7.7,0.3,2,150],
+ [/mango|manga/,60,0.8,15,0.4,1.6,200],[/papaya|mamao/,43,0.5,11,0.3,1.7,150],[/pina|pineapple|abacaxi/,50,0.5,13,0.1,1.4,150],
+ [/tomate|tomato/,18,0.9,3.9,0.2,1.2,120],[/brocoli|broccoli/,35,2.4,7,0.4,3.3,100],[/zanahoria|carrot|cenoura/,41,0.9,10,0.2,2.8,60],
+ [/ensalada|lechuga|verdura|vegetal|salad|alface|salada/,20,1.5,3.5,0.2,1.8,100],
+ [/yogur griego|greek/,97,9,3.6,5,0,150],[/yogur|yogurt|iogurte/,61,3.5,4.7,3.3,0,150],[/leche|milk|leite/,61,3.2,4.8,3.3,0,240],
+ [/queso|cheese|queijo/,300,18,3,24,0,30],[/mantequilla|butter|manteiga/,717,0.9,0.1,81,0,14],[/aceite|oil|azeite|oleo/,884,0,0,100,0,14],
+ [/almendra|nuez|nueces|almond|walnut|castanha/,579,21,22,50,12.5,30],[/mani|peanut|amendoim/,567,26,16,49,8.5,30],
+ [/proteina|whey|scoop/,400,80,8,6,0,30],[/galleta|cookie|biscoito/,480,6,65,22,2,10],[/azucar|sugar|acucar/,387,0,100,0,0,5],
+ [/pizza/,266,11,33,10,2.3,110],[/hamburguesa|burger/,254,13,30,9,1,220],[/bandeja paisa/,140,7,12,7,2,800],
+ [/cafe con leche|latte|cafe com leite/,42,2.2,3.4,2.1,0,240],[/cafe|tinto|coffee/,2,0.3,0,0,0,240],
+ [/jugo|juice|suco/,45,0.7,10.4,0.2,0.2,240],[/gaseosa|soda|refresco|refrigerante|coca/,42,0,10.6,0,0,350],[/cerveza|beer|cerveja/,43,0.5,3.6,0,0,330]
+];
+var NUMW={un:1,uno:1,una:1,one:1,a:1,um:1,uma:1,dos:2,two:2,tres:3,three:3,cuatro:4,four:4,quatro:4,cinco:5,five:5,seis:6,six:6,media:0.5,medio:0.5,half:0.5,meia:0.5,meio:0.5};
+var UNITG={taza:240,cup:240,xicara:240,vaso:240,glass:240,copo:240,cucharada:14,tbsp:14,colher:14,cucharadita:5,tsp:5,lata:350,can:350,tajada:30,slice:30,fatia:30,rebanada:30};
+function nrm(t){return String(t).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();}
+// "3 huevos y 200 g de aguacate" → suma de nutrientes; null si no reconoce nada
+function localEstimate(desc){
+  var tot=[0,0,0,0,0],hit=0;
+  nrm(desc).split(/,| y | e | and | con | com | mas |\+/).forEach(function(part){
+    part=part.trim();if(!part)return;
+    var f=null;for(var i=0;i<FOODS.length;i++)if(FOODS[i][0].test(part)){f=FOODS[i];break;}
+    if(!f)return;hit++;
+    var m=part.match(/(\d+(?:[.,]\d+)?)\s*(kg|g|gr|gramos|grams|ml|l)?\b/),q=1,g=f[6];
+    if(m){q=parseFloat(m[1].replace(',','.'));var u=m[2];if(u==='kg'||u==='l')g=q*1000;else if(u)g=q;else g=q*f[6];}
+    else{var w=part.split(/\s+/)[0];if(NUMW[w]!=null)g=NUMW[w]*f[6];}
+    for(var k in UNITG)if(new RegExp('\\b'+k).test(part)&&!(m&&m[2])){g=(m?q:(NUMW[part.split(/\s+/)[0]]||1))*UNITG[k];break;}
+    for(var j=0;j<5;j++)tot[j]+=f[j+1]*g/100;
+  });
+  if(!hit)return null;
+  return {nombre:desc,kcal:Math.round(tot[0]),proteina_g:Math.round(tot[1]),carbohidratos_g:Math.round(tot[2]),grasas_g:Math.round(tot[3]),fibra_g:Math.round(tot[4])};
+}
 var toast=null,toastT=null;
 function autoAdd(m){S.meals.push(m);modal=null;toast='✓ '+esc(m.n)+' · '+m.k+' kcal · P '+m.p+' g';clearTimeout(toastT);toastT=setTimeout(function(){toast=null;var t=$('toast');if(t)t.remove();},6000);save();}
 function mealFrom(r,fallback){return{d:today(),t:nowT(),n:r.nombre||fallback,k:Math.round(num(r.kcal,0)),p:Math.round(num(r.proteina_g,0)),c:Math.round(num(r.carbohidratos_g,0)),f:Math.round(num(r.grasas_g,0)),fi:Math.round(num(r.fibra_g,0))};}
 function quickAdd(desc,msgEl,done){
-  if(!llm){modal='meal';render();$('f-n').value=desc;return;}
-  msgEl.textContent='Calculando calorías y nutrientes…';
+  var local=function(why){var r=localEstimate(desc);if(r){if(done)done();autoAdd(mealFrom(r,desc));return true;}
+    [].forEach.call(document.querySelectorAll('.sheet button[disabled],#qm'),function(x){x.disabled=false;});
+    if(!modal){modal='meal';render();$('f-n').value=desc;msgEl=$('ai-msg');}
+    msgEl.textContent=T(why||'No reconocí esos alimentos. Escríbelos más simple (ej: 2 huevos y 1 arepa) o pon los números.');var d=document.querySelector('details.man');if(d&&!why)d.open=true;return false;};
+  if(!llm){local();return;}
+  msgEl.textContent=T('Calculando calorías y nutrientes…');
   estimate(desc).then(function(r){var m=mealFrom(r,desc);if(!m.k)throw{};if(done)done();autoAdd(m);})
-   .catch(function(e){[].forEach.call(document.querySelectorAll('.sheet button[disabled],#qm'),function(x){x.disabled=false;});msgEl.textContent=e&&e.code==='rate_limited'?'Muchas consultas seguidas, espera un momento.':'No pude calcularlo. Intenta describirlo distinto o ponlo a mano.';});
+   .catch(function(e){local(e&&e.code==='rate_limited'?'Muchas consultas seguidas, espera un momento.':null);});
 }
 
 /* ---------- Asistente IA ---------- */
@@ -1048,7 +1100,7 @@ document.addEventListener('click',function(e){
     if(s.multi){tmp[k]=tmp[k]||[];var i=tmp[k].indexOf(v);i>=0?tmp[k].splice(i,1):tmp[k].push(v);} else tmp[k]=v;
     render();return;}
   if(d.tab){tab=d.tab;modal=null;history.replaceState(null,'','#'+tab);render();window.scrollTo(0,0);return;}
-  if(d.m){modal=d.m;tmp.sym=[];tmp.mw=tmp.md=null;tmp.am=d.am||'in';if(d.cam){render();if(ai)$('ai-file').click();else $('ai-msg').textContent=T(NATIVE?'Para analizar fotos, agrega tu clave de IA en Mi plan → Conexiones.':'El análisis de fotos funciona en la app instalada con tu clave de IA.');return;}render();return;}
+  if(d.m){modal=d.m;tmp.sym=[];tmp.mw=tmp.md=null;tmp.am=d.am||'in';if(d.cam){render();$('ai-file').click();return;}render();return;}
   if(d.q){ask(d.q);return;}
   if(d.lv){lvlRange=+d.lv;render();return;}
   if(d.del){S[d.del].splice(+d.i,1);save();return;}
@@ -1058,7 +1110,7 @@ document.addEventListener('click',function(e){
   if(d.close&&!d.water){modal=null;render();return;}
   if(d.delph!=null){PH.splice(+d.delph,1);savePH();render();return;}
   var a=d.act,ok=true;
-  if(a==='aicam'||a==='aigal'){if(!ai){$('ai-msg').textContent=T(NATIVE?'Para analizar fotos, agrega tu clave de IA en Mi plan → Conexiones.':'El análisis de fotos funciona en la app instalada con tu clave de IA.');return;}$(a==='aicam'?'ai-file':'ai-gal').click();return;}
+  if(a==='aicam'||a==='aigal'){$(a==='aicam'?'ai-file':'ai-gal').click();return;}
   if(a==='undo'){S.meals.pop();toast=null;save();return;}
   if(d.aip){S.aip=d.aip;llm=aiKey()?makeLLM():null;ai=llm;save();return;}
   if(a==='aitest'){var st=$('ai-st');st.textContent=T('Probando…');aiCall([{role:'user',content:'Responde solo con la palabra OK.'}],40).then(function(t){st.textContent='✓ '+T('Conectado')+': '+String(t).trim().slice(0,40);}).catch(function(er){st.textContent='✕ '+((er&&er.message)||T('No se pudo conectar.'));});return;}
@@ -1078,7 +1130,7 @@ document.addEventListener('click',function(e){
   if(a==='hcoff'){S.hc={on:false};save();return;}
   if(a==='notif'){if(S.notif){S.notif=false;save();return;}LN.requestPermissions().then(function(p){S.notif=p.display==='granted';save();}).catch(function(){});return;}
   if(a==='clearchat'){chat=[];try{localStorage.removeItem('mt-chat');}catch(e){}render();return;}
-  if(a==='meal'){var n=$('f-n').value.trim(),k=Math.round(num($('f-k').value,0));if(!n)return;if(!k){if(!llm)return;b.disabled=true;quickAdd(n,$('ai-msg'),function(){modal=null;});return;}S.meals.push({d:today(),t:nowT(),n:n,k:k,p:Math.round(num($('f-p').value,0)),c:Math.round(num($('f-c').value,0)),f:Math.round(num($('f-f').value,0)),fi:Math.round(num(($('f-fi')||{}).value,0))});}
+  if(a==='meal'){var n=$('f-n').value.trim(),k=Math.round(num($('f-k').value,0));if(!n)return;if(!k){b.disabled=true;quickAdd(n,$('ai-msg'),function(){modal=null;});return;}S.meals.push({d:today(),t:nowT(),n:n,k:k,p:Math.round(num($('f-p').value,0)),c:Math.round(num($('f-c').value,0)),f:Math.round(num($('f-f').value,0)),fi:Math.round(num(($('f-fi')||{}).value,0))});}
   else if(a==='dose'){var s=document.querySelector('[data-site].on');S.doses.push({d:$('f-d').value||today(),t:$('f-t').value||nowT(),site:s?s.dataset.site:'',med:S.tr.med,mg:S.tr.mg});S.doses.sort(function(x,y){return (x.d+x.t)<(y.d+y.t)?-1:1;});if(S.inv.n>0)S.inv.n--;if(S.tr.stage==='start')S.tr.stage='using';}
   else if(a==='weight'){var w=wVal();if(!w)return;var dd=$('f-d').value||today();S.weights=S.weights.filter(function(x){return x.d!==dd;});S.weights.push({d:dd,kg:w});}
   else if(a==='sym'){S.sym.push({d:today(),t:nowT(),s:(tmp.sym||[]).slice(),i:(tmp.sym||[]).length?+$('f-i').value:0,note:$('f-n').value.trim()});tmp.sym=[];}
@@ -1094,7 +1146,9 @@ document.addEventListener('change',function(e){
   if(e.target.id==='ph-file'&&f){shrink(f,900,0.72).then(function(img){PH.push({d:today(),img:img});PH.sort(function(a,b){return a.d<b.d?-1:1;});if(!savePH()){PH.pop();}render();});return;}
   if(e.target.id==='bc-file'&&f){createImageBitmap(f).then(function(b){return new BarcodeDetector().detect(b);}).then(function(r){if(!r.length)throw 0;offLookup(r[0].rawValue);}).catch(function(){$('ai-msg').textContent=T('No pude leer el código. Escríbelo:');$('bcf').style.display='flex';});return;}
   if((e.target.id!=='ai-file'&&e.target.id!=='ai-gal')||!e.target.files[0])return;
-  var msg=$('ai-msg'),pv=$('ai-prev');msg.textContent=T('Analizando la foto…');pv.src=URL.createObjectURL(e.target.files[0]);pv.parentNode.classList.add('has','busy');
+  var msg=$('ai-msg'),pv=$('ai-prev');pv.src=URL.createObjectURL(e.target.files[0]);pv.parentNode.classList.add('has');
+  if(!ai){msg.textContent=T('Sin una IA conectada no puedo leer la foto. Escribe qué es (ej: 2 arepas con queso) y lo calculo. Para que se analice sola, conecta una IA en Mi plan.');$('f-n').focus();return;}
+  msg.textContent=T('Analizando la foto…');pv.parentNode.classList.add('busy');
   ai.json('Mira la foto de comida. Identifica cada alimento, estima la porción visible en gramos y suma los valores de todo el plato. Responde SOLO JSON: {"nombre":"descripción corta en '+({es:'español',en:'inglés',pt:'portugués'}[S.lang]||'español')+' con porción","kcal":entero,"proteina_g":entero,"carbohidratos_g":entero,"grasas_g":entero,"fibra_g":entero}.',{images:[e.target.files[0]]})
    .then(function(r){var m=mealFrom(r,T('Comida'));if(!m.k)throw{};autoAdd(m);})
    .catch(function(err){var sn=document.querySelector('.snap');if(sn)sn.classList.remove('busy');msg.textContent=T(err&&err.code==='rate_limited'?'Demasiadas fotos seguidas, espera un momento.':'No pude analizar la foto. Escríbelo a mano.');});
