@@ -202,7 +202,7 @@ window.onerror=function(m,s,l){mtFail(m+' (línea '+l+')');};
 setTimeout(function(){if(document.getElementById('boot'))mtFail('La app no terminó de cargar.');},10000);
 </script>
 
-<script type="application/json" id="st">{"v":3,"onb":false,"name":"","prof":{"sex":"M","age":40,"h":170,"act":1.2,"target":70,"rate":0.5},"tr":{"stage":"start","med":"","mg":"","freq":7},"worries":[],"meals":[],"water":{},"doses":[],"inv":{"n":0,"exp":""},"weights":[],"sym":[],"hc":{"on":false},"notif":true,"key":"","lang":"es","units":"met","_t":0}</script>
+<script type="application/json" id="st">{"v":3,"onb":false,"name":"","prof":{"sex":"M","age":40,"h":170,"act":1.2,"target":70,"rate":0.5},"tr":{"stage":"start","med":"","mg":"","freq":7},"worries":[],"meals":[],"water":{},"doses":[],"inv":{"n":0,"exp":""},"weights":[],"sym":[],"hc":{"on":false},"sleep":[],"sleepGoal":{"bed":"22:30","wake":"06:30"},"notif":true,"key":"","lang":"es","units":"met","_t":0}</script>
 <script id="code">
 (function(){
 var CODE=document.getElementById('code').textContent, CSS=document.getElementById('css').textContent; // render() reemplaza el body
@@ -254,7 +254,7 @@ function makeLLM(){
   return f;
 }
 // Health Connect / Apple Salud: peso (báscula), pasos, calorías activas, frecuencia cardiaca, grasa corporal, entrenamientos
-var HC_READ=['weight','height','dietaryWater','steps','calories','heartRate','restingHeartRate','bodyFat','workouts'];
+var HC_READ=['weight','height','sleep','dietaryWater','steps','calories','heartRate','restingHeartRate','bodyFat','workouts'];
 function iso(d){return d.toISOString();}
 function dayStart(){var d=new Date();d.setHours(0,0,0,0);return d;}
 function hcConnect(){
@@ -290,8 +290,10 @@ function hcSync(){
     safe(Health.readSamples({dataType:'heartRate',startDate:iso(new Date(now-6*36e5)),endDate:iso(now),limit:1})),
     safe(Health.readSamples({dataType:'bodyFat',startDate:iso(since),endDate:iso(now),limit:1})),
     safe(Health.queryWorkouts({startDate:iso(d0),endDate:iso(now),limit:20})),
-    safe(Health.queryAggregated({dataType:'dietaryWater',startDate:iso(d0),endDate:iso(now),bucket:'day',aggregation:'sum'}))
+    safe(Health.queryAggregated({dataType:'dietaryWater',startDate:iso(d0),endDate:iso(now),bucket:'day',aggregation:'sum'})),
+    safe(Health.readSamples({dataType:'sleep',startDate:iso(new Date(d0-8*864e5)),endDate:iso(now),limit:200,ascending:true}))
   ]).then(function(r){
+    if(r[9]&&r[9].samples)hcSleep(r[9].samples);
     var hw=r[8]&&r[8].samples&&r[8].samples.length?Math.round(r[8].samples.reduce(function(a,x){return a+(x.value||0);},0)*1000):0;if(hw>(S.water[today()]||0))S.water[today()]=hw;
     if(r[0]&&r[0].samples){var byDay={};r[0].samples.forEach(function(x){byDay[dstr(new Date(x.startDate))]=Math.round(x.value*10)/10;});
       Object.keys(byDay).forEach(function(day){var ex=S.weights.filter(function(w){return w.d===day;})[0];if(!ex||ex.kg!==byDay[day]){S.weights=S.weights.filter(function(w){return w.d!==day;});S.weights.push({d:day,kg:byDay[day],src:'hc'});}});}
@@ -311,10 +313,11 @@ var MEALT=[[8,30,'desayuno'],[13,0,'almuerzo'],[16,30,'merienda'],[20,0,'cena']]
 function mealsAfter(d,h){return S.meals.filter(function(m){return m.d===d&&(m.t||'00:00')>=pad(Math.max(0,h))+':00';}).length;}
 function scheduleReminders(){
   if(!LN)return;
-  var ids=[{id:1},{id:2}];for(var k=0;k<30;k++){ids.push({id:100+k});ids.push({id:200+k});}
+  var ids=[{id:1},{id:2},{id:3}];for(var k=0;k<30;k++){ids.push({id:100+k});ids.push({id:200+k});}
   LN.cancel({notifications:ids}).catch(function(){}).then(function(){
     if(!S.notif)return;
     var list=[],n=nextDoseAt(),now=new Date(),P=plan(),t=today(),wl=(S.water[t]||0)/1000;
+    var sb=bedAt();if(sb)list.push({id:3,title:T('Mochi se prepara para dormir 🌙'),body:T('En 30 minutos es tu hora de dormir: apaga las pantallas y baja las luces.'),largeIcon:'mochi_zz',schedule:{at:sb,allowWhileIdle:true}});
     if(n&&n>now)list.push({id:1,title:T('Hora de tu aplicación 💉'),body:(S.tr.med||T('Tu dosis'))+' · '+T('sitio sugerido')+': '+T(nextSite()),schedule:{at:n,allowWhileIdle:true}});
     for(var d=0;d<3;d++){
       WATERH.forEach(function(h,i){var at=new Date();at.setDate(at.getDate()+d);at.setHours(h,0,0,0);if(at<=now||(d===0&&wl>=P.water))return;
@@ -331,7 +334,7 @@ var MEDS=[['Mounjaro','tirzepatida',5],['Zepbound','tirzepatida',5],['Ozempic','
 var SITES=['Abdomen izq','Abdomen der','Muslo izq','Muslo der','Brazo izq','Brazo der'];
 var SYMS=[['Náuseas','🤢'],['Vómitos','🤮'],['Diarrea','💩'],['Estreñimiento','😣'],['Dolor de estómago','🤕'],['Acidez','🔥'],['Dolor de cabeza','🤯'],['Fatiga','😴'],['Mareo','😵‍💫'],['Poco apetito','🍽️']];
 var WHY=['Sentirme seguro(a) de nuevo','Un nuevo comienzo','Más energía y vitalidad','Mejorar mis análisis (colesterol, glucosa)','Ser un ejemplo para mis seres queridos','Un evento especial','Volver a usar mi ropa favorita','Otro'];
-var FOCUS=[['food','Alimentación, dieta y recetas','🥗'],['act','Actividad física','🏃'],['dose','Aplicación de dosis e inventario','💉'],['prog','Visualizar mi progreso','📈'],['sym','Efectos secundarios y síntomas','🩺']];
+var FOCUS=[['food','Alimentación, dieta y recetas','🥗'],['act','Actividad física','🏃'],['dose','Aplicación de dosis e inventario','💉'],['prog','Visualizar mi progreso','📈'],['sleep','Sueño y descanso','😴'],['sym','Efectos secundarios y síntomas','🩺']];
 function freqTxt(f){f=+f;return {1:'Diaria',7:'Semanal',14:'Cada 2 semanas',30:'Mensual'}[f]||(f?'Cada '+f+' días':'');}
 var ACT=[[1.2,'Sedentario','poco o ningún ejercicio','🛋️'],[1.375,'Ligeramente activo','ejercicio 1–3 días/sem','🚶'],[1.55,'Moderadamente activo','ejercicio 3–5 días/sem','🚴'],[1.725,'Activo','ejercicio 6–7 días/sem','🏋️'],[1.9,'Muy activo','ejercicio intenso diario','🔥']];
 var RATES=[[0.25,'Ritmo suave. Fácil de sostener.'],[0.5,'Ritmo recomendado. Equilibrio entre resultados y músculo.'],[0.75,'Ritmo rápido. Requiere disciplina con la proteína.'],[1,'Ritmo acelerado. Requiere seguimiento médico regular.']];
@@ -879,9 +882,9 @@ function vInicio(){
   return '<div class="top"><div><h1>Hoy</h1><div class="mu">'+new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})+'</div></div><button class="x" data-tab="perfil">'+IC.gear+'</button></div>'+alerts()+
   (lazy?'<div class="card row mood zz">'+cat(84,lvl(),'zz',prog())+'<div class="f"><b>'+T('Mochi se quedó sin energía')+'</b><div class="mu">'+T('Registra tu '+lazy+' para recargarlo.')+'</div><div class="row" style="margin-top:10px;gap:6px"><button class="btn sm" data-m="meal" data-cam="1">📷 '+T('Foto')+'</button><button class="btn sec sm" data-m="meal">✏️ '+T('Escribir')+'</button></div></div></div>':'')+
   '<div class="card hero" style="color:#fff"><div class="row"><div class="f"><div style="opacity:.85;font-size:14px">'+greet+'</div><h3 style="font-size:22px">'+esc(S.name)+'</h3>'+
-   '<div class="row" style="margin-top:12px;gap:18px"><div><div style="opacity:.8;font-size:12px">Peso actual</div><b style="font-size:20px">'+fW(cw)+'</b></div><div><div style="opacity:.8;font-size:12px">Meta</div><b style="font-size:20px">'+fW(S.prof.target)+'</b></div></div></div>'+cat(96,lvl(),lazy?'zz':sed?'sed':null,prog())+'</div>'+
+   '<div class="row" style="margin-top:12px;gap:18px"><div><div style="opacity:.8;font-size:12px">Peso actual</div><b style="font-size:20px">'+fW(cw)+'</b></div><div><div style="opacity:.8;font-size:12px">Meta</div><b style="font-size:20px">'+fW(S.prof.target)+'</b></div></div></div>'+cat(96,lvl(),lazy||shortSleep()?'zz':sed?'sed':null,prog())+'</div>'+
    '<div class="bar" style="background:rgba(255,255,255,.25);margin-top:14px"><i style="width:'+pct+'%;background:#fff"></i></div><div style="font-size:12px;opacity:.9;margin-top:6px">'+Math.round(pct)+'% del camino · faltan '+fW(Math.max(0,cw-S.prof.target))+'</div><div style="font-size:12px;margin-top:8px;background:rgba(255,255,255,.16);border-radius:10px;padding:8px 10px">'+mface(18)+' '+T('Nivel')+' '+(lvl()+1)+'/5 · '+T(LVLTXT[lvl()])+(toNext()>0?' '+Tf('Faltan {0} para el siguiente nivel.',[fW(toNext())]):'')+'</div></div>'+
-  actCard()+
+  actCard()+sleepCard()+
   (S.tr.stage!=='none'?'<div class="card">'+(n?'<div class="row"><div class="f"><div class="mu">💉 Próxima aplicación</div><div class="cd" id="cd">'+countdown()+'</div></div><span class="pill">'+esc(S.tr.med)+' '+esc(S.tr.mg)+(S.tr.mg?' mg':'')+'</span></div>'+
      '<div class="row" style="margin-top:12px"><div class="f"><div class="mu">Última dosis</div><b>'+fmt(l.d)+', '+l.t+'</b></div><div class="f"><div class="mu">Próxima dosis</div><b>'+fmt(dstr(n))+', '+l.t+'</b></div><div class="f"><div class="mu">Sitio sugerido</div><b>'+nextSite()+'</b></div></div>':
      '<div class="row"><div class="f"><h3>Registra tu primera aplicación</h3><div class="mu">Activamos la cuenta regresiva para la siguiente.</div></div><button class="btn sm" data-m="dose">Registrar</button></div>')+'</div>':'')+
@@ -941,7 +944,7 @@ function vProg(){
    '<div class="card"><div class="row"><div class="f"><div class="mu">Cambio total</div><div class="big" style="color:'+(st-cw>0?'var(--ok)':'var(--tx)')+'">'+(st-cw>0?'−':'')+fW(Math.abs(st-cw))+'</div></div>'+owl(70)+'</div>'+weightChart()+
     '<div class="grid3" style="margin-top:12px">'+[['Inicio',fW(st)],['Actual',fW(cw)],['Meta',fW(S.prof.target)]].map(function(x){return '<div><div class="mu" style="font-size:12px">'+x[0]+'</div><b>'+x[1]+'</b></div>';}).join('')+'</div></div>'+
    '<div class="card">'+bmiBar(P.bmi,P.bmiT)+(S.hc&&S.hc.fat?'<div class="mu" style="margin-top:10px">Grasa corporal (báscula): <b>'+String(S.hc.fat).replace('.',',')+'%</b></div>':'')+'</div>'+
-   '<h2>Progreso en fotos</h2><div class="card"><div class="ph">'+PH.map(function(x,i){return '<div><img src="'+x.img+'" alt=""><span>'+(i===0&&PH.length>1?T('Inicio')+' · ':'')+fmt(x.d)+'</span><button class="x" data-delph="'+i+'">✕</button></div>';}).join('')+
+   sleepSection()+'<h2>Progreso en fotos</h2><div class="card"><div class="ph">'+PH.map(function(x,i){return '<div><img src="'+x.img+'" alt=""><span>'+(i===0&&PH.length>1?T('Inicio')+' · ':'')+fmt(x.d)+'</span><button class="x" data-delph="'+i+'">✕</button></div>';}).join('')+
     '<button class="add" data-act="addphoto">＋<br>Agregar foto</button></div><input type="file" id="ph-file" accept="image/*" style="display:none"><div class="mu" style="font-size:12px;margin-top:8px">Las fotos se guardan solo en este teléfono.</div></div>'+
    '<h2>Historial de peso</h2><div class="card"><ul>'+ws.slice().reverse().map(function(w,i,a){var prev=a[i+1],d=prev?w.kg-prev.kg:0;return '<li class="it"><div><b>'+fW(w.kg)+'</b><div class="mu">'+fmtY(w.d)+(w.src==='hc'?' · ⚖️ báscula/Health Connect':'')+'</div></div><div class="row">'+(prev?'<span style="color:'+(d<=0?'var(--ok)':'var(--bad)')+';font-weight:700">'+(d>0?'+':'')+rW(d).toFixed(1)+'</span>':'')+'<button class="x" data-del="weights" data-i="'+S.weights.indexOf(w)+'">✕</button></div></li>';}).join('')+'</ul></div>';
 }
@@ -983,7 +986,7 @@ function connCard(){
 function field(lbl,inp){return '<div style="margin-bottom:12px"><label class="l">'+lbl+'</label>'+inp+'</div>';}
 function vModal(){
   var m=modal,h='',t=today();
-  if(m==='menu') h='<h3 style="margin-bottom:14px">¿Qué quieres registrar?</h3><div class="grid3">'+[['meal','🍽️','Comida'],['dose','💉','Aplicación'],['weight','⚖️','Peso'],['sym','🩺','Síntoma'],['water','💧','Agua'],['inv','📦','Inventario']].map(function(x){return '<button class="act" data-m="'+x[0]+'"><span>'+x[1]+'</span>'+x[2]+'</button>';}).join('')+'</div>';
+  if(m==='menu') h='<h3 style="margin-bottom:14px">¿Qué quieres registrar?</h3><div class="grid3">'+[['meal','🍽️','Comida'],['dose','💉','Aplicación'],['weight','⚖️','Peso'],['sym','🩺','Síntoma'],['water','💧','Agua'],['sleep','🌙','Sueño'],['inv','📦','Inventario']].map(function(x){return '<button class="act" data-m="'+x[0]+'"><span>'+x[1]+'</span>'+x[2]+'</button>';}).join('')+'</div>';
   if(m==='lvl'){var L=lvl();h='<div class="center fade">'+cat(170,L)+'<h3 style="font-size:24px;margin:6px 0">'+T('¡Mochi subió al nivel')+' '+(L+1)+'!</h3><p class="mu" style="font-size:16px">'+T(LVLTXT[L])+'</p><button class="btn" data-close="1">'+T('¡Vamos!')+'</button></div>';}
   if(m==='auth'){var up=tmp.am==='up';h='<h3 style="margin-bottom:14px">'+(up?'Crear cuenta':'Entrar')+'</h3>'+field('Correo','<input id="au-e" type="email" autocomplete="email" inputmode="email">')+field('Contraseña','<input id="au-p" type="password" autocomplete="'+(up?'new-password':'current-password')+'" placeholder="'+(up?'Mínimo 6 caracteres':'')+'">')+
     '<div class="mu center" id="au-msg" style="min-height:20px;margin-bottom:8px"></div><button class="btn" data-act="'+(up?'signup':'signin')+'">'+(up?'Crear cuenta':'Entrar')+'</button>'+(up?'':'<button class="link2" data-act="reset">Olvidé mi contraseña</button>')+'<button class="link2" data-m="auth" data-am="'+(up?'in':'up')+'">'+(up?'¿Ya tienes cuenta? Entra':'¿No tienes cuenta? Créala')+'</button>';}
@@ -996,6 +999,7 @@ function vModal(){
   if(m==='weight') h='<h3 style="margin-bottom:14px">Registrar peso</h3>'+wRuler(tmp.mw||curW())+field('Fecha','<input id="f-d" type="date" value="'+(tmp.md||t)+'">')+'<button class="btn" data-act="weight">Guardar</button>';
   if(m==='sym') h='<h3 style="margin-bottom:14px">¿Cómo te sientes?</h3><div class="chips" style="margin-bottom:14px">'+SYMS.map(function(s){return '<button class="chip'+((tmp.sym||[]).indexOf(s[0])>=0?' on':'')+'" data-sym="'+s[0]+'">'+s[1]+' '+s[0]+'</button>';}).join('')+'</div>'+
     field('Intensidad: <b id="f-iv">5</b>/10','<input id="f-i" type="range" min="1" max="10" value="5">')+field('Nota','<textarea id="f-n" rows="2" placeholder="Opcional"></textarea>')+'<button class="btn" data-act="sym">Guardar</button><p class="mu center">Si un síntoma es fuerte o no cede, consulta a tu médico.</p>';
+  if(m==='sleep') h=sleepModal();
   if(m==='water') h='<h3 style="margin-bottom:14px">Agua</h3><div class="grid3">'+[[250,'Vaso'],[500,'Botella'],[1000,'1 litro']].map(function(x){return '<button class="act" data-water="'+x[0]+'" data-close="1"><span>💧</span>'+x[1]+'<br><span class="mu">'+x[0]+' ml</span></button>';}).join('')+'</div>';
   if(m==='inv') h='<h3 style="margin-bottom:14px">Inventario de la pluma</h3><div class="grid2">'+field('Dosis restantes','<input id="f-n" type="number" inputmode="numeric" value="'+S.inv.n+'">')+field('Caducidad','<input id="f-e" type="date" value="'+S.inv.exp+'">')+'</div><p class="mu">Cada aplicación que registras se descuenta sola.</p><button class="btn" data-act="inv">Guardar</button>';
   if(m==='tr') h='<h3 style="margin-bottom:14px">Mi tratamiento</h3>'+field('Medicamento','<select id="f-m"><option value="">Sin medicamento</option>'+MEDS.map(function(x){return '<option value="'+x[0]+'"'+(S.tr.med===x[0]?' selected':'')+'>'+x[0]+'</option>';}).join('')+'</select>')+
@@ -1004,6 +1008,73 @@ function vModal(){
 }
 
 
+
+/* ---------- Sueño e higiene del sueño ---------- */
+// ponytail: metas y hábitos según AASM/SRS (≥7 h en adultos), NHS y Sleep Education (cafeína); el sueño se fecha con el día en que te despiertas
+var SLEEPH=[['hora','Me acosté y levanté a mi hora de siempre','⏰'],['pant','Sin pantallas 1 h antes de dormir','📵'],['caf','Sin cafeína después de las 5 p. m.','☕'],['cena','Sin comidas pesadas cerca de dormir','🍽️'],['alc','Sin alcohol ni cigarrillo 1–2 h antes','🍷'],['cuarto','Cuarto oscuro, silencioso y fresco','🌑'],['relax','Rutina relajante (lectura, respiración)','📖'],['ejer','Me moví durante el día','🚶']];
+var SLEEPQ=['','Muy mal','Mal','Regular','Bien','Excelente'];
+function tmin(t){var a=String(t||'0:0').split(':');return (+a[0])*60+(+a[1]||0);}
+function hm(m){m=Math.round(m||0);return Math.floor(m/60)+' h '+pad(m%60)+' min';}
+function sleepSorted(){return (S.sleep||[]).slice().sort(function(a,b){return a.d<b.d?-1:1;});}
+function lastSleep(){var l=sleepSorted(),x=l[l.length-1];return x&&x.d>=addDays(today(),-1)?x:null;}
+function sleepDays(n){var out=[];for(var i=n-1;i>=0;i--){var d=addDays(today(),-i),e=(S.sleep||[]).filter(function(x){return x.d===d;})[0];out.push({d:d,e:e});}return out;}
+function sleepAvg(){var l=sleepDays(7).filter(function(x){return x.e;});return l.length?l.reduce(function(a,x){return a+x.e.min;},0)/l.length:0;}
+function shortSleep(){var l=lastSleep();return !!(l&&l.min<360);}
+function goalMin(){var g=S.sleepGoal||{bed:'22:30',wake:'06:30'};return (tmin(g.wake)-tmin(g.bed)+1440)%1440;}
+function bedAt(){var g=S.sleepGoal;if(!g)return null;var at=new Date(),m=tmin(g.bed)-30;at.setHours(Math.floor((m+1440)%1440/60),(m+1440)%60,0,0);if(at<=new Date())at.setDate(at.getDate()+1);return at;}
+// constancia: cuánto varía tu hora de acostarte (desviación típica en minutos, alrededor de medianoche)
+function bedVar(){var l=sleepDays(7).filter(function(x){return x.e&&x.e.bed;}).map(function(x){var m=tmin(x.e.bed);return m<720?m+1440:m;});if(l.length<3)return null;var av=l.reduce(function(a,b){return a+b;},0)/l.length;return Math.round(Math.sqrt(l.reduce(function(a,b){return a+(b-av)*(b-av);},0)/l.length));}
+function hygieneScore(){var l=sleepDays(7).filter(function(x){return x.e&&x.e.h;});if(!l.length)return null;return Math.round(l.reduce(function(a,x){return a+x.e.h.length;},0)/(l.length*SLEEPH.length)*100);}
+function sleepMsg(min){return min>=420?['Dormiste lo recomendado (7 h o más).','var(--ok)']:min>=360?['Te faltó un poco: la meta es 7 h o más.','var(--org)']:['Dormiste poco. Con menos de 6 h cuesta más controlar el apetito y bajar grasa.','var(--bad)'];}
+function hcSleep(samples){ // agrupa las sesiones de Health Connect por el día en que terminan
+  var by={};samples.forEach(function(x){var e=new Date(x.endDate),d=dstr(e),m=x.stages&&x.stages.length?x.stages.filter(function(s){return s.stage!=='awake'&&s.stage!=='inBed';}).reduce(function(a,s){return a+s.durationMinutes;},0):(x.sleepState==='awake'||x.sleepState==='inBed'?0:x.value);
+    if(!m)return;var b=by[d]=by[d]||{min:0,bed:null,wake:null};b.min+=m;var st=new Date(x.startDate);if(!b.bed||st<b.bed)b.bed=st;if(!b.wake||e>b.wake)b.wake=e;});
+  Object.keys(by).forEach(function(d){var ex=(S.sleep||[]).filter(function(x){return x.d===d;})[0];if(ex&&ex.src!=='hc')return;var b=by[d];
+    S.sleep=(S.sleep||[]).filter(function(x){return x.d!==d;});S.sleep.push({d:d,bed:pad(b.bed.getHours())+':'+pad(b.bed.getMinutes()),wake:pad(b.wake.getHours())+':'+pad(b.wake.getMinutes()),min:Math.round(b.min),src:'hc'});});
+}
+function sleepCard(){
+  var l=lastSleep(),g=goalMin();
+  if(!l)return '<div class="card row"><span style="font-size:30px">🌙</span><div class="f"><b>¿Cómo dormiste?</b><div class="mu">Registra tu sueño: dormir 7 h o más ayuda a bajar grasa y no músculo.</div></div><button class="btn sm" data-m="sleep">Registrar</button></div>';
+  var M=sleepMsg(l.min);
+  return '<div class="card"><div class="row"><div class="f"><div class="mu">🌙 Sueño de anoche</div><div class="big" style="font-size:28px">'+hm(l.min)+'</div><div style="font-size:13px;font-weight:600;color:'+M[1]+'">'+M[0]+'</div>'+
+   '<div class="mu" style="font-size:12px;margin-top:4px">'+(l.bed?l.bed+' → '+l.wake:'')+(l.q?' · '+SLEEPQ[l.q]:'')+(l.h?' · '+l.h.length+'/'+SLEEPH.length+' hábitos':'')+(l.src==='hc'?' · ⌚ reloj':'')+'</div></div>'+
+   ring(l.min,Math.max(420,g),90,10,'#6d5bd0','<b style="font-size:15px">'+Math.round(l.min/Math.max(420,g)*100)+'%</b>')+'</div>'+
+   '<button class="btn sec sm" data-m="sleep" style="margin-top:10px">Editar / registrar</button></div>';
+}
+function sleepModal(){
+  var t=today(),l=(S.sleep||[]).filter(function(x){return x.d===t;})[0]||{},g=S.sleepGoal||{};
+  var q=tmp.sq||l.q||0,hs=tmp.sh&&tmp.sh.length?tmp.sh:(l.h||[]);tmp.sh=hs.slice();tmp.sq=q||null;
+  return '<h3 style="margin-bottom:4px">🌙 Registrar sueño</h3><div class="mu" style="margin-bottom:12px">Anota cuándo te acostaste y cuándo te levantaste.</div>'+
+   '<div class="grid2">'+field('Me acosté','<input id="s-bed" type="time" value="'+(l.bed||g.bed||'22:30')+'">')+field('Me levanté','<input id="s-wake" type="time" value="'+(l.wake||g.wake||'06:30')+'">')+'</div>'+
+   field('Día en que te despertaste','<input id="s-d" type="date" value="'+t+'">')+
+   field('¿Tardaste en dormirte o te despertaste? (min despierto)','<input id="s-aw" type="number" inputmode="numeric" placeholder="0" value="'+(l.aw||'')+'">')+
+   field('¿Cómo dormiste?','<div class="chips">'+[1,2,3,4,5].map(function(i){return '<button class="chip'+(q===i?' on':'')+'" data-sq="'+i+'">'+['','😫','😕','😐','🙂','😴'][i]+' '+SLEEPQ[i]+'</button>';}).join('')+'</div>')+
+   field('Higiene del sueño de ayer','<div class="chips">'+SLEEPH.map(function(x){return '<button class="chip'+(hs.indexOf(x[0])>=0?' on':'')+'" data-sh="'+x[0]+'">'+x[2]+' '+x[1]+'</button>';}).join('')+'</div>')+
+   '<button class="btn" data-act="sleepsave">Guardar</button><p class="mu center" style="font-size:12px">Si roncas fuerte, te despiertas sin aire o tienes mucho sueño de día, coméntalo con tu médico.</p>';
+}
+function sleepFromForm(){
+  var bed=$('s-bed').value,wake=$('s-wake').value;if(!bed||!wake)return null;
+  var min=(tmin(wake)-tmin(bed)+1440)%1440-Math.max(0,Math.round(num($('s-aw').value,0)));if(min<=0)return null;
+  return {d:$('s-d').value||today(),bed:bed,wake:wake,min:min,aw:Math.round(num($('s-aw').value,0))||0,q:tmp.sq||null,h:(tmp.sh||[]).slice()};
+}
+function sleepChart(){
+  var days=sleepDays(7),W=320,H=130,mx=600,bw=30,gap=(W-7*bw)/8;
+  var y=function(m){return 14+(H-36)*(1-Math.min(m,mx)/mx);};
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%"><line x1="0" x2="'+W+'" y1="'+y(420)+'" y2="'+y(420)+'" stroke="#16a37f" stroke-dasharray="4 4"/><text x="'+(W-2)+'" y="'+(y(420)-4)+'" font-size="10" fill="#16a37f" text-anchor="end">7 h</text>'+
+   days.map(function(x,i){var X=gap+i*(bw+gap),m=x.e?x.e.min:0,c=!x.e?'#ece8fb':m>=420?'#6d5bd0':m>=360?'#ff9f43':'#ef4f5f';
+     return '<rect x="'+X+'" y="'+(x.e?y(m):H-26)+'" width="'+bw+'" height="'+(x.e?H-22-y(m):4)+'" rx="7" fill="'+c+'"/><text x="'+(X+bw/2)+'" y="'+(H-6)+'" font-size="10" fill="#9b97ab" text-anchor="middle">'+new Date(x.d+'T12:00:00').toLocaleDateString(LOC(),{weekday:'short'}).slice(0,3)+'</text>'+(x.e?'<text x="'+(X+bw/2)+'" y="'+(y(m)-4)+'" font-size="9" font-weight="700" fill="#16132b" text-anchor="middle">'+(Math.round(m/6)/10).toString().replace('.',',')+'</text>':'');}).join('')+'</svg>';
+}
+function sleepSection(){
+  var av=sleepAvg(),bv=bedVar(),hy=hygieneScore(),g=S.sleepGoal||{bed:'22:30',wake:'06:30'},gm=goalMin();
+  return '<h2>Sueño</h2><div class="card"><div class="row" style="margin-bottom:6px"><b class="f">Últimos 7 días</b><button class="btn sm" data-m="sleep">🌙 Registrar</button></div>'+sleepChart()+
+   '<div class="grid3" style="margin-top:8px"><div><div class="mu" style="font-size:12px">Promedio</div><b>'+(av?hm(av).replace(' min',''):'—')+'</b></div><div><div class="mu" style="font-size:12px">Constancia</div><b>'+(bv==null?'—':bv<=30?'Buena':bv<=60?'Regular':'Irregular')+'</b><div class="mu" style="font-size:10px">'+(bv==null?'3+ registros':'±'+bv+' min al acostarte')+'</div></div><div><div class="mu" style="font-size:12px">Higiene</div><b>'+(hy==null?'—':hy+'%')+'</b><div class="mu" style="font-size:10px">hábitos cumplidos</div></div></div></div>'+
+   '<div class="card"><b>Mi horario de sueño</b><div class="grid2" style="margin-top:10px">'+field('Acostarme','<input id="g-bed" type="time" value="'+g.bed+'">')+field('Levantarme','<input id="g-wake" type="time" value="'+g.wake+'">')+'</div>'+
+   '<div class="mu" style="font-size:13px;margin:-4px 0 10px;color:'+(gm<420?'var(--bad)':'var(--mu)')+'">'+(gm<420?'⚠️ Ese horario te da '+hm(gm)+'. Los adultos necesitan 7 h o más.':'Te da '+hm(gm)+' para dormir. 🔔 Mochi te avisa 30 min antes.')+'</div><button class="btn sec sm" data-act="sleepgoal">Guardar horario</button></div>'+
+   '<div class="card"><div class="row"><b class="f">🛏️ Higiene del sueño</b><button class="link" data-sleeptips="1" style="padding:4px">'+(tmp.tips?'Ocultar':'Ver consejos')+'</button></div>'+
+   (tmp.tips?'<ul style="margin-top:6px">'+[['⏰','Acuéstate y levántate a la misma hora todos los días, también los fines de semana.'],['📵','Deja el celular, la tablet y el computador una hora antes de dormir.'],['☕','Evita la cafeína después de las 5 p. m.: tomada 6 h antes de dormir puede quitarte más de 1 hora de sueño.'],['🍽️','Evita comidas grandes cerca de la hora de dormir.'],['🍷','Evita el alcohol y el cigarrillo 1 a 2 horas antes de acostarte.'],['🌑','Cuarto oscuro, silencioso y fresco. Usa antifaz o tapones si hace falta.'],['📖','Haz una rutina relajante: leer, respirar despacio, música tranquila.'],['🚶','Muévete durante el día; si el ejercicio de noche te desvela, hazlo más temprano.'],['📝','Si te preocupas, escribe tus pendientes antes de acostarte.'],['🔄','Si a los 20 minutos no te duermes, levántate, haz algo tranquilo y vuelve cuando tengas sueño.']].map(function(x){return '<li class="it" style="justify-content:flex-start;gap:10px;align-items:flex-start"><span>'+x[0]+'</span><span style="font-size:14px">'+x[1]+'</span></li>';}).join('')+'</ul>'+
+    '<div class="alert" style="margin:10px 0 0;background:#efebff;color:#3d2a9e;border-color:#ddd5ff">💡 En un estudio con dieta, quienes durmieron 5,5 h en vez de 8,5 h perdieron 55% menos grasa y 60% más masa muscular (Annals of Internal Medicine, 2010).</div>'+
+    '<p class="mu" style="font-size:11px;margin:8px 0 0">Fuentes: AASM y Sleep Research Society (7 h o más en adultos), NHS (higiene del sueño), Sleep Education / J Clin Sleep Med 2013 (cafeína).</p>':'<div class="mu" style="font-size:13px;margin-top:4px">10 hábitos con respaldo científico para dormir mejor.</div>')+'</div>';
+}
 /* ---------- Revisión de la comida por foto: aporte al plan y alertas ---------- */
 // ponytail: límites OMS para azúcar (≤10% de las calorías) y sodio (<2.000 mg/día); el resto sale del plan del usuario
 var pend=null,pendQ=1,pendImg='';
@@ -1099,6 +1170,7 @@ function ctx(){
   return 'Usuario: '+S.name+', '+(S.prof.sex==='F'?'mujer':'hombre')+', '+S.prof.age+' años, '+S.prof.h+' cm. Peso actual '+curW()+' kg (inicial '+startW()+'), meta '+S.prof.target+' kg, ritmo '+S.prof.rate+' kg/sem.\n'+
    'Plan diario: '+P.kcal+' kcal, proteína '+P.prot+' g, carbohidratos '+P.carb+' g, grasas '+P.fat+' g, fibra '+P.fib+' g, agua '+P.water+' L. IMC '+P.bmi.toFixed(1)+'.\n'+
    'Tratamiento: '+(S.tr.med?S.tr.med+' '+S.tr.mg+' mg, cada '+S.tr.freq+' días':'sin medicamento')+'. Últimas aplicaciones: '+(S.doses.slice(-4).map(function(x){return x.d+' '+x.site;}).join('; ')||'ninguna')+'.\n'+
+   'Sueño: '+(lastSleep()?'anoche '+hm(lastSleep().min)+(lastSleep().q?', calidad '+lastSleep().q+'/5':''):'sin registro')+'; promedio 7 días '+(sleepAvg()?hm(sleepAvg()):'—')+'.\n'+
    'Síntomas recientes: '+(S.sym.slice(-5).map(function(x){return x.d+': '+(x.s.join(', ')||'ninguno')+(x.i?' ('+x.i+'/10)':'');}).join('; ')||'ninguno')+'.\n'+
    'Hoy ('+t+'): '+sum('k')+' kcal, '+sum('p')+' g proteína, '+((S.water[t]||0)/1000)+' L de agua. Comidas: '+(ms.map(function(m){return m.n;}).join(', ')||'ninguna')+'.';
 }
@@ -1166,12 +1238,15 @@ document.addEventListener('click',function(e){
     if(s.multi){tmp[k]=tmp[k]||[];var i=tmp[k].indexOf(v);i>=0?tmp[k].splice(i,1):tmp[k].push(v);} else tmp[k]=v;
     render();return;}
   if(d.tab){tab=d.tab;modal=null;history.replaceState(null,'','#'+tab);render();window.scrollTo(0,0);return;}
-  if(d.m){modal=d.m;tmp.sym=[];tmp.mw=tmp.md=null;tmp.am=d.am||'in';if(d.cam){render();$('ai-file').click();return;}render();return;}
+  if(d.m){modal=d.m;tmp.sym=[];if(d.m==='sleep'){tmp.sq=null;tmp.sh=[];}tmp.mw=tmp.md=null;tmp.am=d.am||'in';if(d.cam){render();$('ai-file').click();return;}render();return;}
   if(d.q){ask(d.q);return;}
   if(d.lv){lvlRange=+d.lv;render();return;}
   if(d.del){S[d.del].splice(+d.i,1);save();return;}
   if(d.water){var t=today();S.water[t]=Math.max(0,(S.water[t]||0)+(+d.water));if(Health&&S.hc&&S.hc.on&&+d.water>0)Health.saveSample({dataType:'dietaryWater',value:+d.water/1000,unit:'liter'}).catch(function(){});if(d.close)modal=null;save();return;}
   if(d.sym){tmp.sym=tmp.sym||[];var j=tmp.sym.indexOf(d.sym);j>=0?tmp.sym.splice(j,1):tmp.sym.push(d.sym);b.classList.toggle('on');return;}
+  if(d.sq){tmp.sq=+d.sq;[].forEach.call(document.querySelectorAll('[data-sq]'),function(x){x.classList.toggle('on',x===b);});return;}
+  if(d.sh){tmp.sh=tmp.sh||[];var hi=tmp.sh.indexOf(d.sh);hi>=0?tmp.sh.splice(hi,1):tmp.sh.push(d.sh);b.classList.toggle('on');return;}
+  if(d.sleeptips){tmp.tips=!tmp.tips;render();return;}
   if(d.site){[].forEach.call(document.querySelectorAll('[data-site]'),function(x){x.classList.remove('on');});b.classList.add('on');return;}
   if(d.close&&!d.water){modal=null;render();return;}
   if(d.delph!=null){PH.splice(+d.delph,1);savePH();render();return;}
@@ -1205,6 +1280,8 @@ document.addEventListener('click',function(e){
   else if(a==='dose'){var s=document.querySelector('[data-site].on');S.doses.push({d:$('f-d').value||today(),t:$('f-t').value||nowT(),site:s?s.dataset.site:'',med:S.tr.med,mg:S.tr.mg});S.doses.sort(function(x,y){return (x.d+x.t)<(y.d+y.t)?-1:1;});if(S.inv.n>0)S.inv.n--;if(S.tr.stage==='start')S.tr.stage='using';}
   else if(a==='weight'){var w=wVal();if(!w)return;var dd=$('f-d').value||today();S.weights=S.weights.filter(function(x){return x.d!==dd;});S.weights.push({d:dd,kg:w});}
   else if(a==='sym'){S.sym.push({d:today(),t:nowT(),s:(tmp.sym||[]).slice(),i:(tmp.sym||[]).length?+$('f-i').value:0,note:$('f-n').value.trim()});tmp.sym=[];}
+  else if(a==='sleepsave'){var e=sleepFromForm();if(!e)return;S.sleep=S.sleep.filter(function(x){return x.d!==e.d;});S.sleep.push(e);S.sleep.sort(function(x,y){return x.d<y.d?-1:1;});tmp.sq=null;tmp.sh=null;}
+  else if(a==='sleepgoal'){S.sleepGoal={bed:$('g-bed').value||'22:30',wake:$('g-wake').value||'06:30'};}
   else if(a==='inv'){S.inv={n:Math.max(0,Math.round(num($('f-n').value,0))),exp:$('f-e').value,on:true};}
   else if(a==='tr'){var med=$('f-m').value;S.tr={stage:med?(S.doses.length?'using':'start'):'none',med:med,mg:$('f-mg').value,freq:+$('f-fr').value};}
   else ok=false;
