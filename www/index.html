@@ -201,6 +201,7 @@ function mtFail(msg){document.body.innerHTML='<div style="padding:24px;font:15px
 window.onerror=function(m,s,l){mtFail(m+' (línea '+l+')');};
 setTimeout(function(){if(document.getElementById('boot'))mtFail('La app no terminó de cargar.');},10000);
 </script>
+<script src="capacitor.js"></script>
 
 <script type="application/json" id="st">{"v":3,"onb":false,"name":"","prof":{"sex":"M","age":40,"h":170,"act":1.2,"target":70,"rate":0.5},"tr":{"stage":"start","med":"","mg":"","freq":7},"worries":[],"meals":[],"water":{},"doses":[],"inv":{"n":0,"exp":""},"weights":[],"sym":[],"hc":{"on":false},"sleep":[],"sleepGoal":{"bed":"22:30","wake":"06:30"},"notif":true,"key":"","lang":"es","units":"met","_t":0}</script>
 <script id="code">
@@ -216,7 +217,8 @@ if(S.v!==3){ S.v=3; S.onb=false; }
 var chat=[];try{chat=JSON.parse(localStorage.getItem('mt-chat')||'[]');}catch(e){}
 var llm=null,busy=false;
 /* ---------- Capa nativa (Android / iOS) ---------- */
-var NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+// ponytail: sin capacitor.js no hay registerPlugin; la app sigue sin funciones nativas en vez de caerse
+var NATIVE=!!(window.Capacitor&&Capacitor.registerPlugin&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 var Health=NATIVE?Capacitor.registerPlugin('Health'):null, AppP=NATIVE?Capacitor.registerPlugin('App'):null, LN=NATIVE?Capacitor.registerPlugin('LocalNotifications'):null;
 var hcBusy=false, hcErr='';
 function persist(){S._t=Date.now();try{localStorage.setItem('mt-state',JSON.stringify(S));}catch(e){}if(!modal&&S.onb)render();}
