@@ -679,7 +679,7 @@ function offLookup(code){var msg=$('ai-msg');msg.textContent=T('Buscando el prod
     autoAdd({d:today(),t:nowT(),n:(p.product_name||code)+' ('+(sv?(p.serving_size||T('porción')):'100 g')+')',k:+g('energy-kcal')||0,p:+g('proteins')||0,c:+g('carbohydrates')||0,f:+g('fat')||0,fi:+g('fiber')||0});}).catch(function(){msg.textContent=T('No encontré ese código. Escríbelo a mano.');});}
 /* ---------- Cuentas con correo: Firebase (Auth + Firestore por REST, sin librerías) ---------- */
 // ponytail: llena key y project con los de tu proyecto de Firebase; vacíos = cuentas desactivadas
-var FB={key:'',project:''};
+var FB={key:'AIzaSyA87L7RDrjnL4HhKoyTVLL06oYl9MPlsRc',project:'mi-tracker-a6d2e'};
 var AU=null;try{AU=JSON.parse(localStorage.getItem('mt-auth')||'null');}catch(e){}
 function setAU(a){AU=a;try{a?localStorage.setItem('mt-auth',JSON.stringify(a)):localStorage.removeItem('mt-auth');}catch(e){}}
 function fbPost(url,body,form){return fetch(url,{method:'POST',headers:{'content-type':form?'application/x-www-form-urlencoded':'application/json'},body:form?body:JSON.stringify(body)}).then(function(r){return r.json().then(function(j){if(!r.ok)throw (j.error&&j.error.message)||'ERR';return j;});});}
