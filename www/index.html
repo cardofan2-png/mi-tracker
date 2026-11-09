@@ -234,6 +234,8 @@ function aiProv(){return AIP[S.aip]?S.aip:'mochi';}
 // IA propia (Firebase AI Logic, plan gratis de Gemini): sin clave. Límite diario por persona para no agotar el cupo de todos.
 // ponytail: el contador vive en el teléfono; si alguien lo salta, poner App Check y contar en el servidor
 var AI_DAY=40;
+// Intermediario en Cloudflare (servidor-ia/worker.js): guarda la clave de Google AI Studio. Firebase AI Logic exige App Check desde nov 2026.
+var AI_URL='';
 function aiKey(){var p=aiProv();if(p==='mochi')return 'app';return (S.aik||{})[p]||(p==='claude'?S.key:'')||'';}
 function aiModel(){var p=aiProv();return ((S.aim||{})[p]||'').trim()||AIP[p].m;}
 // msgs: [{role:'user'|'assistant', content: texto | [{img:base64}|{text:...}]}]
@@ -244,7 +246,8 @@ function aiCall(msgs,max){
       body:JSON.stringify({model:m,max_tokens:max||800,messages:msgs.map(function(x){return{role:x.role,content:typeof x.content==='string'?x.content:x.content.map(function(q){return q.img?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:q.img}}:{type:'text',text:q.text};})};})})})
     .then(ok).then(function(j){return (j.content||[]).map(function(c){return c.text||'';}).join('');});
   if(p==='mochi'){var t=today();if(!S.aiu||S.aiu.d!==t)S.aiu={d:t,n:0};if(S.aiu.n>=AI_DAY)return Promise.reject({code:'daily'});S.aiu.n++;try{localStorage.setItem('mt-state',JSON.stringify(S));}catch(e){}
-    return fetch('https://firebasevertexai.googleapis.com/v1beta/projects/'+FB.project+'/models/'+m+':generateContent',{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':FB.key,'X-Firebase-Appid':FB.app},
+    if(!AI_URL)return Promise.reject({message:'La IA gratuita aún se está configurando.'});
+    return fetch(AI_URL,{method:'POST',headers:{'content-type':'application/json','x-app':'michi-salud'},
       body:JSON.stringify({contents:msgs.map(function(x){return{role:x.role==='assistant'?'model':'user',parts:parts(x.content).map(function(q){return q.img?{inline_data:{mime_type:'image/jpeg',data:q.img}}:{text:q.text};})};}),generationConfig:{maxOutputTokens:max||800}})})
     .then(ok).then(function(j){var c=j.candidates&&j.candidates[0];return c&&c.content?(c.content.parts||[]).map(function(q){return q.text||'';}).join(''):'';});}
   if(p==='gemini')return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(m)+':generateContent',{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':k},
