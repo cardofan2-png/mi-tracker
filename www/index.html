@@ -697,9 +697,10 @@ function fbDoc(){return 'https://firestore.googleapis.com/v1/projects/'+FB.proje
 var pushT=null;
 function fbPush(){if(!AU||!FB.key)return Promise.resolve();var c=JSON.parse(JSON.stringify(S));delete c.key;delete c.aik;
   return fbTok().then(function(t){return fetch(fbDoc(),{method:'PATCH',headers:{'content-type':'application/json',authorization:'Bearer '+t},body:JSON.stringify({fields:{state:{stringValue:JSON.stringify(c)},t:{integerValue:String(S._t||0)}}})});}).catch(function(){});}
-function fbPull(){if(!AU||!FB.key)return Promise.resolve();
+// force=true al iniciar sesión: manda la cuenta. Nunca un perfil sin terminar pisa uno terminado.
+function fbPull(force){if(!AU||!FB.key)return Promise.resolve();
   return fbTok().then(function(t){return fetch(fbDoc(),{headers:{authorization:'Bearer '+t}});}).then(function(r){if(r.status===404)return fbPush();return r.json().then(function(j){
-    var c=j.fields&&j.fields.state&&JSON.parse(j.fields.state.stringValue);if(!c)return;if((c._t||0)>(S._t||0)){c.key=S.key;c.aik=S.aik;S=c;for(var k in DEF)if(S[k]==null)S[k]=DEF[k];try{localStorage.setItem('mt-state',JSON.stringify(S));}catch(e){}modal=null;render();}else fbPush();});}).catch(function(){});}
+    var c=j.fields&&j.fields.state&&JSON.parse(j.fields.state.stringValue);if(!c)return;var take=(c.onb&&!S.onb)||(!(S.onb&&!c.onb)&&(force||(c._t||0)>(S._t||0)));if(take){c.key=S.key;c.aik=S.aik;S=c;for(var k in DEF)if(S[k]==null)S[k]=DEF[k];try{localStorage.setItem('mt-state',JSON.stringify(S));}catch(e){}modal=null;tab='inicio';render();}else fbPush();});}).catch(function(){});}
 var AUERR={EMAIL_EXISTS:'Ese correo ya tiene una cuenta.',INVALID_LOGIN_CREDENTIALS:'Correo o contraseña incorrectos.',INVALID_PASSWORD:'Correo o contraseña incorrectos.',EMAIL_NOT_FOUND:'Correo o contraseña incorrectos.',INVALID_EMAIL:'Correo no válido.',MISSING_PASSWORD:'La contraseña debe tener al menos 6 caracteres.',OFF:'Las cuentas aún no están activadas en esta versión.'};
 function auErr(e){var k=String(e).split(' ')[0];return T(AUERR[k]||(/WEAK_PASSWORD/.test(k)?'La contraseña debe tener al menos 6 caracteres.':'No se pudo completar. Revisa tu conexión.'));}
 
@@ -1274,7 +1275,7 @@ document.addEventListener('click',function(e){
   if(a==='bc'){if(BS){bcNative();return;}if(window.BarcodeDetector)$('bc-file').click();else{$('bcf').style.display='flex';$('bc-code').focus();}return;}
   if(a==='signup'||a==='signin'||a==='reset'){var em=$('au-e').value.trim(),pw=$('au-p').value,msg=$('au-msg');msg.textContent=T('Entrando…');
     var pr=a==='reset'?fbAuth('sendOobCode',{requestType:'PASSWORD_RESET',email:em}).then(function(){msg.textContent=T('Te enviamos un correo para cambiar tu contraseña.');}):
-      fbAuth(a==='signup'?'signUp':'signInWithPassword',{email:em,password:pw,returnSecureToken:true}).then(function(){return a==='signup'?fbPush():fbPull();}).then(function(){modal=null;render();});
+      fbAuth(a==='signup'?'signUp':'signInWithPassword',{email:em,password:pw,returnSecureToken:true}).then(function(){return a==='signup'?fbPush():fbPull(true);}).then(function(){modal=null;render();});
     pr.catch(function(e){msg.textContent=auErr(e);});return;}
   if(a==='logout'){setAU(null);render();return;}
   if(a==='reonb'){startOnb();return;}
