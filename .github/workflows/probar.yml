@@ -13,7 +13,7 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
       - env: { GH_TOKEN: '${{ github.token }}' }
-        run: gh release download ultima -R ${{ github.repository }} -p MiTracker.apk
+        run: gh release download ultima -R ${{ github.repository }} -p MichiSalud.apk
       # Simula una red donde las conexiones a internet se quedan colgadas
       - run: (nohup nc -lk 8899 >/dev/null 2>&1 &)
       - uses: reactivecircus/android-emulator-runner@v2
@@ -24,7 +24,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim ${{ inputs.red_colgada == 'si' && '-http-proxy http://127.0.0.1:8899' || '' }}
           script: |
-            adb install -r MiTracker.apk
+            adb install -r MichiSalud.apk
             adb logcat -c
             adb shell am start -n com.ricardo.mitracker/.MainActivity
             sleep 30

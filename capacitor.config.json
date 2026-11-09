@@ -1,6 +1,6 @@
 {
   "appId": "com.ricardo.mitracker",
-  "appName": "Mi Tracker",
+  "appName": "Michi Salud",
   "webDir": "www",
   "android": {
     "allowMixedContent": false

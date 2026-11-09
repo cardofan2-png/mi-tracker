@@ -25,10 +25,10 @@ jobs:
       - name: Publicar descarga
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
-          F=MiTracker-v1.${{ github.run_number }}.apk
+          F=MichiSalud-v1.${{ github.run_number }}.apk
           cp android/app/build/outputs/apk/release/app-release.apk $F
-          cp $F MiTracker.apk
+          cp $F MichiSalud.apk
           gh release delete ultima -y --cleanup-tag || true
-          gh release create ultima $F MiTracker.apk --latest -t "Mi Tracker v1.${{ github.run_number }}" -n "Descarga $F en tu Android e instálala."
+          gh release create ultima $F MichiSalud.apk --latest -t "Michi Salud v1.${{ github.run_number }}" -n "Descarga $F en tu Android e instálala."
       - uses: actions/upload-artifact@v4
-        with: { name: MiTracker-apk, path: MiTracker.apk }
+        with: { name: MichiSalud-apk, path: MichiSalud.apk }
