@@ -219,7 +219,7 @@ var llm=null,busy=false;
 /* ---------- Capa nativa (Android / iOS) ---------- */
 // ponytail: sin capacitor.js no hay registerPlugin; la app sigue sin funciones nativas en vez de caerse
 var NATIVE=!!(window.Capacitor&&Capacitor.registerPlugin&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
-var Health=NATIVE?Capacitor.registerPlugin('Health'):null, AppP=NATIVE?Capacitor.registerPlugin('App'):null, LN=NATIVE?Capacitor.registerPlugin('LocalNotifications'):null;
+var Health=NATIVE?Capacitor.registerPlugin('Health'):null, AppP=NATIVE?Capacitor.registerPlugin('App'):null, LN=NATIVE?Capacitor.registerPlugin('LocalNotifications'):null; var BS=NATIVE?Capacitor.registerPlugin('BarcodeScanner'):null;
 var hcBusy=false, hcErr='';
 function persist(){S._t=Date.now();try{localStorage.setItem('mt-state',JSON.stringify(S));}catch(e){}if(!modal&&S.onb)render();}
 // IA del usuario: Claude, ChatGPT, Gemini u otra compatible con OpenAI. La clave se guarda solo en este teléfono.
@@ -673,6 +673,13 @@ var PH=[];try{PH=JSON.parse(localStorage.getItem('mt-photos')||'[]');}catch(e){}
 function savePH(){try{localStorage.setItem('mt-photos',JSON.stringify(PH));return true;}catch(e){return false;}}
 function shrink(file,max,q){return new Promise(function(res,rej){var u=URL.createObjectURL(file),im=new Image();im.onload=function(){var k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',q));};im.onerror=rej;im.src=u;});}
 /* ---------- Código de barras: lector del teléfono + Open Food Facts ---------- */
+// Android: lector de Google (ML Kit). No pide permiso de cámara; si el módulo aún no está, lo instala.
+function bcManual(t){$('ai-msg').textContent=T(t);$('bcf').style.display='flex';$('bc-code').focus();}
+function bcNative(){var msg=$('ai-msg');
+  BS.isGoogleBarcodeScannerModuleAvailable().then(function(r){
+    if(!r.available){BS.installGoogleBarcodeScannerModule().catch(function(){});bcManual('Estoy descargando el lector de códigos. Intenta en un minuto o escríbelo:');return;}
+    return BS.scan({formats:['EAN_13','EAN_8','UPC_A','UPC_E']}).then(function(res){var b=res.barcodes&&res.barcodes[0];if(b)offLookup(b.rawValue);});
+  }).catch(function(e){if(/cancel/i.test(String(e&&e.message||e)))return;bcManual('No pude leer el código. Escríbelo:');});}
 function offLookup(code){var msg=$('ai-msg');msg.textContent=T('Buscando el producto…');
   return fetch('https://world.openfoodfacts.org/api/v2/product/'+encodeURIComponent(code)+'.json?fields=product_name,nutriments,serving_size').then(function(r){return r.json();}).then(function(j){
     var p=j&&j.product;if(!p||!p.nutriments)throw 0;var n=p.nutriments,sv=n['energy-kcal_serving']!=null,g=function(k){var v=n[k+(sv?'_serving':'_100g')];return v==null?'':Math.round(v);};
@@ -1264,7 +1271,7 @@ document.addEventListener('click',function(e){
   if(a==='pq'){pendQ=+d.pq;render();return;}
   if(a==='nodose'){tmp.mg='';obNav(1,true);return;}
   if(a==='addphoto'){$('ph-file').click();return;}
-  if(a==='bc'){if(window.BarcodeDetector)$('bc-file').click();else{$('bcf').style.display='flex';$('bc-code').focus();}return;}
+  if(a==='bc'){if(BS){bcNative();return;}if(window.BarcodeDetector)$('bc-file').click();else{$('bcf').style.display='flex';$('bc-code').focus();}return;}
   if(a==='signup'||a==='signin'||a==='reset'){var em=$('au-e').value.trim(),pw=$('au-p').value,msg=$('au-msg');msg.textContent=T('Entrando…');
     var pr=a==='reset'?fbAuth('sendOobCode',{requestType:'PASSWORD_RESET',email:em}).then(function(){msg.textContent=T('Te enviamos un correo para cambiar tu contraseña.');}):
       fbAuth(a==='signup'?'signUp':'signInWithPassword',{email:em,password:pw,returnSecureToken:true}).then(function(){return a==='signup'?fbPush():fbPull();}).then(function(){modal=null;render();});
