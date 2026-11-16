@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- La cámara se abre desde la app (fotos de comida y progreso) -->
+    <!-- La cámara se abre desde la app (fotos de comida y progreso); el dictado usa el reconocedor de voz del teléfono -->
     <queries>
         <intent><action android:name="android.media.action.IMAGE_CAPTURE" /></intent>
+        <intent><action android:name="android.speech.RecognitionService" /></intent>
     </queries>
 
     <application

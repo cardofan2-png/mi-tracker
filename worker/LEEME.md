@@ -15,8 +15,12 @@ Guarda tu clave de Anthropic en el servidor. Los usuarios solo necesitan su cuen
    `https://michi-salud-ia.<tu-subdominio>.workers.dev`
 6. Pásame esa URL (o pégala en `www/index.html`, en `var MS_AI=''`). Con eso la opción "Michi Salud" aparece en la app y queda por defecto.
 
-## Controles de costo
-- Modelo: `MODEL` en `wrangler.toml` (por defecto Claude Haiku 5.5, el más económico).
-- Máximo 1.200 tokens por respuesta, fijado por el servidor.
+## Cupos y controles de costo
+Se ajustan en `wrangler.toml` → `[vars]`:
+- **Gratis:** `FREE_DAILY` = 10 consultas por día por usuario (se renuevan a medianoche, hora de Colombia).
+- **Tope mensual de los gratis:** `FREE_BUDGET_USD` = 5. Se suma el gasto real (tokens que reporta Anthropic) de todos los usuarios gratis; al llegar a USD 5 en el mes, la IA gratis se pausa hasta el mes siguiente y la app ofrece Premium.
+- **Premium:** `PREMIUM_DAILY` = 80 por día. Fotos (comida y báscula) y planes/recetas son solo Premium; el servidor detecta las fotos, no confía en la app.
+- **Dar Premium a mano** (mientras se conecta el pago): pon el UID de Firebase del usuario en `PREMIUM_UIDS` (separados por coma). El UID está en Firebase → Authentication → Users.
+- Modelo `MODEL` (Claude Haiku 5.5) y máximo 1.200 tokens por respuesta, fijados por el servidor.
 - Solo responde a usuarios con sesión iniciada.
-- Límite diario por usuario (`DAILY_LIMIT`, 80): para activarlo, crea el KV como indica `wrangler.toml`.
+- El contador usa Durable Objects con SQLite, incluido en el plan gratis de Cloudflare: no hay que crear nada.
