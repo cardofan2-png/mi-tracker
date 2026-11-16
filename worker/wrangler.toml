@@ -4,9 +4,18 @@ compatibility_date = "2026-11-01"
 
 [vars]
 MODEL = "claude-haiku-5-5"
-DAILY_LIMIT = "80"
+FREE_DAILY = "10"        # consultas por día, usuario gratis
+PREMIUM_DAILY = "80"     # consultas por día, usuario Premium
+FREE_BUDGET_USD = "5"    # gasto máximo al mes entre TODOS los usuarios gratis
+PRICE_IN = "0.10"        # USD por millón de tokens de entrada (Haiku 5.5)
+PRICE_OUT = "0.50"       # USD por millón de tokens de salida
+PREMIUM_UIDS = ""        # UIDs de Firebase con Premium, separados por coma (hasta conectar el pago)
 
-# Opcional: límite diario por usuario. Crea el KV con `npx wrangler kv namespace create LIMITS` y pega el id aquí.
-# [[kv_namespaces]]
-# binding = "LIMITS"
-# id = "..."
+# Contador de cupos (SQLite en Durable Objects, incluido en el plan gratis)
+[[durable_objects.bindings]]
+name = "CUPOS"
+class_name = "Cupos"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Cupos"]

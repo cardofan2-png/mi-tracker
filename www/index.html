@@ -195,6 +195,8 @@ nav button.on{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(91,61
 .hor .row{padding:7px 6px;border-bottom:1px solid #f3f1f8;gap:10px}.hor .row:last-child{border-bottom:0}.hor .ht{width:46px;font-variant-numeric:tabular-nums}.hor .past{opacity:.45}.hor .nx{background:var(--pl);border-radius:12px}
 .dbar{position:relative;height:14px;background:#efedf5;border-radius:8px;margin:12px 0 4px;overflow:hidden}.dbar i{position:absolute;top:0;bottom:0;background:var(--ok);opacity:.8}.dbar u{position:absolute;top:0;bottom:0;width:3px;background:var(--tx)}
 .okl{display:flex;gap:10px;align-items:flex-start;font-size:15px;margin:14px 6px;line-height:1.35}.okl input{width:22px;height:22px;flex:0 0 auto;margin-top:1px;accent-color:var(--p)}
+.qbar{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e4e0f3;border-radius:16px;padding:6px 6px 6px 14px;font-size:13px;font-weight:600;margin-bottom:10px} .qbar .link2,.pwl2{display:inline-block;margin:0;padding:6px 10px;font-size:13px} .pchip{border-color:#f5c26b;background:#fffaf0} .pwwhy{background:#fff4ec;color:#a4501f;border-radius:14px;padding:10px 12px;font-size:14px;font-weight:600;margin:6px 0 4px} .pwl{list-style:none;padding:0;margin:14px 0} .pwl li{padding:9px 0 9px 30px;position:relative;font-size:15px;border-bottom:1px solid #f0edf8} .pwl li:before{content:'✓';position:absolute;left:4px;color:var(--ok);font-weight:800} .pwp{font-size:30px;font-weight:800} .pwp span{font-size:15px;font-weight:500;color:var(--mu)}
+.mic{padding:10px 12px;flex:none} .in .mic{width:44px;height:44px;border-radius:50%;padding:0;margin-right:6px;background:#efebff;font-size:18px} .mic.on{background:#ef4f5f!important;color:#fff;animation:micp 1s infinite} @keyframes micp{50%{box-shadow:0 0 0 8px rgba(239,79,95,.18)}}
 </style>
 </head>
 <body>
@@ -223,6 +225,28 @@ var llm=null,busy=false;
 // ponytail: sin capacitor.js no hay registerPlugin; la app sigue sin funciones nativas en vez de caerse
 var NATIVE=!!(window.Capacitor&&Capacitor.registerPlugin&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 var Health=NATIVE?Capacitor.registerPlugin('Health'):null, AppP=NATIVE?Capacitor.registerPlugin('App'):null, LN=NATIVE?Capacitor.registerPlugin('LocalNotifications'):null; var BS=NATIVE?Capacitor.registerPlugin('BarcodeScanner'):null, FS=NATIVE?Capacitor.registerPlugin('Filesystem'):null, SH=NATIVE?Capacitor.registerPlugin('Share'):null;
+// Dictado por voz: en el teléfono, el reconocimiento de Android (gratis, sin IA); en la web, el de Chrome
+var SR=NATIVE?Capacitor.registerPlugin('SpeechRecognition'):null, oyendo=false;
+function vozLang(){return {es:'es-CO',en:'en-US',pt:'pt-BR'}[S.lang]||'es-CO';}
+function escuchar(){
+  if(SR)return SR.requestPermissions().then(function(p){if(p.speechRecognition!=='granted')throw{code:'perm'};return SR.start({language:vozLang(),maxResults:1,partialResults:false,popup:false});}).then(function(r){return (r&&r.matches||[])[0]||'';});
+  var W=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!W)return Promise.reject({code:'nosup'});
+  return new Promise(function(res,rej){var r=new W(),got='';r.lang=vozLang();r.interimResults=false;r.maxAlternatives=1;
+    r.onresult=function(e){got=e.results[0][0].transcript;};r.onerror=function(e){rej({code:e.error==='not-allowed'||e.error==='service-not-allowed'?'perm':e.error==='no-speech'?'vacio':'err'});};r.onend=function(){res(got);};r.start();});
+}
+function voz(b){
+  if(oyendo){if(SR)SR.stop().catch(function(){});return;}
+  var inp=$(b.dataset.mic),go=b.dataset.go,msg=b.dataset.msg&&$(b.dataset.msg),ph=inp?inp.placeholder:'';
+  if(!inp)return;
+  oyendo=true;b.classList.add('on');inp.placeholder=T('Escuchando… habla ahora');if(msg)msg.textContent='';
+  escuchar().then(function(t){t=(t||'').trim();if(!t)throw{code:'vacio'};inp.value=t;inp.placeholder=ph;
+      if(go==='meal'){var a=document.querySelector('[data-act=meal]');if(a)a.click();}else if(go){var f=$(go);if(f&&f.requestSubmit)f.requestSubmit();}})
+   .catch(function(e){var c=e&&e.code,t=T(c==='perm'?'Activa el permiso del micrófono para registrar con la voz.':c==='nosup'?'Este teléfono no permite dictar aquí. Usa el micrófono del teclado.':'No te escuché bien. Toca 🎤 e intenta de nuevo.');
+      if(msg){msg.textContent=t;inp.placeholder=ph;}else inp.placeholder=t;})
+   .then(function(){oyendo=false;b.classList.remove('on');});
+}
+var MIC=function(inp,go,msg){return '<button class="btn sec sm mic" type="button" data-mic="'+inp+'" data-go="'+go+'"'+(msg?' data-msg="'+msg+'"':'')+' aria-label="'+T('Dictar con la voz')+'">🎤</button>';};
 var hcBusy=false, hcErr='';
 function persist(){S._t=Date.now();try{localStorage.setItem('mt-state',JSON.stringify(S));}catch(e){}if(!modal&&S.onb)render();}
 // IA de la app: el servidor de Michi Salud (Cloudflare) guarda la clave; el usuario solo necesita su cuenta.
@@ -230,21 +254,39 @@ function persist(){S._t=Date.now();try{localStorage.setItem('mt-state',JSON.stri
 var MS_AI='';
 function aiOn(){return !!MS_AI;}
 // msgs: [{role:'user'|'assistant', content: texto | [{img:base64}|{text:...}]}]
-function aiCall(msgs,max){
-  var ok=function(r){return r.json().then(function(j){if(!r.ok)throw{code:r.status===429?'rate_limited':'api',message:(j.error&&(j.error.message||j.error))||String(r.status)};return j;});};
+var AIQ=null; // cupo de IA que informa el servidor: {premium, usados, max, ok}
+var PWMSG={limit:'Usaste tus {0} consultas gratis de hoy. Se renuevan a medianoche, o desbloquea Premium.',budget:'La IA gratuita llegó a su límite este mes. Con Premium sigue disponible.',premium:'Esta función es parte de Premium.'};
+var pwWhy='';
+function pwText(c){return c==='limit'?Tf(PWMSG.limit,[AIQ&&AIQ.max||10]):T(PWMSG[c]);}
+function paywall(why){pwWhy=why||'';modal='premium';render();}
+function isPW(e){return !!e&&(e.code==='limit'||e.code==='premium'||e.code==='budget');}
+function aiCall(msgs,max,kind){
   var am=msgs.map(function(x){return{role:x.role,content:typeof x.content==='string'?x.content:x.content.map(function(q){return q.img?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:q.img}}:{type:'text',text:q.text};})};});
   if(!MS_AI)return Promise.reject({code:'off',message:T('La IA de Mochi estará disponible muy pronto.')});
   if(!AU)return Promise.reject({code:'noauth',message:T('Crea tu cuenta o inicia sesión en Mi plan para hablar con')+' '+(isFem()?'Michi':'Mochi')+'.'});
-  return fbTok().then(function(t){return fetch(MS_AI,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+t},body:JSON.stringify({max_tokens:max||800,messages:am})});})
-    .then(function(r){if(r.status===429)return r.json().then(function(j){throw{code:'rate_limited',message:j.error&&j.error.message==='LIMIT'?T('Llegaste al límite de consultas de hoy. Vuelve mañana.'):T('Estoy recibiendo muchas preguntas. Intenta de nuevo en un momento.')};});
-      if(r.status===401){setAU(null);throw{code:'noauth',message:T('Tu sesión venció. Inicia sesión de nuevo en Mi plan.')};}return ok(r);})
+  return fbTok().then(function(t){return fetch(MS_AI,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+t},body:JSON.stringify({max_tokens:max||800,messages:am,kind:kind||undefined})});})
+    .then(function(r){return r.json().catch(function(){return{};}).then(function(j){
+      if(j.cupo){AIQ=AIQ||{ok:true};AIQ.premium=j.cupo.premium;AIQ.max=j.cupo.max;if(j.cupo.usados!=null)AIQ.usados=j.cupo.usados;}
+      if(r.status===401){setAU(null);AIQ=null;throw{code:'noauth',message:T('Tu sesión venció. Inicia sesión de nuevo en Mi plan.')};}
+      var em=j.error&&(j.error.message||j.error),c=r.status===402?'premium':r.status===429&&em==='LIMIT'?'limit':r.status===503&&em==='BUDGET'?'budget':'';
+      if(c){if(c==='budget'&&AIQ)AIQ.ok=false;throw{code:c,message:pwText(c)};}
+      if(r.status===429)throw{code:'rate_limited',message:T('Estoy recibiendo muchas preguntas. Intenta de nuevo en un momento.')};
+      if(!r.ok)throw{code:'api',message:em||String(r.status)};
+      return j;});})
     .then(function(j){return (j.content||[]).map(function(c){return c.text||'';}).join('');});
 }
+// Estado del cupo (para mostrar "te quedan X consultas")
+function aiStatus(){
+  if(!MS_AI||!AU)return;
+  fbTok().then(function(t){return fetch(MS_AI,{headers:{authorization:'Bearer '+t}});}).then(function(r){return r.json();})
+   .then(function(j){if(!j.cupo)return;AIQ=j.cupo;AIQ.ok=j.disponible;if(tab==='ia'&&!busy&&!modal)render();}).catch(function(){});
+}
+var PBTN='<button class="link2 pwl2" type="button" data-m="premium">⭐ Premium</button>';
 function imgB64(file){ // reduce la foto a 1024 px para enviarla rápido
   return new Promise(function(res,rej){var u=URL.createObjectURL(file),im=new Image();im.onload=function(){var k=Math.min(1,1024/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',0.82).split(',')[1]);};im.onerror=rej;im.src=u;});
 }
 function makeLLM(){
-  var f=function(msgs,o){return aiCall(msgs,800).then(function(t){if(o&&o.onText)o.onText({text:t});return{text:t};});};
+  var f=function(msgs,o){return aiCall(msgs,800,o&&o.kind).then(function(t){if(o&&o.onText)o.onText({text:t});return{text:t};});};
   f.json=function(prompt,o){var imgs=(o&&o.images)||[];return Promise.all(imgs.map(imgB64)).then(function(bs){
       return aiCall([{role:'user',content:bs.map(function(b){return{img:b};}).concat([{text:prompt}])}],600);}).then(function(t){var m=t.match(/\{[\s\S]*\}/);if(!m)throw{code:'parse'};return JSON.parse(m[0]);});};
   f.limits=function(){return Promise.resolve({images:true});};
@@ -455,6 +497,32 @@ function fW(kg){return nf(rW(kg),1)+' '+uW();}
 function fR(r){return U()?String(Math.round(r*LB*10)/10):String(r).replace('.',',');}
 function fH(cm){if(!U())return cm+' cm';var i=Math.round(cm/2.54);return Math.floor(i/12)+'′ '+(i%12)+'″';}
 var I18N={
+"Escuchando… habla ahora":["Listening… speak now", "Ouvindo… fale agora"],
+"Activa el permiso del micrófono para registrar con la voz.":["Turn on the microphone permission to log by voice.", "Ative a permissão do microfone para registrar por voz."],
+"Este teléfono no permite dictar aquí. Usa el micrófono del teclado.":["This phone doesn’t allow dictation here. Use the keyboard’s microphone.", "Este telefone não permite ditar aqui. Use o microfone do teclado."],
+"No te escuché bien. Toca 🎤 e intenta de nuevo.":["I didn’t hear you well. Tap 🎤 and try again.", "Não te ouvi bem. Toque em 🎤 e tente de novo."],
+"Dictar con la voz":["Dictate by voice", "Ditar por voz"],
+"Usaste tus {0} consultas gratis de hoy. Se renuevan a medianoche, o desbloquea Premium.":["You used your {0} free questions for today. They renew at midnight, or unlock Premium.", "Você usou suas {0} consultas grátis de hoje. Elas renovam à meia-noite, ou desbloqueie o Premium."],
+"La IA gratuita llegó a su límite este mes. Con Premium sigue disponible.":["The free AI reached its limit this month. It’s still available with Premium.", "A IA grátis chegou ao limite este mês. Com o Premium continua disponível."],
+"Esta función es parte de Premium.":["This feature is part of Premium.", "Este recurso faz parte do Premium."],
+"Te quedan {0} de {1} consultas gratis hoy":["{0} of {1} free questions left today", "Restam {0} de {1} consultas grátis hoje"],
+"Premium activo":["Premium active", "Premium ativo"],
+"Plan gratis: {0} consultas al día.":["Free plan: {0} questions a day.", "Plano grátis: {0} consultas por dia."],
+"🍽️ Plan de comidas de hoy":["🍽️ Today’s meal plan", "🍽️ Plano de refeições de hoje"],
+"🥘 Receta con lo que me falta":["🥘 Recipe for what I’m missing", "🥘 Receita com o que me falta"],
+"Arma mi plan de comidas para lo que queda de hoy según mis calorías y proteína restantes, con porciones.":["Build my meal plan for the rest of today based on my remaining calories and protein, with portions.", "Monte meu plano de refeições para o resto de hoje com base nas calorias e proteína que faltam, com porções."],
+"Dame una receta fácil y económica que me ayude a completar la proteína que me falta hoy, con ingredientes comunes en Colombia y cantidades.":["Give me an easy, affordable recipe to help me reach the protein I’m missing today, with common ingredients and amounts.", "Me dê uma receita fácil e barata que me ajude a completar a proteína que falta hoje, com ingredientes comuns e quantidades."],
+"Calcular desde la foto es Premium. Escribe qué es (ej: 2 arepas con queso) y lo calculo gratis.":["Calculating from a photo is Premium. Type what it is (e.g.: 2 arepas with cheese) and I’ll calculate it for free.", "Calcular pela foto é Premium. Escreva o que é (ex.: 2 arepas com queijo) que eu calculo grátis."],
+"Leer la captura de la báscula es Premium.":["Reading the scale screenshot is Premium.", "Ler a captura da balança é Premium."],
+"IA de Mochi sin quedarte corto: hasta 80 consultas al día":["Mochi’s AI without running short: up to 80 questions a day", "IA do Mochi sem ficar na mão: até 80 consultas por dia"],
+"Calorías y nutrientes desde una foto de tu plato":["Calories and nutrients from a photo of your plate", "Calorias e nutrientes a partir de uma foto do seu prato"],
+"Planes de comida y recetas a tu medida":["Meal plans and recipes made for you", "Planos de refeição e receitas sob medida"],
+"Comidas escritas calculadas con IA, más precisas":["Typed meals calculated with AI, more accurate", "Refeições escritas calculadas com IA, mais precisas"],
+"mes":["month", "mês"],
+"Cancela cuando quieras.":["Cancel anytime.", "Cancele quando quiser."],
+"Suscribirme":["Subscribe", "Assinar"],
+"Ahora no":["Not now", "Agora não"],
+"Muy pronto podrás suscribirte desde aquí. Te avisaremos cuando esté disponible.":["You’ll be able to subscribe here very soon. We’ll let you know when it’s available.", "Em breve você poderá assinar por aqui. Avisaremos quando estiver disponível."],
 'No reconocí esos alimentos. Escríbelos más simple (ej: 2 huevos y 1 arepa) o pon los números.':['I didn’t recognize those foods. Write them more simply (e.g.: 2 eggs and 1 arepa) or enter the numbers.','Não reconheci esses alimentos. Escreva de forma mais simples (ex.: 2 ovos e 1 arepa) ou coloque os números.'],
 'Sin una IA conectada no puedo leer la foto. Escribe qué es (ej: 2 arepas con queso) y lo calculo. Para que se analice sola, conecta una IA en Mi plan.':['Without a connected AI I can’t read the photo. Type what it is (e.g.: 2 arepas with cheese) and I’ll calculate it. To analyze photos automatically, connect an AI in My plan.','Sem uma IA conectada não consigo ler a foto. Escreva o que é (ex.: 2 arepas com queijo) e eu calculo. Para analisar sozinho, conecte uma IA em Meu plano.'],
 'Activa con tu Claude de claude.ai (sin clave)':['Active with your Claude from claude.ai (no key)','Ativa com seu Claude do claude.ai (sem chave)'],
@@ -471,7 +539,7 @@ var I18N={
 'Mochi se quedó sin energía':['Mochi ran out of energy','O Mochi ficou sem energia'],
 'Registra tu desayuno para recargarlo.':['Log your breakfast to recharge him.','Registre seu café da manhã para recarregá-lo.'],'Registra tu almuerzo para recargarlo.':['Log your lunch to recharge him.','Registre seu almoço para recarregá-lo.'],
 'Registra tu merienda para recargarlo.':['Log your snack to recharge him.','Registre seu lanche para recarregá-lo.'],'Registra tu cena para recargarlo.':['Log your dinner to recharge him.','Registre seu jantar para recarregá-lo.'],
-'Foto':['Photo','Foto'],'Escribir':['Type','Escrever'],'Mochi tiene sed':['Mochi is thirsty','O Mochi está com sede'],
+'Foto':['Photo','Foto'],'Escribir':['Type','Escrever'],'Hablar':['Speak','Falar'],'Mochi tiene sed':['Mochi is thirsty','O Mochi está com sede'],
 'A esta hora deberías llevar {0} L. ¡Un vaso y lo alivias!':['By now you should be at {0} L. One glass and he feels better!','A esta hora você deveria estar em {0} L. Um copo e ele melhora!'],
 'Tu smartwatch (Galaxy Watch, Pixel Watch y otros) entra por Health Connect: pasos, ritmo cardiaco, ejercicios y agua. Los recordatorios del teléfono también le llegan al reloj.':['Your smartwatch (Galaxy Watch, Pixel Watch and others) connects through Health Connect: steps, heart rate, workouts and water. Phone reminders also reach your watch.','Seu smartwatch (Galaxy Watch, Pixel Watch e outros) entra pelo Health Connect: passos, frequência cardíaca, exercícios e água. Os lembretes do telefone também chegam ao relógio.'],
 'Dosis, agua y cada comida del día':['Dose, water and every meal of the day','Dose, água e cada refeição do dia'],
@@ -1266,7 +1334,7 @@ function vInicio(){
   var due=mealSched().filter(function(m){return hh>=m[0]+m[1]/60+1.5;}),missing=due.filter(function(m){return !mealsAfter(t,m[0]-2);}),lazy=missing.length?missing[missing.length-1][2]:'';
   var hr=new Date().getHours(),greet=hr<12?'Buenos días':hr<19?'Buenas tardes':'Buenas noches';
   return '<div class="top"><div><h1>Hoy</h1><div class="mu">'+new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})+'</div></div><button class="x" data-tab="perfil">'+IC.gear+'</button></div>'+alerts()+
-  (lazy?'<div class="card row mood zz">'+cat(84,lvl(),'zz',prog())+'<div class="f"><b>'+T('Mochi se quedó sin energía')+'</b><div class="mu">'+T('Registra tu '+lazy+' para recargarlo.')+'</div><div class="row" style="margin-top:10px;gap:6px"><button class="btn sm" data-m="meal" data-cam="1">📷 '+T('Foto')+'</button><button class="btn sec sm" data-m="meal">✏️ '+T('Escribir')+'</button></div></div></div>':'')+
+  (lazy?'<div class="card row mood zz">'+cat(84,lvl(),'zz',prog())+'<div class="f"><b>'+T('Mochi se quedó sin energía')+'</b><div class="mu">'+T('Registra tu '+lazy+' para recargarlo.')+'</div><div class="row" style="margin-top:10px;gap:6px"><button class="btn sm" data-m="meal" data-cam="1">📷 '+T('Foto')+'</button><button class="btn sec sm" data-m="meal">✏️ '+T('Escribir')+'</button><button class="btn sec sm" data-m="meal" data-voz="1">🎤 '+T('Hablar')+'</button></div></div></div>':'')+
   '<div class="card hero" style="color:#fff"><div class="row"><div class="f"><div style="opacity:.85;font-size:14px">'+greet+'</div><h3 style="font-size:22px">'+esc(S.name)+'</h3>'+
    '<div class="row" style="margin-top:12px;gap:18px"><div><div style="opacity:.8;font-size:12px">Peso actual</div><b style="font-size:20px">'+fW(cw)+'</b></div><div><div style="opacity:.8;font-size:12px">Meta</div><b style="font-size:20px">'+fW(S.prof.target)+'</b></div></div></div>'+cat(96,lvl(),lazy||shortSleep()?'zz':sed?'sed':null,prog())+'</div>'+
    '<div class="bar" style="background:rgba(255,255,255,.25);margin-top:14px"><i style="width:'+pct+'%;background:#fff"></i></div><div style="font-size:12px;opacity:.9;margin-top:6px">'+Math.round(pct)+'% del camino · faltan '+fW(Math.max(0,cw-S.prof.target))+'</div><div style="font-size:12px;margin-top:8px;background:rgba(255,255,255,.16);border-radius:10px;padding:8px 10px">'+mface(18)+' '+T('Nivel')+' '+(lvl()+1)+'/5 · '+T(LVLTXT[lvl()])+(toNext()>0?' '+Tf('Faltan {0} para el siguiente nivel.',[fW(toNext())]):'')+'</div>'+(streak()>1?'<div style="font-size:13px;font-weight:700;margin-top:8px">🔥 '+Tf('{0} días seguidos registrando',[streak()])+'</div>':'')+'</div>'+
@@ -1277,7 +1345,7 @@ function vInicio(){
   '<div class="card"><div class="row"><div class="f"><div class="mu">Calorías ingeridas</div><div class="big">'+k+'<span class="mu" style="font-size:16px;font-weight:600"> / '+P.kcal+'</span></div><div class="mu">'+(P.kcal-k>=0?'Te quedan <b>'+(P.kcal-k)+'</b> kcal':'Te pasaste <b style="color:var(--bad)">'+(k-P.kcal)+'</b> kcal')+'</div></div>'+
    ring(k,P.kcal,110,12,'#5b3df5','<span style="font-size:22px">🔥</span>')+'</div>'+
    '<div class="grid3" style="margin-top:16px;grid-template-columns:repeat(4,1fr)">'+[['Proteína',sum('p'),P.prot,'#f59e0b'],['Carbos',sum('c'),P.carb,'#22a861'],['Grasas',sum('f'),P.fat,'#f5c518'],['Fibra',sum('fi'),P.fib,'#14b8a6']].map(function(x){return '<div>'+ring(x[1],x[2],62,7,x[3],'<b style="font-size:14px">'+x[1]+'</b>')+'<div style="font-weight:700;font-size:13px;margin-top:6px">'+x[0]+'</div><div class="mu" style="font-size:11px">de '+x[2]+' g</div></div>';}).join('')+'</div></div>'+
-  '<h2>Comidas de hoy</h2><div class="card"><form id="qf" class="row" style="margin-bottom:6px"><input class="f" id="qm" placeholder="¿Qué comiste? Ej: 6 huevos cocidos y 200 g de aguacate" autocomplete="off"><button class="btn sm" type="submit">Agregar</button><button class="btn sec sm" type="button" data-m="meal" data-cam="1" aria-label="Foto" style="padding:10px 12px">📷</button></form><div class="mu" id="qmsg" style="min-height:18px"></div>'+(ms.length?'<ul>'+ms.map(function(m){return '<li class="it"><div><b>'+esc(m.n)+'</b><div class="mu">'+m.k+' kcal · P '+(m.p||0)+' g · C '+(m.c||0)+' g · G '+(m.f||0)+' g · Fibra '+(m.fi||0)+' g</div></div><button class="x" data-del="meals" data-i="'+S.meals.indexOf(m)+'">✕</button></li>';}).join('')+'</ul>':'<div class="mu">Escribe lo que comiste y se calculan solas las calorías, la proteína, los carbohidratos, las grasas y la fibra.</div>')+'</div>'+
+  '<h2>Comidas de hoy</h2><div class="card"><form id="qf" class="row" style="margin-bottom:6px"><input class="f" id="qm" placeholder="¿Qué comiste? Ej: 6 huevos cocidos y 200 g de aguacate" autocomplete="off"><button class="btn sm" type="submit">Agregar</button><button class="btn sec sm" type="button" data-m="meal" data-cam="1" aria-label="Foto" style="padding:10px 12px">📷</button>'+MIC('qm','qf','qmsg')+'</form><div class="mu" id="qmsg" style="min-height:18px"></div>'+(ms.length?'<ul>'+ms.map(function(m){return '<li class="it"><div><b>'+esc(m.n)+'</b><div class="mu">'+m.k+' kcal · P '+(m.p||0)+' g · C '+(m.c||0)+' g · G '+(m.f||0)+' g · Fibra '+(m.fi||0)+' g</div></div><button class="x" data-del="meals" data-i="'+S.meals.indexOf(m)+'">✕</button></li>';}).join('')+'</ul>':'<div class="mu">Escribe lo que comiste y se calculan solas las calorías, la proteína, los carbohidratos, las grasas y la fibra.</div>')+'</div>'+
   (sed?'<div class="card row mood sed">'+cat(84,lvl(),'sed',prog())+'<div class="f"><b>'+T('Mochi tiene sed')+'</b><div class="mu">'+Tf('A esta hora deberías llevar {0} L. ¡Un vaso y lo alivias!',[expW.toFixed(1).replace('.',',')])+'</div><button class="btn sm" data-water="250" style="margin-top:10px">💧 +250 ml</button></div></div>':'')+
   '<div class="card row"><div style="width:58px;height:84px;border:3px solid #cfe0fb;border-top:0;border-radius:0 0 16px 16px;position:relative;overflow:hidden;flex:0 0 auto"><div style="position:absolute;left:0;right:0;bottom:0;height:'+Math.min(100,wl/P.water*100)+'%;background:linear-gradient(#7fb2ff,#3b82f6)"></div></div>'+
    '<div class="f"><div class="mu">💧 Agua</div><div class="big" style="font-size:28px">'+wl.toFixed(2).replace('.',',')+'<span class="mu" style="font-size:15px"> / '+String(P.water).replace('.',',')+' L</span></div><div class="row" style="margin-top:8px;gap:6px"><button class="btn sec sm" data-water="250">+250 ml</button><button class="btn sec sm" data-water="500">+500 ml</button>'+(wl?'<button class="x" data-water="-250">−</button>':'')+'</div></div></div>'+
@@ -1349,7 +1417,7 @@ function vPerfil(){
 }
 
 function aiCard(){
-  return '<h2>Inteligencia artificial</h2><div class="card"><div class="row">'+mface(32)+'<div class="f"><b>IA de Mochi</b><div class="mu">'+(!MS_AI?T('La IA de Mochi estará disponible muy pronto.'):AU?'✓ '+T('Incluida con tu cuenta. No necesitas ninguna clave.'):T('Incluida: solo crea tu cuenta o inicia sesión arriba.'))+'</div></div></div>'+
+  return '<h2>Inteligencia artificial</h2><div class="card"><div class="row">'+mface(32)+'<div class="f"><b>IA de Mochi</b><div class="mu">'+(!MS_AI?T('La IA de Mochi estará disponible muy pronto.'):AU?'✓ '+(AIQ&&AIQ.premium?'⭐ '+T('Premium activo'):Tf('Plan gratis: {0} consultas al día.',[AIQ?AIQ.max:10]))+(AIQ&&AIQ.premium?'':PBTN):T('Incluida: solo crea tu cuenta o inicia sesión arriba.'))+'</div></div></div>'+
    (MS_AI&&AU?'<div class="row" style="gap:8px;margin-top:10px"><button class="btn sec sm f" type="button" data-act="aitest">'+T('Probar')+'</button></div><div class="mu" id="ai-st" style="margin-top:8px;min-height:18px"></div>':'')+'</div>';
 }
 function connCard(){
@@ -1375,7 +1443,7 @@ function vModal(){
     '<div class="mu center" id="au-msg" style="min-height:20px;margin-bottom:8px"></div><button class="btn" data-act="'+(up?'signup':'signin')+'">'+(up?'Crear cuenta':'Entrar')+'</button>'+(up?'':'<button class="link2" data-act="reset">Olvidé mi contraseña</button>')+'<button class="link2" data-m="auth" data-am="'+(up?'in':'up')+'">'+(up?'¿Ya tienes cuenta? Entra':'¿No tienes cuenta? Créala')+'</button>';}
   if(m==='meal'&&pend) h=review();
   else if(m==='meal') h='<h3 style="margin-bottom:14px">Agregar comida</h3><div class="snap"><img id="ai-prev" alt=""><div class="snap-in"><div style="font-size:34px">📸</div><b>Toma una foto de tu comida</b><div class="mu">Mochi calcula calorías, proteína, carbohidratos, grasas y fibra.</div></div><div class="row" style="margin-top:12px"><button class="btn sm f" data-act="aicam">📷 Tomar foto</button><button class="btn sec sm f" data-act="aigal">🖼️ Galería</button></div></div><input type="file" id="ai-file" accept="image/*" capture="environment" style="display:none"><input type="file" id="ai-gal" accept="image/*" style="display:none"><button class="btn sec" data-act="bc" style="margin-bottom:8px">🏷️ Escanear código de barras</button><input type="file" id="bc-file" accept="image/*" capture="environment" style="display:none"><form id="bcf" class="row" style="display:none;margin-bottom:8px"><input class="f" id="bc-code" inputmode="numeric" placeholder="Código de barras"><button class="btn sm" type="submit">Buscar</button></form><div class="mu center" id="ai-msg" style="margin:6px 0"></div>'+
-    field('O cuéntale a Mochi qué comiste','<input id="f-n" placeholder="Ej: 3 huevos cocidos con aguacate">')+
+    field('O cuéntale a Mochi qué comiste','<div class="row"><input class="f" id="f-n" placeholder="Ej: 3 huevos cocidos con aguacate">'+MIC('f-n','meal','ai-msg')+'</div>')+
     '<details class="man"><summary>✏️ Prefiero poner los números yo</summary><div class="grid2" style="margin-top:10px">'+field('Calorías','<input id="f-k" type="number" inputmode="numeric">')+field('Proteína g','<input id="f-p" type="number" inputmode="numeric">')+field('Carbohidratos g','<input id="f-c" type="number" inputmode="numeric">')+field('Grasas g','<input id="f-f" type="number" inputmode="numeric">')+field('Fibra g','<input id="f-fi" type="number" inputmode="numeric">')+'</div></details><button class="btn" data-act="meal">Agregar</button>';
   if(m==='dose') h='<h3 style="margin-bottom:4px">Registrar aplicación</h3><div class="mu" style="margin-bottom:14px">'+(S.tr.med?esc(S.tr.med)+' '+esc(S.tr.mg)+(S.tr.mg?' mg':''):'Primero configura tu medicamento')+'</div>'+
     (S.tr.med?'<div class="grid2">'+field('Fecha','<input id="f-d" type="date" value="'+t+'">')+field('Hora','<input id="f-t" type="time" value="'+nowT()+'">')+'</div>'+field('Sitio · sugerido: '+nextSite(),'<div class="chips" id="f-s">'+SITES.map(function(s){return '<button class="chip'+(s===nextSite()?' on':'')+'" data-site="'+s+'">'+s+'</button>';}).join('')+'</div>')+'<button class="btn" data-act="dose">Registrar dosis</button>':'<button class="btn" data-m="tr">Configurar tratamiento</button>');
@@ -1395,6 +1463,10 @@ function vModal(){
   if(m==='inv') h='<h3 style="margin-bottom:14px">Inventario de la pluma</h3><div class="grid2">'+field('Dosis restantes','<input id="f-n" type="number" inputmode="numeric" value="'+S.inv.n+'">')+field('Caducidad','<input id="f-e" type="date" value="'+S.inv.exp+'">')+'</div><p class="mu">Cada aplicación que registras se descuenta sola.</p><button class="btn" data-act="inv">Guardar</button>';
   if(m==='tr') h='<h3 style="margin-bottom:14px">Mi tratamiento</h3>'+field('Medicamento','<select id="f-m"><option value="">Sin medicamento</option>'+MEDS.map(function(x){return '<option value="'+x[0]+'"'+(S.tr.med===x[0]?' selected':'')+'>'+x[0]+'</option>';}).join('')+'</select>')+
     '<div class="grid2">'+field('Dosis mg','<input id="f-mg" type="number" step="0.05" inputmode="decimal" value="'+esc(S.tr.mg)+'">')+field('Frecuencia','<select id="f-fr">'+[[1,'Diaria'],[7,'Semanal'],[14,'Cada 2 semanas'],[30,'Mensual']].concat([1,7,14,30].indexOf(+S.tr.freq)<0&&+S.tr.freq?[[+S.tr.freq,freqTxt(S.tr.freq)]]:[]).map(function(o){return '<option value="'+o[0]+'"'+(+S.tr.freq===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select>')+'</div><p class="mu">La dosis la define tu médico.</p><button class="btn" data-act="tr">Guardar</button>';
+  if(m==='premium') h='<div class="center"><div style="font-size:42px">⭐</div><h3 style="font-size:22px;margin:2px 0 6px">Michi Salud Premium</h3>'+(pwWhy?'<p class="pwwhy">'+esc(pwText(pwWhy))+'</p>':'')+'</div>'+
+    '<ul class="pwl">'+['IA de Mochi sin quedarte corto: hasta 80 consultas al día','Calorías y nutrientes desde una foto de tu plato','Planes de comida y recetas a tu medida','Comidas escritas calculadas con IA, más precisas'].map(function(x){return '<li>'+esc(T(x))+'</li>';}).join('')+'</ul>'+
+    '<div class="center"><div class="pwp">USD 2,99<span> / '+T('mes')+'</span></div><p class="mu" style="margin:2px 0 12px">'+T('Cancela cuando quieras.')+'</p></div>'+
+    '<div class="mu center" id="pw-msg" style="min-height:20px;margin-bottom:8px"></div><button class="btn" data-act="buy">'+T('Suscribirme')+'</button><button class="link2" data-close="1">'+T('Ahora no')+'</button>';
   return '<div class="ov" data-close="1"><div class="sheet fade"><div class="grab"></div>'+h+'</div></div>';
 }
 
@@ -1521,11 +1593,12 @@ function bodyModal(){
 }
 function scaleRead(f){
   var m=$('sc-msg');if(!ai){m.textContent=T('Para leer la captura necesitas la IA activa en Mi plan.');return;}
+  if(AIQ&&!AIQ.premium){m.innerHTML=esc(T('Leer la captura de la báscula es Premium.'))+PBTN;return;}
   m.textContent=T('Leyendo la captura…');
   ai.json('Esta es una captura de la app de una báscula inteligente. Extrae los valores y responde SOLO un JSON con estas claves (null si no aparece): {"fecha":"AAAA-MM-DD","peso_kg":n,"grasa_pct":n,"musculo_kg":n,"agua_pct":n,"grasa_visceral":n,"hueso_kg":n,"edad_metabolica":n}. Si los pesos están en libras, conviértelos a kg.',{images:[f]}).then(function(j){
     var g=function(k){var v=j[k];return v==null||v===''||isNaN(+v)?null:+v;},d=/^\d{4}-\d\d-\d\d$/.test(j.fecha||'')&&j.fecha<=today()?j.fecha:today();
     tmp.body={d:d,w:g('peso_kg'),fat:g('grasa_pct'),mus:g('musculo_kg'),wat:g('agua_pct'),visc:g('grasa_visceral'),bone:g('hueso_kg'),age:g('edad_metabolica')};modal='bodyrev';render();
-  }).catch(function(){var mm=$('sc-msg');if(mm)mm.textContent=T('No pude leer la captura. Intenta con una más nítida.');});
+  }).catch(function(e){var mm=$('sc-msg');if(mm&&isPW(e)){mm.innerHTML=esc(e.code==='premium'?T('Leer la captura de la báscula es Premium.'):e.message)+PBTN;return;}if(mm)mm.textContent=T('No pude leer la captura. Intenta con una más nítida.');});
 }
 // Estancamiento: 14+ días con menos de 0,5 kg de cambio
 function plateau(){
@@ -1743,7 +1816,7 @@ function quickAdd(desc,msgEl,done){
     [].forEach.call(document.querySelectorAll('.sheet button[disabled],#qm'),function(x){x.disabled=false;});
     if(!modal){modal='meal';render();$('f-n').value=desc;msgEl=$('ai-msg');}
     msgEl.textContent=T(why||'No reconocí esos alimentos. Escríbelos más simple (ej: 2 huevos y 1 arepa) o pon los números.');var d=document.querySelector('details.man');if(d&&!why)d.open=true;return false;};
-  if(!llm){local();return;}
+  if(!llm||!(AIQ&&AIQ.premium)){local();return;} // ponytail: gratis no gasta su cupo de IA en comidas escritas
   msgEl.textContent=T('Calculando calorías y nutrientes…');
   estimate(desc).then(function(r){var m=mealFrom(r,desc);if(!m.k)throw{};if(done)done();autoAdd(m);})
    .catch(function(e){local(e&&e.code==='rate_limited'?'Muchas consultas seguidas, espera un momento.':null);});
@@ -1766,23 +1839,27 @@ function mdLite(t){
   if(inL)out+='</ul>';return out.replace(/(<br>)+$/,'');
 }
 var SUGG=['¿Qué ceno hoy con la proteína que me falta?','¿Cómo manejo las náuseas?','Ideas de desayuno alto en proteína','¿Voy bien con mi plan?'];
+var PLANQ=[['🍽️ Plan de comidas de hoy','Arma mi plan de comidas para lo que queda de hoy según mis calorías y proteína restantes, con porciones.'],['🥘 Receta con lo que me falta','Dame una receta fácil y económica que me ayude a completar la proteína que me falta hoy, con ingredientes comunes en Colombia y cantidades.']];
 function vIA(){
   return '<div class="top"><div class="row">'+owl(46)+'<div><h1 style="font-size:24px">Mochi</h1><div class="mu">Tu asistente con IA</div></div></div>'+(chat.length?'<button class="btn sec sm" data-act="clearchat">Nueva</button>':'')+'</div>'+
    (llm?'':'<div class="alert">'+T('La IA de Mochi estará disponible muy pronto.')+'</div>')+
-   '<div class="msgs" id="msgs">'+(chat.length?'':'<div class="msg a greet">¡Hola, '+esc(S.name)+'! Puedo ayudarte con comidas, proteína, síntomas, hidratación o cómo vas con tu plan. ¿Qué necesitas?</div><div class="chips" style="margin-top:6px">'+SUGG.map(function(q){return '<button class="chip" data-q="'+esc(T(q))+'">'+esc(q)+'</button>';}).join('')+'</div>')+
+   (llm&&AIQ?'<div class="qbar"><span>'+(AIQ.premium?'⭐ '+T('Premium activo'):AIQ.ok===false?T('La IA gratuita llegó a su límite este mes. Con Premium sigue disponible.'):Tf('Te quedan {0} de {1} consultas gratis hoy',[Math.max(0,AIQ.max-AIQ.usados),AIQ.max]))+'</span>'+(AIQ.premium?'':PBTN)+'</div>':'')+
+   '<div class="msgs" id="msgs">'+(chat.length?'':'<div class="msg a greet">¡Hola, '+esc(S.name)+'! Puedo ayudarte con comidas, proteína, síntomas, hidratación o cómo vas con tu plan. ¿Qué necesitas?</div><div class="chips" style="margin-top:6px">'+SUGG.map(function(q){return '<button class="chip" data-q="'+esc(T(q))+'">'+esc(q)+'</button>';}).join('')+PLANQ.map(function(x){return '<button class="chip pchip" data-kind="plan" data-q="'+esc(T(x[1]))+'">'+esc(T(x[0]))+' ⭐</button>';}).join('')+'</div>')+
    chat.map(function(m,i){return '<div class="msg '+(m.role==='user'?'u':'a')+'"'+(i===chat.length-1&&m.role==='assistant'?' id="last"':'')+'>'+(m.role==='user'?esc(m.content):mdLite(m.content||'…'))+'</div>';}).join('')+
    '<p class="mu center" style="font-size:11px">Mochi no reemplaza a tu médico.</p></div>'+
-   '<div class="composer"><form class="in" id="chatf"><input id="q" placeholder="Escríbele a Mochi…" autocomplete="off"'+(llm&&!busy?'':' disabled')+'><button type="submit"'+(llm&&!busy?'':' disabled')+'>↑</button></form></div>';
+   '<div class="composer"><form class="in" id="chatf"><input id="q" placeholder="Escríbele a Mochi…" autocomplete="off"'+(llm&&!busy?'':' disabled')+'>'+(llm&&!busy?MIC('q','chatf'):'')+'<button type="submit"'+(llm&&!busy?'':' disabled')+'>↑</button></form></div>';
 }
-function ask(q){
+function ask(q,kind){
   if(!llm||busy||!q)return;
+  if(kind==='plan'&&!(AIQ&&AIQ.premium)){paywall('premium');return;}
+  var pw='';
   busy=true;chat.push({role:'user',content:q});chat.push({role:'assistant',content:''});render();scrollChat();
   var msgs=chat.slice(0,-1).map(function(m,i){return{role:m.role,content:i===0?sys()+'\n\nDatos actuales del usuario:\n'+ctx()+'\n\nMensaje del usuario: '+m.content:m.content};});
   if(chat.length>3) msgs[msgs.length-1].content='(Datos actualizados: '+ctx()+')\n\n'+q;
-  llm(msgs,{modelTier:'default',cache:false,onText:function(r){chat[chat.length-1].content=r.text;var el=$('last');if(el){el.innerHTML=mdLite(r.text);scrollChat();}}})
+  llm(msgs,{kind:kind,modelTier:'default',cache:false,onText:function(r){chat[chat.length-1].content=r.text;var el=$('last');if(el){el.innerHTML=mdLite(r.text);scrollChat();}}})
    .then(function(r){chat[chat.length-1].content=r.text;})
-   .catch(function(e){chat[chat.length-1].content=e&&(e.code==='noauth'||e.code==='rate_limited')&&e.message?e.message:T(e&&e.code==='rate_limited'?'Estoy recibiendo muchas preguntas. Intenta de nuevo en un momento.':'No pude responder ahora. Intenta de nuevo.');})
-   .then(function(){busy=false;try{localStorage.setItem('mt-chat',JSON.stringify(chat.slice(-30)));}catch(e){}if(tab==='ia'){render();scrollChat();var i=$('q');if(i)i.focus();}});
+   .catch(function(e){if(isPW(e))pw=e.code;chat[chat.length-1].content=e&&(e.code==='noauth'||e.code==='rate_limited'||isPW(e))&&e.message?e.message:T(e&&e.code==='rate_limited'?'Estoy recibiendo muchas preguntas. Intenta de nuevo en un momento.':'No pude responder ahora. Intenta de nuevo.');})
+   .then(function(){busy=false;try{localStorage.setItem('mt-chat',JSON.stringify(chat.slice(-30)));}catch(e){}if(pw){paywall(pw);return;}if(tab==='ia'){render();scrollChat();var i=$('q');if(i)i.focus();}});
 }
 function scrollChat(){window.scrollTo(0,document.body.scrollHeight);}
 
@@ -1817,6 +1894,7 @@ document.addEventListener('click',function(e){
   if(e.target.classList&&e.target.classList.contains('ov')){modal=null;pend=null;tmp.sym=[];render();return;}
   var b=e.target.closest('button,[data-tab],[data-m]');if(!b)return;
   var d=b.dataset;
+  if(d.mic){voz(b);return;}
   if(d.ob){obNav(+d.ob);return;}
   if(d.units){setUnits(d.units);return;}
   if(d.lang){S.lang=d.lang;langOpen=false;document.documentElement.lang=S.lang;save();return;}
@@ -1827,8 +1905,8 @@ document.addEventListener('click',function(e){
     if(s.multi){tmp[k]=tmp[k]||[];var i=tmp[k].indexOf(v);i>=0?tmp[k].splice(i,1):tmp[k].push(v);if(s.only)tmp[k]=v===s.only?(i>=0?[]:[s.only]):tmp[k].filter(function(x){return x!==s.only;});} else{if(s.read)s.read();tmp[k]=v;}
     render();return;}
   if(d.tab){tab=d.tab;modal=null;history.replaceState(null,'','#'+tab);render();window.scrollTo(0,0);return;}
-  if(d.m){modal=d.m;tmp.sym=[];tmp.symShow=null;tmp.bt=null;if(d.m==='sleep'){tmp.sq=null;tmp.sh=[];}tmp.mw=tmp.md=null;tmp.am=d.am||'in';if(d.cam){render();$('ai-file').click();return;}render();return;}
-  if(d.q){ask(d.q);return;}
+  if(d.m){modal=d.m;tmp.sym=[];tmp.symShow=null;tmp.bt=null;if(d.m==='sleep'){tmp.sq=null;tmp.sh=[];}tmp.mw=tmp.md=null;tmp.am=d.am||'in';if(d.cam){render();$('ai-file').click();return;}if(d.voz){render();var mb=document.querySelector('.sheet .mic');if(mb)voz(mb);return;}render();return;}
+  if(d.q){ask(d.q,d.kind);return;}
   if(d.lv){lvlRange=+d.lv;render();return;}
   if(d.del){S[d.del].splice(+d.i,1);save();return;}
   if(d.water){var t=today();S.water[t]=Math.max(0,(S.water[t]||0)+(+d.water));if(Health&&S.hc&&S.hc.on&&+d.water>0)Health.saveSample({dataType:'dietaryWater',value:+d.water/1000,unit:'liter'}).catch(function(){});if(d.close)modal=null;save();return;}
@@ -1865,9 +1943,10 @@ document.addEventListener('click',function(e){
   if(a==='bc'){if(BS){bcNative();return;}if(window.BarcodeDetector)$('bc-file').click();else{$('bcf').style.display='flex';$('bc-code').focus();}return;}
   if(a==='signup'||a==='signin'||a==='reset'){var em=$('au-e').value.trim(),pw=$('au-p').value,msg=$('au-msg');msg.textContent=T('Entrando…');
     var pr=a==='reset'?fbAuth('sendOobCode',{requestType:'PASSWORD_RESET',email:em}).then(function(){msg.textContent=T('Te enviamos un correo para cambiar tu contraseña.');}):
-      fbAuth(a==='signup'?'signUp':'signInWithPassword',{email:em,password:pw,returnSecureToken:true}).then(function(){return a==='signup'?fbPush():fbPull(true);}).then(function(){modal=null;render();});
+      fbAuth(a==='signup'?'signUp':'signInWithPassword',{email:em,password:pw,returnSecureToken:true}).then(function(){return a==='signup'?fbPush():fbPull(true);}).then(function(){modal=null;render();aiStatus();});
     pr.catch(function(e){msg.textContent=auErr(e);});return;}
-  if(a==='logout'){setAU(null);render();return;}
+  if(a==='buy'){var pm=$('pw-msg');if(pm)pm.textContent=T('Muy pronto podrás suscribirte desde aquí. Te avisaremos cuando esté disponible.');return;}
+  if(a==='logout'){setAU(null);AIQ=null;render();return;}
   if(a==='reonb'){startOnb();return;}
   if(a==='hc'){hcConnect();return;}
   if(a==='hcimp'){hcImport();return;}
@@ -1902,15 +1981,17 @@ document.addEventListener('change',function(e){
   if((e.target.id!=='ai-file'&&e.target.id!=='ai-gal')||!e.target.files[0])return;
   var msg=$('ai-msg'),pv=$('ai-prev');pv.src=URL.createObjectURL(e.target.files[0]);pv.parentNode.classList.add('has');
   if(!ai){msg.textContent=T(MS_AI?'Para leer la foto, crea tu cuenta o inicia sesión en Mi plan. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.':'La lectura de fotos con IA estará disponible muy pronto. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.');$('f-n').focus();return;}
+  if(AIQ&&!AIQ.premium){msg.innerHTML=esc(T('Calcular desde la foto es Premium. Escribe qué es (ej: 2 arepas con queso) y lo calculo gratis.'))+PBTN;$('f-n').focus();return;}
   msg.textContent=T('Analizando la foto…');pv.parentNode.classList.add('busy');
   ai.json('Mira la foto de comida. Identifica cada alimento, estima la porción visible en gramos y suma los valores de todo el plato. Responde SOLO JSON: {"nombre":"descripción corta en '+({es:'español',en:'inglés',pt:'portugués'}[S.lang]||'español')+' con porción","kcal":entero,"proteina_g":entero,"carbohidratos_g":entero,"grasas_g":entero,"fibra_g":entero,"azucar_g":entero,"sodio_mg":entero}.',{images:[e.target.files[0]]})
    .then(function(r){var m=mealFrom(r,T('Comida'));if(!m.k)throw{};pend=m;pendQ=1;pendImg=pv.src;render();window.scrollTo(0,0);})
-   .catch(function(err){var sn=document.querySelector('.snap');if(sn)sn.classList.remove('busy');msg.textContent=T(err&&err.code==='rate_limited'?'Demasiadas fotos seguidas, espera un momento.':'No pude analizar la foto. Escríbelo a mano.');});
+   .catch(function(err){var sn=document.querySelector('.snap');if(sn)sn.classList.remove('busy');if(isPW(err)){msg.innerHTML=esc(err.code==='premium'?T('Calcular desde la foto es Premium. Escribe qué es (ej: 2 arepas con queso) y lo calculo gratis.'):err.message)+PBTN;return;}msg.textContent=T(err&&err.code==='rate_limited'?'Demasiadas fotos seguidas, espera un momento.':'No pude analizar la foto. Escríbelo a mano.');});
 });
 
 if(aiOn()){llm=makeLLM();ai=llm;}
 render();
 fbPull();
+aiStatus();
 if(NATIVE){
   AppP.addListener('resume',function(){hcSync();});
   hcSync();setInterval(hcSync,10*6e4);
