@@ -2,18 +2,32 @@ name: Publicar IA (Cloudflare)
 on:
   push:
     branches: [main]
-    paths: ['worker/**']
+    paths: ['worker/**', '.github/workflows/ia.yml']
   workflow_dispatch:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    defaults:
+      run:
+        working-directory: worker
     steps:
       - uses: actions/checkout@v4
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: worker
-          secrets: ANTHROPIC_API_KEY
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      # Falla con un mensaje claro si algún secreto falta o el token de Cloudflare no sirve
+      - name: Verificar secretos
+        run: |
+          for v in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID ANTHROPIC_API_KEY; do
+            [ -n "${!v}" ] || { echo "::error::Falta el secreto $v en GitHub"; exit 1; }
+          done
+          s=$(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/user/tokens/verify | jq -r '.result.status // .errors[0].message')
+          echo "Token de Cloudflare: $s"
+          [ "$s" = "active" ] || { echo "::error::El token de Cloudflare no es válido ($s). Vuelve a copiarlo en el secreto CLOUDFLARE_API_TOKEN."; exit 1; }
+      - name: Publicar el servidor
+        run: npx -y wrangler@4.163.0 deploy
+      - name: Guardar la clave de Anthropic en el servidor
+        run: printf %s "$ANTHROPIC_API_KEY" | npx -y wrangler@4.163.0 secret put ANTHROPIC_API_KEY

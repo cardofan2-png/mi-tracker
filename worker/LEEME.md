@@ -2,6 +2,8 @@
 
 Guarda tu clave de Anthropic en el servidor. Los usuarios solo necesitan su cuenta de Michi Salud (Firebase); nadie ve la clave.
 
+**Publicado en:** https://michi-salud-ia.cardofan2.workers.dev (ya configurado en la app).
+
 ## Publicarlo (una sola vez, ~10 min)
 1. Crea una cuenta gratis en https://dash.cloudflare.com.
 2. En Cloudflare: **My Profile → API Tokens → Create Token → plantilla "Edit Cloudflare Workers"**. Copia el token.
