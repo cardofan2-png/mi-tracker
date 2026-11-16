@@ -251,7 +251,7 @@ var hcBusy=false, hcErr='';
 function persist(){S._t=Date.now();try{localStorage.setItem('mt-state',JSON.stringify(S));}catch(e){}if(!modal&&S.onb)render();}
 // IA de la app: el servidor de Michi Salud (Cloudflare) guarda la clave; el usuario solo necesita su cuenta.
 // ponytail: pega aquí la URL del Worker al publicarlo (worker/LEEME.md); vacía = IA aún no disponible
-var MS_AI='';
+var MS_AI='https://michi-salud-ia.cardofan2.workers.dev/';
 function aiOn(){return !!MS_AI;}
 // msgs: [{role:'user'|'assistant', content: texto | [{img:base64}|{text:...}]}]
 var AIQ=null; // cupo de IA que informa el servidor: {premium, usados, max, ok}
