@@ -1,0 +1,12 @@
+name = "michi-salud-ia"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+MODEL = "claude-haiku-5-5"
+DAILY_LIMIT = "80"
+
+# Opcional: límite diario por usuario. Crea el KV con `npx wrangler kv namespace create LIMITS` y pega el id aquí.
+# [[kv_namespaces]]
+# binding = "LIMITS"
+# id = "..."
