@@ -20,7 +20,7 @@ jobs:
         run: |
           npm i --no-save playwright@1
           npx playwright install --with-deps chromium
-          node tests/regresion.mjs && node tests/diseno.mjs
+          node tests/regresion.mjs && node tests/lector-ia.mjs && node tests/diseno.mjs
       - name: Capturas de los errores de diseño
         if: failure()
         uses: actions/upload-artifact@v4
