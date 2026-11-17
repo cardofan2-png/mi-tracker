@@ -192,7 +192,9 @@ nav button.on{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(91,61
 .mood{border:0}.mood.sed{background:linear-gradient(135deg,#e8f1ff,#fff)}.mood.zz{background:linear-gradient(135deg,#f1edf7,#fff)}
 .mood svg{flex:0 0 auto;animation:bob 2.6s ease-in-out infinite}.mood.zz svg{animation-duration:4s}
 .mimg{position:relative;display:inline-block;vertical-align:middle;flex:0 0 auto}.mimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;transform-origin:50% 100%;transition:transform .6s}.mimg img:first-child{filter:drop-shadow(0 6px 10px rgba(52,32,140,.18))}.center .mimg,.mochi .mimg{display:block;margin:0 auto}.mood .mimg{animation:bob 2.6s ease-in-out infinite}.mood.zz .mimg{animation-duration:4s}
-.hor .row{padding:7px 6px;border-bottom:1px solid #f3f1f8;gap:10px}.hor .row:last-child{border-bottom:0}.hor .ht{width:46px;font-variant-numeric:tabular-nums}.hor .past{opacity:.45}.hor .nx{background:var(--pl);border-radius:12px}
+.hor .row{padding:7px 6px;border-bottom:1px solid #f3f1f8;gap:10px}.hor .row:last-child{border-bottom:0}.hor .ht{flex:0 0 auto;min-width:2.9em;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:13px!important;font-weight:700}
+.hor .row{font-size:13px!important;padding:5px 6px;line-height:1.25}
+.hor .row *{font-size:inherit}.hor .past{opacity:.45}.hor .nx{background:var(--pl);border-radius:12px}
 .dbar{position:relative;height:14px;background:#efedf5;border-radius:8px;margin:12px 0 4px;overflow:hidden}.dbar i{position:absolute;top:0;bottom:0;background:var(--ok);opacity:.8}.dbar u{position:absolute;top:0;bottom:0;width:3px;background:var(--tx)}
 .okl{display:flex;gap:10px;align-items:flex-start;font-size:15px;margin:14px 6px;line-height:1.35}.okl input{width:22px;height:22px;flex:0 0 auto;margin-top:1px;accent-color:var(--p)}
 .qbar{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e4e0f3;border-radius:16px;padding:6px 6px 6px 14px;font-size:13px;font-weight:600;margin-bottom:10px} .qbar .link2,.pwl2{display:inline-block;margin:0;padding:6px 10px;font-size:13px} .pchip{border-color:#f5c26b;background:#fffaf0} .pwwhy{background:#fff4ec;color:#a4501f;border-radius:14px;padding:10px 12px;font-size:14px;font-weight:600;margin:6px 0 4px} .pwl{list-style:none;padding:0;margin:14px 0} .pwl li{padding:9px 0 9px 30px;position:relative;font-size:15px;border-bottom:1px solid #f0edf8} .pwl li:before{content:'✓';position:absolute;left:4px;color:var(--ok);font-weight:800} .pwp{font-size:30px;font-weight:800} .pwp span{font-size:15px;font-weight:500;color:var(--mu)}
@@ -201,7 +203,8 @@ nav button.on{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(91,61
 
 /* ---- Adaptable: cualquier ancho (320 px en adelante) y letra grande de Android. Lo vigila tests/diseno.mjs ---- */
 html,body{overflow-x:hidden;max-width:100%}
-body{overflow-wrap:anywhere}
+body{overflow-wrap:break-word}
+button,.btn,.chip{overflow-wrap:normal;word-break:normal;hyphens:none}
 img,svg,canvas,video{max-width:100%}
 .row>*,.grid2>*,.grid3>*,.f{min-width:0}
 .row:has(>.btn),.row:has(>button.act){flex-wrap:wrap}
@@ -221,11 +224,17 @@ h1{font-size:clamp(22px,7.5vw,30px)}
 .sheet{position:relative}
 .mx{position:absolute;top:10px;right:12px;width:40px;height:40px;border-radius:50%;background:#ece9f6;color:var(--tx);font-size:18px;font-weight:700;line-height:40px;padding:0;z-index:2}
 .sheet>h3:first-of-type,.sheet>.center:first-of-type{padding-right:44px}
-nav{max-width:calc(100vw - 110px)}
+nav{left:max(12px,calc(50% - 250px));transform:none;width:calc(100% - 104px);max-width:360px;justify-content:space-between}
+nav button{flex:1 1 0;width:auto!important;height:auto!important;aspect-ratio:1;max-width:48px;min-width:0}
+/* Horas siempre en un renglón: los campos de hora/fecha van lado a lado y achican la letra si no caben */
+.grid2:has(input[type=time]){grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}
+input[type=time],input[type=date]{font-size:clamp(13px,4vw,17px);padding:12px 6px 12px 12px;white-space:nowrap;min-width:0;letter-spacing:-.2px}
+input[type=time]::-webkit-calendar-picker-indicator,input[type=date]::-webkit-calendar-picker-indicator{margin:0 0 0 2px;padding:0;width:16px;height:16px}
+input[type=time]::-webkit-datetime-edit,input[type=date]::-webkit-datetime-edit{padding:0}
 .row>.btn.sm.mic,.in .mic{flex:0 0 auto;width:auto}
 .row>input.f,.row>.f>input{flex:1 1 auto}
 .row:has(>[data-voz]){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.row:has(>[data-voz])>.btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;font-size:14px;line-height:1.15}
+.row:has(>[data-voz])>.btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 2px;font-size:clamp(11px,3.4vw,14px);line-height:1.15;letter-spacing:-.2px}
 
 .mguide{position:sticky;top:-14px;z-index:1;display:flex;gap:12px;align-items:center;background:#fff;border-radius:22px;padding:10px 12px;margin:0 0 12px;box-shadow:0 4px 18px rgba(30,20,70,.06)}
 .mfig{position:relative;flex:0 0 auto;width:150px;height:150px}
@@ -236,6 +245,7 @@ nav{max-width:calc(100vw - 110px)}
 .mtip b{font-size:16px;color:var(--p)}
 .mtip small{color:var(--mu);font-size:12px}
 @media (max-width:380px){.mfig{width:110px;height:110px}.mfig .mimg{width:110px!important;height:110px!important}.mtip{font-size:13px}.mtip small{display:none}}
+.msil{width:1.6em;height:1.6em;display:inline-block;vertical-align:top;margin:-.22em 0 -.18em}
 </style>
 </head>
 <body>
@@ -1500,9 +1510,11 @@ function connCard(){
 
 /* ---------- Modales ---------- */
 function field(lbl,inp){return '<div style="margin-bottom:12px"><label class="l">'+lbl+'</label>'+inp+'</div>';}
+// Ícono de Medidas: silueta con cinta métrica en la cintura
+var MSIL='<svg class="msil" viewBox="4 1 24 30" aria-hidden="true"><circle cx="16" cy="5" r="3.2" fill="#5b3df5"/><path d="M10.5 10.5c0-1.4 1.1-2.3 2.5-2.3h6c1.4 0 2.5.9 2.5 2.3v7.2c0 .8-.5 1.4-1.2 1.6l-.6 9.4c-.1.9-.8 1.5-1.7 1.5h-.9c-.6 0-1.1-.5-1.1-1.1V21h-.4v8.1c0 .6-.5 1.1-1.1 1.1h-.9c-.9 0-1.6-.6-1.7-1.5l-.6-9.4c-.7-.2-1.2-.8-1.2-1.6z" fill="#8b5cf6"/><path d="M7.5 10.6c-.9.5-1.4 1.4-1.3 2.4l.7 5.6" stroke="#8b5cf6" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M24.5 10.6c.9.5 1.4 1.4 1.3 2.4l-.7 5.6" stroke="#8b5cf6" stroke-width="2.2" stroke-linecap="round" fill="none"/><rect x="8.6" y="14.2" width="14.8" height="3.4" rx="1.2" fill="#ffc83d" stroke="#e0a100" stroke-width=".5"/><path d="M10.6 14.4v1.3M12.6 14.4v2M14.6 14.4v1.3M16.6 14.4v2M18.6 14.4v1.3M20.6 14.4v2" stroke="#7a5200" stroke-width=".5"/><path d="M23.2 16.6c1.6.2 2.6 1.3 2.4 2.8-.1 1.2-1 2-2.2 2.1" stroke="#ffc83d" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>';
 function vModal(){
   var m=modal,h='',t=today();
-  if(m==='menu') h='<h3 style="margin-bottom:14px">¿Qué quieres registrar?</h3><div class="grid3">'+[['meal','🍽️','Comida'],['dose','💉','Aplicación'],['weight','⚖️','Peso'],['sym','🩺','Síntoma'],['water','💧','Agua'],['sleep','🌙','Sueño'],['inv','📦','Inventario'],['meas','📏','Medidas'],['bowel','🚽','Deposición'],['supp','💊','Suplementos'],['fast','⏳','Ayuno'],['vial','🧪','Calculadora']].map(function(x){return '<button class="act" data-m="'+x[0]+'"><span>'+x[1]+'</span>'+x[2]+'</button>';}).join('')+'</div>';
+  if(m==='menu') h='<h3 style="margin-bottom:14px">¿Qué quieres registrar?</h3><div class="grid3">'+[['meal','🍽️','Comida'],['dose','💉','Aplicación'],['weight','⚖️','Peso'],['sym','🩺','Síntoma'],['water','💧','Agua'],['sleep','🌙','Sueño'],['inv','📦','Inventario'],['meas',MSIL,'Medidas'],['bowel','🚽','Deposición'],['supp','💊','Suplementos'],['fast','⏳','Ayuno'],['vial','🧪','Calculadora']].map(function(x){return '<button class="act" data-m="'+x[0]+'"><span>'+x[1]+'</span>'+x[2]+'</button>';}).join('')+'</div>';
   if(m==='lvl'){var L=lvl();h='<div class="center fade">'+cat(170,L)+'<h3 style="font-size:24px;margin:6px 0">'+T('¡Mochi subió al nivel')+' '+(L+1)+'!</h3><p class="mu" style="font-size:16px">'+T(LVLTXT[L])+'</p><button class="btn" data-close="1">'+T('¡Vamos!')+'</button></div>';}
   if(m==='auth'){var up=tmp.am==='up';h='<h3 style="margin-bottom:14px">'+(up?'Crear cuenta':'Entrar')+'</h3>'+field('Correo','<input id="au-e" type="email" autocomplete="email" inputmode="email">')+field('Contraseña','<input id="au-p" type="password" autocomplete="'+(up?'new-password':'current-password')+'" placeholder="'+(up?'Mínimo 6 caracteres':'')+'">')+
     '<div class="mu center" id="au-msg" style="min-height:20px;margin-bottom:8px"></div><button class="btn" data-act="'+(up?'signup':'signin')+'">'+(up?'Crear cuenta':'Entrar')+'</button>'+(up?'':'<button class="link2" data-act="reset">Olvidé mi contraseña</button>')+'<button class="link2" data-m="auth" data-am="'+(up?'in':'up')+'">'+(up?'¿Ya tienes cuenta? Entra':'¿No tienes cuenta? Créala')+'</button>';}

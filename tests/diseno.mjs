@@ -5,11 +5,13 @@
 import { chromium } from 'playwright';
 import { pathToFileURL } from 'node:url';
 import { mkdirSync } from 'node:fs';
+import { LETRA_GRANDE } from './letra.mjs';
 
 const APP = pathToFileURL(new URL('../www/index.html', import.meta.url).pathname).href;
 const OUT = new URL('../diseno-fallas/', import.meta.url).pathname;
 // 320 px ≈ teléfono pequeño o letra grande de Android; 412 = Galaxy S25; tabletas y escritorio
-const SIZES = [[320, 640], [360, 760], [412, 915], [768, 1024], [1280, 800]];
+const SIZES = (process.env.SOLO ? [[+process.env.SOLO, 915]] : [[320, 640], [360, 760], [412, 915], [768, 1024], [1280, 800]]);
+const LETRA = 1.3; // letra grande del teléfono (en la app se limita a 115 %; aquí se prueba más grande para tener margen)
 const fallas = [];
 
 // Elementos con texto, botones o imágenes que quedan cortados por el borde de la pantalla
@@ -26,6 +28,14 @@ const MEDIR = `(()=>{const W=document.documentElement.clientWidth,out=[];
     if(enScroll) continue; // carruseles y reglas que se desplazan a propósito
     out.push(desc(e)+' se sale '+Math.round(Math.max(r.right-W,-r.left))+' px');
   }
+  // ninguna palabra ni hora partida en dos renglones (botones, chips, horas)
+  const tw=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
+  while(n=tw.nextNode()){const el=n.parentElement;if(!el||!el.offsetParent)continue;const t=n.textContent,re=/\\d{1,2}:\\d{2}(\\s?[ap]\\.?\\s?m\\.?)?|[A-Za-zÁÉÍÓÚáéíóúÑñÜü]{3,}/g;let mm;
+    const enBoton=!!el.closest('button,.chip,.btn');
+    while(mm=re.exec(t)){if(!enBoton&&!/:/.test(mm[0]))continue;const r=document.createRange();r.setStart(n,mm.index);r.setEnd(n,mm.index+mm[0].length);const rs=[...r.getClientRects()].filter(x=>x.width>0);if(rs.length>1&&Math.abs(rs[0].top-rs[rs.length-1].top)>2)out.push('"'+mm[0]+'" partido en dos renglones en '+desc(el));}}
+  document.querySelectorAll('input[type=time],input[type=date]').forEach(i=>{if(i.offsetParent&&i.scrollWidth>i.clientWidth+1)out.push('hora/fecha cortada '+desc(i))});
+  const tm=[...document.querySelectorAll('input[type=time]')].filter(i=>i.offsetParent);
+  for(let k=0;k+1<tm.length;k+=2){const a=tm[k].getBoundingClientRect(),b=tm[k+1].getBoundingClientRect();if(tm[k].closest('.grid2')&&tm[k].closest('.grid2')===tm[k+1].closest('.grid2')&&Math.abs(a.top-b.top)>2)out.push('las horas no quedaron en un renglón '+desc(tm[k]));}
   return [...new Set(out)].slice(0,6);})()`;
 
 async function revisar(pg, donde) {
@@ -70,6 +80,8 @@ async function app(pg, donde) {
     const ir = () => pg.evaluate(t => { const b = document.querySelector('nav button[data-tab=' + t + ']'); if (b) b.click(); }, t);
     await ir(); await pg.waitForTimeout(250);
     await revisar(pg, `${donde} pestaña ${t}`);
+    // listas que se despliegan dentro de la pestaña (p. ej. "Ver todos" los horarios)
+    for (const act of ["horall"]) { if (await pg.$(`[data-act=${act}]`)) { await pg.evaluate(a => document.querySelector(`[data-act=${a}]`).click(), act); await pg.waitForTimeout(200); await revisar(pg, `${donde} pestaña ${t} (${act})`); } }
     const ms = await pg.evaluate(`[...new Set([...document.querySelectorAll('[data-m]')].map(x=>x.dataset.m))]`);
     for (const m of ms) {
       await pg.evaluate(m => { const x = document.querySelector('[data-m="' + m + '"]'); if (x) x.click(); }, m);
@@ -77,7 +89,7 @@ async function app(pg, donde) {
       if (await pg.$('.sheet')) {
         await revisar(pg, `${donde} ventana ${m}`);
         if (!await pg.$('.sheet .mx')) fallas.push(`[${donde}] la ventana "${m}" no tiene ✕ para cerrar`);
-        else { await pg.click('.sheet .mx'); await pg.waitForTimeout(150); if (await pg.$('.sheet')) fallas.push(`[${donde}] la ✕ de la ventana "${m}" no la cierra`); }
+        else { await pg.evaluate(() => document.querySelector('.sheet .mx').click()); await pg.waitForTimeout(150); if (await pg.$('.sheet')) fallas.push(`[${donde}] la ✕ de la ventana "${m}" no la cierra`); }
       }
       await ir(); await pg.waitForTimeout(120);
     }
@@ -91,6 +103,7 @@ for (const [w, h] of SIZES) {
   for (const lang of w === 320 ? ['es', 'en', 'pt'] : ['es']) {
     const donde = `${w}px ${lang}`;
     const pg = await b.newPage({ viewport: { width: w, height: h } });
+    if (w <= 412) await pg.addInitScript(LETRA_GRANDE, LETRA);
     const errores = [];
     pg.on('pageerror', e => errores.push(e.message));
     await pg.goto(APP); await pg.waitForTimeout(600);
