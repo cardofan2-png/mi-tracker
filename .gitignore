@@ -6,3 +6,5 @@ android/local.properties
 android/capacitor-cordova-android-plugins/build/
 *.apk
 www/capacitor.js
+
+diseno-fallas/
