@@ -15,6 +15,16 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '22' }
       - run: npm ci || npm install
+      # Loop de diseño: si algo se sale de la pantalla o una ventana no cierra, no se publica el APK
+      - name: Probar diseño en todos los tamaños de pantalla
+        run: |
+          npm i --no-save playwright@1
+          npx playwright install --with-deps chromium
+          node tests/diseno.mjs
+      - name: Capturas de los errores de diseño
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with: { name: diseno-fallas, path: diseno-fallas/ }
       # registerPlugin vive en @capacitor/core; sin esto la app abre en blanco
       - run: cp node_modules/@capacitor/core/dist/capacitor.js www/
       - run: sed -i "s/__VERSION__/1.${{ github.run_number }}/g" www/index.html

@@ -192,11 +192,60 @@ nav button.on{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(91,61
 .mood{border:0}.mood.sed{background:linear-gradient(135deg,#e8f1ff,#fff)}.mood.zz{background:linear-gradient(135deg,#f1edf7,#fff)}
 .mood svg{flex:0 0 auto;animation:bob 2.6s ease-in-out infinite}.mood.zz svg{animation-duration:4s}
 .mimg{position:relative;display:inline-block;vertical-align:middle;flex:0 0 auto}.mimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;transform-origin:50% 100%;transition:transform .6s}.mimg img:first-child{filter:drop-shadow(0 6px 10px rgba(52,32,140,.18))}.center .mimg,.mochi .mimg{display:block;margin:0 auto}.mood .mimg{animation:bob 2.6s ease-in-out infinite}.mood.zz .mimg{animation-duration:4s}
-.hor .row{padding:7px 6px;border-bottom:1px solid #f3f1f8;gap:10px}.hor .row:last-child{border-bottom:0}.hor .ht{width:46px;font-variant-numeric:tabular-nums}.hor .past{opacity:.45}.hor .nx{background:var(--pl);border-radius:12px}
+.hor .row{padding:7px 6px;border-bottom:1px solid #f3f1f8;gap:10px}.hor .row:last-child{border-bottom:0}.hor .ht{flex:0 0 auto;min-width:2.9em;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:13px!important;font-weight:700}
+.hor .row{font-size:13px!important;padding:5px 6px;line-height:1.25}
+.hor .row *{font-size:inherit}.hor .past{opacity:.45}.hor .nx{background:var(--pl);border-radius:12px}
 .dbar{position:relative;height:14px;background:#efedf5;border-radius:8px;margin:12px 0 4px;overflow:hidden}.dbar i{position:absolute;top:0;bottom:0;background:var(--ok);opacity:.8}.dbar u{position:absolute;top:0;bottom:0;width:3px;background:var(--tx)}
 .okl{display:flex;gap:10px;align-items:flex-start;font-size:15px;margin:14px 6px;line-height:1.35}.okl input{width:22px;height:22px;flex:0 0 auto;margin-top:1px;accent-color:var(--p)}
 .qbar{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e4e0f3;border-radius:16px;padding:6px 6px 6px 14px;font-size:13px;font-weight:600;margin-bottom:10px} .qbar .link2,.pwl2{display:inline-block;margin:0;padding:6px 10px;font-size:13px} .pchip{border-color:#f5c26b;background:#fffaf0} .pwwhy{background:#fff4ec;color:#a4501f;border-radius:14px;padding:10px 12px;font-size:14px;font-weight:600;margin:6px 0 4px} .pwl{list-style:none;padding:0;margin:14px 0} .pwl li{padding:9px 0 9px 30px;position:relative;font-size:15px;border-bottom:1px solid #f0edf8} .pwl li:before{content:'✓';position:absolute;left:4px;color:var(--ok);font-weight:800} .pwp{font-size:30px;font-weight:800} .pwp span{font-size:15px;font-weight:500;color:var(--mu)}
 .mic{padding:10px 12px;flex:none} .in .mic{width:44px;height:44px;border-radius:50%;padding:0;margin-right:6px;background:#efebff;font-size:18px} .mic.on{background:#ef4f5f!important;color:#fff;animation:micp 1s infinite} @keyframes micp{50%{box-shadow:0 0 0 8px rgba(239,79,95,.18)}}
+.okbox{background:#e9f8f1;color:#0c7a5a;border-radius:16px;padding:12px 14px;font-weight:700;font-size:14px;margin:6px 0}
+
+/* ---- Adaptable: cualquier ancho (320 px en adelante) y letra grande de Android. Lo vigila tests/diseno.mjs ---- */
+html,body{overflow-x:hidden;max-width:100%}
+body{overflow-wrap:break-word}
+button,.btn,.chip{overflow-wrap:normal;word-break:normal;hyphens:none}
+img,svg,canvas,video{max-width:100%}
+.row>*,.grid2>*,.grid3>*,.f{min-width:0}
+.row:has(>.btn),.row:has(>button.act){flex-wrap:wrap}
+.row>.btn.sm{flex:0 1 auto;white-space:normal}
+.row>.f{flex:1 1 140px}
+.btn,.chip,.act{white-space:normal;max-width:100%}
+h1{font-size:clamp(22px,7.5vw,30px)}
+.say{font-size:clamp(19px,6.4vw,26px);padding:clamp(14px,4.5vw,22px) clamp(14px,5vw,24px)}
+.bub{font-size:clamp(17px,5.6vw,24px)}
+.big{font-size:clamp(24px,8.5vw,34px)}
+.cd{font-size:clamp(22px,7.5vw,30px)}
+.rv{flex-wrap:wrap;max-width:100%}
+.rv input{font-size:clamp(30px,13vw,48px);max-width:62vw}
+.rv small{font-size:clamp(15px,5.2vw,22px)}
+.grid3{grid-template-columns:repeat(auto-fit,minmax(min(92px,100%),1fr))}
+@media (max-width:360px){.grid2{grid-template-columns:1fr}.wrap{padding:0 12px}.card{padding:16px}}
+.sheet{position:relative}
+.mx{position:absolute;top:10px;right:12px;width:40px;height:40px;border-radius:50%;background:#ece9f6;color:var(--tx);font-size:18px;font-weight:700;line-height:40px;padding:0;z-index:2}
+.sheet>h3:first-of-type,.sheet>.center:first-of-type{padding-right:44px}
+nav{left:max(12px,calc(50% - 250px));transform:none;width:calc(100% - 104px);max-width:360px;justify-content:space-between}
+nav button{flex:1 1 0;width:auto!important;height:auto!important;aspect-ratio:1;max-width:48px;min-width:0}
+/* Horas siempre en un renglón: los campos de hora/fecha van lado a lado y achican la letra si no caben */
+.grid2:has(input[type=time]){grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}
+input[type=time],input[type=date]{font-size:clamp(13px,4vw,17px);padding:12px 6px 12px 12px;white-space:nowrap;min-width:0;letter-spacing:-.2px}
+input[type=time]::-webkit-calendar-picker-indicator,input[type=date]::-webkit-calendar-picker-indicator{margin:0 0 0 2px;padding:0;width:16px;height:16px}
+input[type=time]::-webkit-datetime-edit,input[type=date]::-webkit-datetime-edit{padding:0}
+.row>.btn.sm.mic,.in .mic{flex:0 0 auto;width:auto}
+.row>input.f,.row>.f>input{flex:1 1 auto}
+.row:has(>[data-voz]){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.row:has(>[data-voz])>.btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 2px;font-size:clamp(11px,3.4vw,14px);line-height:1.15;letter-spacing:-.2px}
+
+.mguide{position:sticky;top:-14px;z-index:1;display:flex;gap:12px;align-items:center;background:#fff;border-radius:22px;padding:10px 12px;margin:0 0 12px;box-shadow:0 4px 18px rgba(30,20,70,.06)}
+.mfig{position:relative;flex:0 0 auto;width:150px;height:150px}
+.mfig svg{position:absolute;inset:0;width:100%;height:100%}
+.mz{fill:none;stroke:#b9b2d6;stroke-width:.8;stroke-dasharray:2 1.6;opacity:.45}
+.mz.on{stroke:#ff6b3d;stroke-width:1.8;stroke-dasharray:none;opacity:1;filter:drop-shadow(0 0 1.5px #fff)}
+.mtip{display:flex;flex-direction:column;gap:4px;min-width:0;font-size:14px;line-height:1.35}
+.mtip b{font-size:16px;color:var(--p)}
+.mtip small{color:var(--mu);font-size:12px}
+@media (max-width:380px){.mfig{width:110px;height:110px}.mfig .mimg{width:110px!important;height:110px!important}.mtip{font-size:13px}.mtip small{display:none}}
+.msil{width:1.6em;height:1.6em;display:inline-block;vertical-align:top;margin:-.22em 0 -.18em}
 </style>
 </head>
 <body>
@@ -302,11 +351,20 @@ function hcConnect(){
    .then(function(st){S.hc=S.hc||{};S.hc.on=(st.readAuthorized||[]).length>0;S.hc.granted=st.readAuthorized||[];if(!S.hc.on)hcErr='No diste permisos. Puedes activarlos en Ajustes de Health Connect.';persist();return hcSync();})
    .catch(function(e){hcErr=(e&&e.message)||'No se pudo conectar.';persist();});
 }
+// Resultado de la conexión: error claro y salida a los Ajustes de Health Connect (Android deja de mostrar el permiso tras dos rechazos)
+function hcHelp(){
+  if(!hcErr||hcBusy)return '';
+  var noHC=/no está disponible|not available|não está disponível/i.test(hcErr);
+  return '<div class="alert" style="margin:10px 0 0">'+esc(hcErr)+'</div>'+
+   (noHC?'<button class="btn sec sm" style="margin-top:8px;width:100%" data-act="hcstore">'+T('Instalar Health Connect')+'</button>':
+    '<button class="btn sec sm" style="margin-top:8px;width:100%" data-act="hcset">⚙️ '+T('Abrir ajustes de Health Connect')+'</button><p class="mu" style="font-size:12px;margin:6px 2px 0">'+T('Allí entra a Permisos de apps → Michi Salud → Permitir todo. Luego vuelve y toca Conectar otra vez.')+'</p>');
+}
+function hcImpTxt(){var im=(S.hc&&S.hc.imp)||{},a=[];if(im.w)a.push((U()?Math.round(im.w*LB*10)/10:im.w)+' '+uW());if(im.h)a.push(im.h+' cm');if(im.steps)a.push(im.steps+' '+T('pasos/día'));return a.length?'<div class="mu" style="margin-top:4px">'+T('Traje')+': '+a.join(' · ')+'</div>':'';}
 function hcImport(){
   if(!Health)return;hcErr='';hcBusy=true;render();
   var now=new Date(),far=new Date(now-5*365*864e5),safe=function(p){return p.then(function(x){return x;},function(){return null;});};
   Health.isAvailable().then(function(a){if(!a.available)throw{message:T('Health Connect no está disponible en este teléfono. Instálalo desde la Play Store.')};return Health.requestAuthorization({read:HC_READ,write:['dietaryWater'],requestHistoryAccess:true});})
-   .then(function(st){S.hc=S.hc||{};S.hc.granted=st.readAuthorized||[];S.hc.on=S.hc.granted.length>0;if(!S.hc.on)throw{message:T('No diste permisos. Puedes activarlos en Ajustes de Health Connect.')};
+   .then(function(st){S.hc=S.hc||{};S.hc.granted=st.readAuthorized||[];S.hc.on=S.hc.granted.length>0;if(!S.hc.on)throw{message:T('Health Connect no mostró el permiso o no lo aceptaste.')};
      return Promise.all([safe(Health.readSamples({dataType:'weight',startDate:iso(far),endDate:iso(now),limit:1,ascending:false})),safe(Health.readSamples({dataType:'height',startDate:iso(far),endDate:iso(now),limit:1,ascending:false})),
        safe(Health.queryAggregated({dataType:'steps',startDate:iso(new Date(dayStart()-14*864e5)),endDate:iso(dayStart()),bucket:'day',aggregation:'sum'}))]);})
    .then(function(r){var im={},w=r[0]&&r[0].samples&&r[0].samples[0],h=r[1]&&r[1].samples&&r[1].samples[0],ss=r[2]&&r[2].samples?r[2].samples.filter(function(x){return x.value>0;}):[];
@@ -497,6 +555,23 @@ function fW(kg){return nf(rW(kg),1)+' '+uW();}
 function fR(r){return U()?String(Math.round(r*LB*10)/10):String(r).replace('.',',');}
 function fH(cm){if(!U())return cm+' cm';var i=Math.round(cm/2.54);return Math.floor(i/12)+'′ '+(i%12)+'″';}
 var I18N={
+"Justo debajo de la nuez, con la cinta horizontal.":["Just below the Adam’s apple, tape level.", "Logo abaixo do pomo de Adão, com a fita na horizontal."],
+"A la altura de los pezones, después de soltar el aire normal.":["At nipple level, after breathing out normally.", "Na altura dos mamilos, depois de soltar o ar normalmente."],
+"En el punto medio entre la última costilla y la parte de arriba del hueso de la cadera, al soltar el aire (referencia de la OMS).":["Midway between your lowest rib and the top of your hip bone, after breathing out (WHO method).", "No ponto médio entre a última costela e o topo do osso do quadril, ao soltar o ar (referência da OMS)."],
+"Alrededor de la parte más ancha de los glúteos, con los pies juntos.":["Around the widest part of the buttocks, feet together.", "Em volta da parte mais larga dos glúteos, com os pés juntos."],
+"Brazo relajado, en el punto medio entre el hombro y el codo.":["Arm relaxed, midway between shoulder and elbow.", "Braço relaxado, no ponto médio entre o ombro e o cotovelo."],
+"En la parte más ancha del muslo, justo debajo del glúteo.":["At the widest part of the thigh, just below the buttock.", "Na parte mais larga da coxa, logo abaixo do glúteo."],
+"En la parte más ancha de la pantorrilla.":["At the widest part of the calf.", "Na parte mais larga da panturrilha."],
+"Toca cada medida y Mochi te muestra dónde va la cinta.":["Tap each measurement and Mochi shows where the tape goes.", "Toque em cada medida e o Mochi mostra onde vai a fita."],
+"Cerrar":["Close","Fechar"],
+"Dispositivos conectados con Health Connect.":["Devices connected with Health Connect.", "Dispositivos conectados ao Health Connect."],
+"Instalar Health Connect":["Install Health Connect", "Instalar o Health Connect"],
+"Abrir ajustes de Health Connect":["Open Health Connect settings", "Abrir configurações do Health Connect"],
+"Allí entra a Permisos de apps → Michi Salud → Permitir todo. Luego vuelve y toca Conectar otra vez.":["There go to App permissions → Michi Salud → Allow all. Then come back and tap Connect again.", "Lá entre em Permissões de apps → Michi Salud → Permitir tudo. Depois volte e toque em Conectar de novo."],
+"pasos/día":["steps/day", "passos/dia"],
+"Traje":["Imported", "Importei"],
+"No pude abrir Health Connect. Ábrelo desde Ajustes del teléfono → Salud o busca \"Health Connect\".":["I couldn’t open Health Connect. Open it from phone Settings → Health or search \"Health Connect\".", "Não consegui abrir o Health Connect. Abra em Configurações do telefone → Saúde ou procure \"Health Connect\"."],
+"Health Connect no mostró el permiso o no lo aceptaste.":["Health Connect didn’t show the permission or you didn’t accept it.", "O Health Connect não mostrou a permissão ou você não aceitou."],
 "Escuchando… habla ahora":["Listening… speak now", "Ouvindo… fale agora"],
 "Activa el permiso del micrófono para registrar con la voz.":["Turn on the microphone permission to log by voice.", "Ative a permissão do microfone para registrar por voz."],
 "Este teléfono no permite dictar aquí. Usa el micrófono del teclado.":["This phone doesn’t allow dictation here. Use the keyboard’s microphone.", "Este telefone não permite ditar aqui. Use o microfone do teclado."],
@@ -1219,7 +1294,7 @@ var STEPS=[
     return '<div class="card center" style="margin-top:6px"><div style="font-size:40px">⌚ ❤️ ⚖️</div><b>Health Connect · Samsung Health · Google Fit</b><p class="mu" style="font-size:15px;margin:8px 0 12px">Si la conectas, traigo tu peso, estatura y actividad para completar tu plan.</p>'+
      (im?'<div class="found">'+(im.w?'<div>✓ '+T('Peso')+': '+fW(im.w)+'</div>':'')+(im.h?'<div>✓ '+T('Estatura')+': '+fH(im.h)+'</div>':'')+(im.steps?'<div>✓ '+T('Pasos promedio')+': '+im.steps.toLocaleString(LOC())+'/'+T('día')+'</div>':'')+'</div>':
       NATIVE?'<button class="btn" data-act="hcimp"'+(hcBusy?' disabled':'')+'>'+T(hcBusy?'Trayendo tus datos…':'Conectar y traer mis datos')+'</button>':'<div class="mu">Disponible en la app instalada en tu celular.</div>')+
-     (hcErr?'<div class="alert" style="margin:10px 0 0">'+esc(hcErr)+'</div>':'')+'</div><p class="mu center">Si no usas ninguna, toca Continuar y llenas tú los datos.</p>';},ok:function(){return true;}},
+     hcHelp()+'</div><p class="mu center">Si no usas ninguna, toca Continuar y llenas tú los datos.</p>';},ok:function(){return true;}},
   {q:'¿Cómo te identificas?',key:'sex',body:function(){return [['M','Masculino','Mochi'],['F','Femenino','Michi']].map(function(o){return '<button class="opt'+(tmp.sex===o[0]?' on':'')+'" data-o="'+o[0]+'" style="padding:10px 20px">'+cat(84,0,null,0,o[0])+'<span>'+o[1]+'<br><span class="mu" style="font-weight:500">'+o[2]+'</span></span><span class="ck">✓</span></button>';}).join('');},ok:function(){return tmp.sex!=null;}},
   {intro:true,body:function(){return '<div class="center fade" style="margin-top:8vh">'+owl(170)+'<div class="bub np" style="display:inline-block;font-size:22px;padding:20px 24px;margin-top:26px;line-height:1.3">🩺 '+T('Si ya consultaste a tu médico y tienes tu protocolo, te ayudo a llevar tu registro con tus datos.')+'</div></div>';},ok:function(){return true;}},
   optStep('¿Dónde estás en tu tratamiento?','stage',[['using','Ya estoy usando GLP-1','✨'],['start','Quiero comenzar con GLP-1','▶️'],['none','No uso medicamento','🥗']]),
@@ -1245,7 +1320,7 @@ var STEPS=[
   {q:'El sueño, el descanso y la actividad física son clave para tu salud',body:function(){return '<div class="card"><div style="font-size:30px;text-align:center">😴 🏃 ⌚</div><p class="mu" style="font-size:15px;margin:8px 0 12px">'+T('Dormir 7 horas o más y moverte cada día te ayudan a bajar grasa y no músculo. Dime tu horario de sueño:')+'</p>'+
     '<div class="grid2">'+field(T('Me acuesto'),'<input id="ob-bed" type="time" value="'+(tmp.bed||'22:30')+'">')+field(T('Me levanto'),'<input id="ob-wake" type="time" value="'+(tmp.wake||'06:30')+'">')+'</div></div>'+
     '<label class="okl"><input type="checkbox" id="ob-dev"'+(tmp.dev?' checked':'')+'><span>'+T('Autorizo usar mis datos de sueño, actividad y peso de mis apps y dispositivos (reloj, anillo, báscula u otros).')+'</span></label>'+
-    (NATIVE?'<button class="btn sec" data-act="hcimp"'+(hcBusy?' disabled':'')+'>⌚ '+T(hcBusy?'Trayendo tus datos…':'Conectar mis dispositivos')+'</button>':'')+'<p class="mu center" style="font-size:13px">'+T('Puedes cambiarlo cuando quieras en Mi plan.')+'</p>';},
+    (NATIVE?(S.hc&&S.hc.on?'<div class="okbox">✓ '+T('Dispositivos conectados con Health Connect.')+hcImpTxt()+'</div>':'<button class="btn sec" data-act="hcimp"'+(hcBusy?' disabled':'')+'>⌚ '+T(hcBusy?'Trayendo tus datos…':'Conectar mis dispositivos')+'</button>')+hcHelp():'')+'<p class="mu center" style="font-size:13px">'+T('Puedes cambiarlo cuando quieras en Mi plan.')+'</p>';},
     read:function(){tmp.bed=$('ob-bed').value||'22:30';tmp.wake=$('ob-wake').value||'06:30';tmp.dev=$('ob-dev').checked;},ok:function(){return true;}},
   {intro:true,body:function(){var P=plan({sex:tmp.sex,age:tmp.age,h:tmp.h,act:tmp.act,target:tmp.target,rate:tmp.rate},tmp.w);return '<div class="center fade" style="margin-top:3vh">'+cat(120,0,'sed',0)+'<h1 style="font-size:26px;margin:12px 6px 4px">💧 '+T('Siempre te recordaremos tomar agua')+'</h1><p class="mu" style="font-size:16px;margin:0 0 12px">'+Tf('Tu meta: {0} L al día',[nf(P.water,1)])+'</p></div>'+
     '<div class="card"><b>'+T('Sugerencias para que sea más fácil')+'</b><ul style="margin:8px 0 0 18px;padding:0">'+H2OTIPS.map(function(t){return '<li style="margin:6px 0">'+T(t)+'</li>';}).join('')+'</ul></div>';},ok:function(){return true;}},
@@ -1295,7 +1370,7 @@ function vOnb(){
   var ok=s.ok();
   return '<div class="ob"><div class="row">'+(step>0?'<button class="back" data-ob="-1">‹</button>':'<div style="height:44px"></div>')+langPill()+'</div>'+
     (s.intro||s.summary?'':'<div class="prog"><i style="width:'+(vis/tot*100)+'%"></i></div>')+
-    '<div class="body fade">'+(s.q?'<div class="ask">'+owl(64)+'<div class="bub">'+qText(s)+'</div></div>':'')+s.body()+'</div>'+
+    '<div class="body fade">'+s.body()+'</div>'+
     (s.nofoot?'':'<div class="foot"><button class="btn" data-ob="1"'+(ok?'':' disabled')+'>'+T(s.cta||'Continuar')+' ›</button></div>')+'</div>';
 }
 function planSummary(t){
@@ -1334,7 +1409,7 @@ function vInicio(){
   var due=mealSched().filter(function(m){return hh>=m[0]+m[1]/60+1.5;}),missing=due.filter(function(m){return !mealsAfter(t,m[0]-2);}),lazy=missing.length?missing[missing.length-1][2]:'';
   var hr=new Date().getHours(),greet=hr<12?'Buenos días':hr<19?'Buenas tardes':'Buenas noches';
   return '<div class="top"><div><h1>Hoy</h1><div class="mu">'+new Date().toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})+'</div></div><button class="x" data-tab="perfil">'+IC.gear+'</button></div>'+alerts()+
-  (lazy?'<div class="card row mood zz">'+cat(84,lvl(),'zz',prog())+'<div class="f"><b>'+T('Mochi se quedó sin energía')+'</b><div class="mu">'+T('Registra tu '+lazy+' para recargarlo.')+'</div><div class="row" style="margin-top:10px;gap:6px"><button class="btn sm" data-m="meal" data-cam="1">📷 '+T('Foto')+'</button><button class="btn sec sm" data-m="meal">✏️ '+T('Escribir')+'</button><button class="btn sec sm" data-m="meal" data-voz="1">🎤 '+T('Hablar')+'</button></div></div></div>':'')+
+  (lazy?'<div class="card row mood zz">'+cat(84,lvl(),'zz',prog())+'<div class="f"><b>'+T('Mochi se quedó sin energía')+'</b><div class="mu">'+T('Registra tu '+lazy+' para recargarlo.')+'</div><div class="row" style="margin-top:10px;gap:6px"><button class="btn sm" data-m="meal" data-cam="1"><span>📷</span>'+T('Foto')+'</button><button class="btn sec sm" data-m="meal"><span>✏️</span>'+T('Escribir')+'</button><button class="btn sec sm" data-m="meal" data-voz="1"><span>🎤</span>'+T('Hablar')+'</button></div></div></div>':'')+
   '<div class="card hero" style="color:#fff"><div class="row"><div class="f"><div style="opacity:.85;font-size:14px">'+greet+'</div><h3 style="font-size:22px">'+esc(S.name)+'</h3>'+
    '<div class="row" style="margin-top:12px;gap:18px"><div><div style="opacity:.8;font-size:12px">Peso actual</div><b style="font-size:20px">'+fW(cw)+'</b></div><div><div style="opacity:.8;font-size:12px">Meta</div><b style="font-size:20px">'+fW(S.prof.target)+'</b></div></div></div>'+cat(96,lvl(),lazy||shortSleep()?'zz':sed?'sed':null,prog())+'</div>'+
    '<div class="bar" style="background:rgba(255,255,255,.25);margin-top:14px"><i style="width:'+pct+'%;background:#fff"></i></div><div style="font-size:12px;opacity:.9;margin-top:6px">'+Math.round(pct)+'% del camino · faltan '+fW(Math.max(0,cw-S.prof.target))+'</div><div style="font-size:12px;margin-top:8px;background:rgba(255,255,255,.16);border-radius:10px;padding:8px 10px">'+mface(18)+' '+T('Nivel')+' '+(lvl()+1)+'/5 · '+T(LVLTXT[lvl()])+(toNext()>0?' '+Tf('Faltan {0} para el siguiente nivel.',[fW(toNext())]):'')+'</div>'+(streak()>1?'<div style="font-size:13px;font-weight:700;margin-top:8px">🔥 '+Tf('{0} días seguidos registrando',[streak()])+'</div>':'')+'</div>'+
@@ -1435,9 +1510,11 @@ function connCard(){
 
 /* ---------- Modales ---------- */
 function field(lbl,inp){return '<div style="margin-bottom:12px"><label class="l">'+lbl+'</label>'+inp+'</div>';}
+// Ícono de Medidas: silueta con cinta métrica en la cintura
+var MSIL='<svg class="msil" viewBox="4 1 24 30" aria-hidden="true"><circle cx="16" cy="5" r="3.2" fill="#5b3df5"/><path d="M10.5 10.5c0-1.4 1.1-2.3 2.5-2.3h6c1.4 0 2.5.9 2.5 2.3v7.2c0 .8-.5 1.4-1.2 1.6l-.6 9.4c-.1.9-.8 1.5-1.7 1.5h-.9c-.6 0-1.1-.5-1.1-1.1V21h-.4v8.1c0 .6-.5 1.1-1.1 1.1h-.9c-.9 0-1.6-.6-1.7-1.5l-.6-9.4c-.7-.2-1.2-.8-1.2-1.6z" fill="#8b5cf6"/><path d="M7.5 10.6c-.9.5-1.4 1.4-1.3 2.4l.7 5.6" stroke="#8b5cf6" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M24.5 10.6c.9.5 1.4 1.4 1.3 2.4l-.7 5.6" stroke="#8b5cf6" stroke-width="2.2" stroke-linecap="round" fill="none"/><rect x="8.6" y="14.2" width="14.8" height="3.4" rx="1.2" fill="#ffc83d" stroke="#e0a100" stroke-width=".5"/><path d="M10.6 14.4v1.3M12.6 14.4v2M14.6 14.4v1.3M16.6 14.4v2M18.6 14.4v1.3M20.6 14.4v2" stroke="#7a5200" stroke-width=".5"/><path d="M23.2 16.6c1.6.2 2.6 1.3 2.4 2.8-.1 1.2-1 2-2.2 2.1" stroke="#ffc83d" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>';
 function vModal(){
   var m=modal,h='',t=today();
-  if(m==='menu') h='<h3 style="margin-bottom:14px">¿Qué quieres registrar?</h3><div class="grid3">'+[['meal','🍽️','Comida'],['dose','💉','Aplicación'],['weight','⚖️','Peso'],['sym','🩺','Síntoma'],['water','💧','Agua'],['sleep','🌙','Sueño'],['inv','📦','Inventario'],['meas','📏','Medidas'],['bowel','🚽','Deposición'],['supp','💊','Suplementos'],['fast','⏳','Ayuno'],['vial','🧪','Calculadora']].map(function(x){return '<button class="act" data-m="'+x[0]+'"><span>'+x[1]+'</span>'+x[2]+'</button>';}).join('')+'</div>';
+  if(m==='menu') h='<h3 style="margin-bottom:14px">¿Qué quieres registrar?</h3><div class="grid3">'+[['meal','🍽️','Comida'],['dose','💉','Aplicación'],['weight','⚖️','Peso'],['sym','🩺','Síntoma'],['water','💧','Agua'],['sleep','🌙','Sueño'],['inv','📦','Inventario'],['meas',MSIL,'Medidas'],['bowel','🚽','Deposición'],['supp','💊','Suplementos'],['fast','⏳','Ayuno'],['vial','🧪','Calculadora']].map(function(x){return '<button class="act" data-m="'+x[0]+'"><span>'+x[1]+'</span>'+x[2]+'</button>';}).join('')+'</div>';
   if(m==='lvl'){var L=lvl();h='<div class="center fade">'+cat(170,L)+'<h3 style="font-size:24px;margin:6px 0">'+T('¡Mochi subió al nivel')+' '+(L+1)+'!</h3><p class="mu" style="font-size:16px">'+T(LVLTXT[L])+'</p><button class="btn" data-close="1">'+T('¡Vamos!')+'</button></div>';}
   if(m==='auth'){var up=tmp.am==='up';h='<h3 style="margin-bottom:14px">'+(up?'Crear cuenta':'Entrar')+'</h3>'+field('Correo','<input id="au-e" type="email" autocomplete="email" inputmode="email">')+field('Contraseña','<input id="au-p" type="password" autocomplete="'+(up?'new-password':'current-password')+'" placeholder="'+(up?'Mínimo 6 caracteres':'')+'">')+
     '<div class="mu center" id="au-msg" style="min-height:20px;margin-bottom:8px"></div><button class="btn" data-act="'+(up?'signup':'signin')+'">'+(up?'Crear cuenta':'Entrar')+'</button>'+(up?'':'<button class="link2" data-act="reset">Olvidé mi contraseña</button>')+'<button class="link2" data-m="auth" data-am="'+(up?'in':'up')+'">'+(up?'¿Ya tienes cuenta? Entra':'¿No tienes cuenta? Créala')+'</button>';}
@@ -1467,7 +1544,7 @@ function vModal(){
     '<ul class="pwl">'+['IA de Mochi sin quedarte corto: hasta 80 consultas al día','Calorías y nutrientes desde una foto de tu plato','Planes de comida y recetas a tu medida','Comidas escritas calculadas con IA, más precisas'].map(function(x){return '<li>'+esc(T(x))+'</li>';}).join('')+'</ul>'+
     '<div class="center"><div class="pwp">USD 2,99<span> / '+T('mes')+'</span></div><p class="mu" style="margin:2px 0 12px">'+T('Cancela cuando quieras.')+'</p></div>'+
     '<div class="mu center" id="pw-msg" style="min-height:20px;margin-bottom:8px"></div><button class="btn" data-act="buy">'+T('Suscribirme')+'</button><button class="link2" data-close="1">'+T('Ahora no')+'</button>';
-  return '<div class="ov" data-close="1"><div class="sheet fade"><div class="grab"></div>'+h+'</div></div>';
+  return '<div class="ov" data-close="1"><div class="sheet fade"><div class="grab"></div><button class="mx" data-close="1" aria-label="'+T('Cerrar')+'">✕</button>'+h+'</div></div>';
 }
 
 
@@ -1495,10 +1572,22 @@ function measCard(){
   var cp=l.filter(function(x){return x.cin!=null;}).map(function(x){return{d:x.d,v:x.cin};});
   return h+(cp.length>1?'<div class="mu" style="margin-top:8px;font-size:12px">'+T('Cintura')+'</div>'+lineChart(cp,fL,'#5b3df5'):'')+'<button class="link" data-act="measdel" style="padding-left:0">'+T('Borrar la última medición')+'</button></div>';
 }
+// Guía de medidas: Mochi muestra dónde va la cinta. Zonas en coordenadas 0-100 sobre su figura.
+var MZ={cue:[50,33,15,2.6],pec:[50,44,27,3.6],cin:[50,58,30,3.8],cad:[50,72,29,3.8],bri:[79,52,5,2.4],brd:[21,52,5,2.4],mui:[64,85,10,2.6],mud:[36,85,10,2.6],pai:[66,93,6.5,2],pad:[34,93,6.5,2]};
+var MTIP={cue:'Justo debajo de la nuez, con la cinta horizontal.',pec:'A la altura de los pezones, después de soltar el aire normal.',cin:'En el punto medio entre la última costilla y la parte de arriba del hueso de la cadera, al soltar el aire (referencia de la OMS).',cad:'Alrededor de la parte más ancha de los glúteos, con los pies juntos.',bri:'Brazo relajado, en el punto medio entre el hombro y el codo.',brd:'Brazo relajado, en el punto medio entre el hombro y el codo.',mui:'En la parte más ancha del muslo, justo debajo del glúteo.',mud:'En la parte más ancha del muslo, justo debajo del glúteo.',pai:'En la parte más ancha de la pantorrilla.',pad:'En la parte más ancha de la pantorrilla.'};
+var measOn='cin';
+function measGuide(){
+  var z=MZ[measOn],name=(MEAS.filter(function(m){return m[0]===measOn;})[0]||['',''])[1];
+  return '<div class="mguide"><div class="mfig">'+cat(150,0,null,0)+'<svg viewBox="0 0 100 100" aria-hidden="true">'+
+   Object.keys(MZ).map(function(k){var q=MZ[k],on=k===measOn;return '<ellipse cx="'+q[0]+'" cy="'+q[1]+'" rx="'+q[2]+'" ry="'+q[3]+'" class="'+(on?'mz on':'mz')+'"/>';}).join('')+
+   '</svg></div><div class="mtip"><b>📏 '+T(name)+'</b><span>'+T(MTIP[measOn])+'</span><small>'+T('Toca cada medida y Mochi te muestra dónde va la cinta.')+'</small></div></div>';
+}
+function measPick(k){if(!MZ[k]||k===measOn)return;measOn=k;var g=document.querySelector('.mguide');if(g)g.outerHTML=measGuide();}
+document.addEventListener('focusin',function(e){if(e.target.id&&e.target.id.indexOf('ms-')===0)measPick(e.target.id.slice(3));});
 function measModal(){
   var l=measSorted(),last=l[l.length-1]||{};
   return '<h3 style="margin-bottom:4px">'+T('Medidas corporales')+'</h3><div class="mu" style="margin-bottom:12px">'+(U()?T('En pulgadas. Mide con cinta, sin apretar.'):T('En centímetros. Mide con cinta, sin apretar.'))+'</div>'+
-   field(T('Fecha'),'<input id="f-d" type="date" value="'+today()+'">')+'<div class="grid2">'+MEAS.map(function(m){return field(T(m[1]),'<input id="ms-'+m[0]+'" type="number" step="0.1" inputmode="decimal" placeholder="'+(last[m[0]]!=null?(U()?nf(last[m[0]]/2.54,1):nf(last[m[0]],1)):'')+'">');}).join('')+'</div><button class="btn" data-act="meas">'+T('Guardar')+'</button>';
+   measGuide()+field(T('Fecha'),'<input id="f-d" type="date" value="'+today()+'">')+'<div class="grid2">'+MEAS.map(function(m){return field(T(m[1]),'<input id="ms-'+m[0]+'" type="number" step="0.1" inputmode="decimal" placeholder="'+(last[m[0]]!=null?(U()?nf(last[m[0]]/2.54,1):nf(last[m[0]],1)):'')+'">');}).join('')+'</div><button class="btn" data-act="meas">'+T('Guardar')+'</button>';
 }
 // Calculadora de viales (mg ↔ unidades de jeringa U-100). Solo convierte: no recomienda dosis.
 function vialModal(){
@@ -1949,9 +2038,10 @@ document.addEventListener('click',function(e){
   if(a==='logout'){setAU(null);AIQ=null;render();return;}
   if(a==='reonb'){startOnb();return;}
   if(a==='hc'){hcConnect();return;}
-  if(a==='hcimp'){hcImport();return;}
+  if(a==='hcimp'){if(!S.onb&&STEPS[step]&&STEPS[step].read)STEPS[step].read();tmp.dev=true;hcImport();return;}
+  if(a==='hcstore'){window.open('https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata','_system');return;}
   if(a==='hcsync'){hcSync();persist();return;}
-  if(a==='hcset'){Health.openHealthConnectSettings().catch(function(){});return;}
+  if(a==='hcset'){Health.openHealthConnectSettings().catch(function(){hcErr=T('No pude abrir Health Connect. Ábrelo desde Ajustes del teléfono → Salud o busca "Health Connect".');render();});return;}
   if(a==='hcoff'){S.hc={on:false};save();return;}
   if(a==='notif'){if(S.notif){S.notif=false;save();return;}LN.requestPermissions().then(function(p){S.notif=p.display==='granted';save();}).catch(function(){});return;}
   if(a==='clearchat'){chat=[];try{localStorage.removeItem('mt-chat');}catch(e){}render();return;}
@@ -1993,7 +2083,7 @@ render();
 fbPull();
 aiStatus();
 if(NATIVE){
-  AppP.addListener('resume',function(){hcSync();});
+  AppP.addListener('resume',function(){if(hcErr&&!(S.hc&&S.hc.on)&&Health)Health.checkAuthorization({read:HC_READ,write:['dietaryWater']}).then(function(st){if((st.readAuthorized||[]).length){hcErr='';hcImport();}}).catch(function(){});else hcSync();});
   hcSync();setInterval(hcSync,10*6e4);
   if(S.notif&&LN)LN.checkPermissions().then(function(p){if(p.display!=='granted')return LN.requestPermissions();}).then(scheduleReminders).catch(function(){});
   render();
