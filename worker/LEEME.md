@@ -19,9 +19,9 @@ Guarda tu clave de Anthropic en el servidor. Los usuarios solo necesitan su cuen
 
 ## Cupos y controles de costo
 Se ajustan en `wrangler.toml` → `[vars]`:
-- **Gratis:** `FREE_DAILY` = 10 consultas por día por usuario (se renuevan a medianoche, hora de Colombia).
+- **Gratis:** `FREE_DAILY` = 8 consultas de chat y `FREE_PHOTOS` = 2 fotos (comida o báscula) por día por usuario, con contadores separados (se renuevan a medianoche, hora de Colombia).
 - **Tope mensual de los gratis:** `FREE_BUDGET_USD` = 5. Se suma el gasto real (tokens que reporta Anthropic) de todos los usuarios gratis; al llegar a USD 5 en el mes, la IA gratis se pausa hasta el mes siguiente y la app ofrece Premium.
-- **Premium:** `PREMIUM_DAILY` = 80 por día. Fotos (comida y báscula) y planes/recetas son solo Premium; el servidor detecta las fotos, no confía en la app.
+- **Premium:** `PREMIUM_DAILY` = 80 por día. Chat y fotos comparten el cupo de 80; planes/recetas son solo Premium. El servidor detecta las fotos, no confía en la app.
 - **Dar Premium a mano** (mientras se conecta el pago): pon el UID de Firebase del usuario en `PREMIUM_UIDS` (separados por coma). El UID está en Firebase → Authentication → Users.
 - Modelo `MODEL` (Claude Haiku 5.5) y máximo 1.200 tokens por respuesta, fijados por el servidor.
 - Solo responde a usuarios con sesión iniciada.

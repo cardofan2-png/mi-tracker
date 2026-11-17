@@ -4,7 +4,8 @@ compatibility_date = "2026-11-01"
 
 [vars]
 MODEL = "claude-haiku-5-5"
-FREE_DAILY = "10"        # consultas por día, usuario gratis
+FREE_DAILY = "8"         # consultas de chat por día, usuario gratis
+FREE_PHOTOS = "2"        # fotos de comida/báscula por día, usuario gratis (8 + 2 = 10)
 PREMIUM_DAILY = "80"     # consultas por día, usuario Premium
 FREE_BUDGET_USD = "5"    # gasto máximo al mes entre TODOS los usuarios gratis
 PRICE_IN = "0.10"        # USD por millón de tokens de entrada (Haiku 5.5)
