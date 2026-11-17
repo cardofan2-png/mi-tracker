@@ -38,6 +38,10 @@ const marcas = [
   ['Servidor de IA conectado', app, "MS_AI='https://michi-salud-ia.cardofan2.workers.dev/'"],
   ['iPhone: pantalla de inicio', app, 'apple-mobile-web-app-capable'],
   ['Android: cámara y voz visibles', man, 'android.media.action.IMAGE_CAPTURE'],
+  ['Lector tolerante de la IA', app, 'function aiObj(t)'],
+  ['Nutrientes con nombres en ES/EN y listas', app, 'function normMeal(o)'],
+  ['Instrucción de solo JSON a la IA', app, 'Respondes ÚNICAMENTE con un objeto JSON válido'],
+  ['Versión visible en Perfil', app, '<span>Versión</span> __VERSION__'],
 ];
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }

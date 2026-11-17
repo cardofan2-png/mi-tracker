@@ -323,11 +323,11 @@ var pwWhy='';
 function pwText(c){return c==='limit'?Tf(PWMSG.limit,[AIQ&&AIQ.max||8]):c==='limitf'?Tf(PWMSG.limitf,[AIQ&&AIQ.fotos&&AIQ.fotos.max||2]):T(PWMSG[c]);}
 function paywall(why){pwWhy=why||'';modal='premium';render();}
 function isPW(e){return !!e&&(e.code==='limit'||e.code==='limitf'||e.code==='premium'||e.code==='budget');}
-function aiCall(msgs,max,kind){
+function aiCall(msgs,max,kind,sys){
   var am=msgs.map(function(x){return{role:x.role,content:typeof x.content==='string'?x.content:x.content.map(function(q){return q.img?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:q.img}}:{type:'text',text:q.text};})};});
   if(!MS_AI)return Promise.reject({code:'off',message:T('La IA de Mochi estará disponible muy pronto.')});
   if(!AU)return Promise.reject({code:'noauth',message:T('Crea tu cuenta o inicia sesión en Mi plan para hablar con')+' '+(isFem()?'Michi':'Mochi')+'.'});
-  return fbTok().then(function(t){return fetch(MS_AI,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+t},body:JSON.stringify({max_tokens:max||800,messages:am,kind:kind||undefined})});})
+  return fbTok().then(function(t){return fetch(MS_AI,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+t},body:JSON.stringify({max_tokens:max||800,messages:am,kind:kind||undefined,system:sys||undefined})});})
     .then(function(r){return r.json().catch(function(){return{};}).then(function(j){
       if(j.cupo){AIQ=AIQ||{ok:true};AIQ.premium=j.cupo.premium;AIQ.max=j.cupo.max;if(j.cupo.usados!=null)AIQ.usados=j.cupo.usados;if(j.cupo.fotos){AIQ.fotos=AIQ.fotos||{};AIQ.fotos.max=j.cupo.fotos.max;if(j.cupo.fotos.usados!=null)AIQ.fotos.usados=j.cupo.fotos.usados;}}
       if(r.status===401){setAU(null);AIQ=null;throw{code:'noauth',message:T('Tu sesión venció. Inicia sesión de nuevo en Mi plan.')};}
@@ -351,7 +351,8 @@ function imgB64(file){ // reduce la foto a 1024 px para enviarla rápido
 function makeLLM(){
   var f=function(msgs,o){return aiCall(msgs,800,o&&o.kind).then(function(t){if(o&&o.onText)o.onText({text:t});return{text:t};});};
   f.json=function(prompt,o){var imgs=(o&&o.images)||[];return Promise.all(imgs.map(imgB64)).then(function(bs){
-      return aiCall([{role:'user',content:bs.map(function(b){return{img:b};}).concat([{text:prompt}])}],600);}).then(function(t){var m=t.match(/\{[\s\S]*\}/);if(!m)throw{code:'parse'};return JSON.parse(m[0]);});};
+      return aiCall([{role:'user',content:bs.map(function(b){return{img:b};}).concat([{text:prompt}])}],1000,null,'Eres un nutricionista experto en comida latinoamericana. Respondes ÚNICAMENTE con un objeto JSON válido en una sola línea: sin texto antes ni después, sin markdown, con números (no rangos ni unidades).');})
+    .then(function(t){try{localStorage.setItem('mt-lastai',String(t).slice(0,2000));}catch(e){}return aiObj(t);});};
   f.limits=function(){return Promise.resolve({images:true});};
   return f;
 }
@@ -756,7 +757,7 @@ var I18N={
 'Te enviamos un correo para cambiar tu contraseña.':['We sent you an email to reset your password.','Enviamos um e-mail para você trocar a senha.'],'Ese correo ya tiene una cuenta.':['That email already has an account.','Esse e-mail já tem uma conta.'],
 'Correo o contraseña incorrectos.':['Wrong email or password.','E-mail ou senha incorretos.'],'Correo no válido.':['Invalid email.','E-mail inválido.'],'La contraseña debe tener al menos 6 caracteres.':['Password must be at least 6 characters.','A senha deve ter pelo menos 6 caracteres.'],
 'No se pudo completar. Revisa tu conexión.':['Couldn’t complete it. Check your connection.','Não foi possível concluir. Verifique sua conexão.'],'Las cuentas aún no están activadas en esta versión.':['Accounts aren’t enabled in this version yet.','As contas ainda não estão ativadas nesta versão.'],
-'Cuenta':['Account','Conta'],'Cerrar sesión':['Log out','Sair'],'Sincronizado en la nube':['Synced to the cloud','Sincronizado na nuvem'],'Sin cuenta: tus datos están solo en este teléfono.':['No account: your data is only on this phone.','Sem conta: seus dados estão só neste telefone.'],
+'Cuenta':['Account','Conta'],'Cerrar sesión':['Log out','Sair'],'Versión':['Version','Versão'],'Sincronizado en la nube':['Synced to the cloud','Sincronizado na nuvem'],'Sin cuenta: tus datos están solo en este teléfono.':['No account: your data is only on this phone.','Sem conta: seus dados estão só neste telefone.'],
 'Creando tu plan personalizado…':['Creating your personalized plan…','Criando seu plano personalizado…'],'Analizando tu perfil y respuestas':['Analyzing your profile and answers','Analisando seu perfil e respostas'],'Calculando metas y objetivos':['Calculating goals and targets','Calculando metas e objetivos'],'Finalizando tu plan':['Finishing your plan','Finalizando seu plano'],
 'Respaldado por la ciencia':['Backed by science','Respaldado pela ciência'],'Ecuación de gasto energético en reposo (Mifflin-St Jeor, 1990)':['Resting energy expenditure equation (Mifflin-St Jeor, 1990)','Equação de gasto energético em repouso (Mifflin-St Jeor, 1990)'],'Eficacia y riesgos de los GLP-1 (2025)':['Effectiveness and risks of GLP-1s (2025)','Eficácia e riscos dos GLP-1 (2025)'],
 'Progreso en fotos':['Progress photos','Progresso em fotos'],'Agregar foto':['Add photo','Adicionar foto'],'Las fotos se guardan solo en este teléfono.':['Photos are stored only on this phone.','As fotos ficam salvas só neste telefone.'],
@@ -1629,7 +1630,7 @@ function vPerfil(){
    '<h2>Metas diarias</h2>'+goalsGrid(P)+
    '<div class="card" style="margin-top:12px"><div class="mu">'+(P.hc?'⌚ '+Tf('Calculado con tu reloj: reposo + la mitad de tus {0} kcal activas promedio de los últimos 7 días.',[S.hc.avgActive])+' ':'')+Tf('Gastas unas <b>{0} kcal</b> al día. Al ritmo elegido llegarías a {1} hacia el <b>{2}</b>.',[P.tdee,fW(p.target),fmtY(P.eta)])+'</div></div>'+
    '<h2>Cuenta</h2><div class="card row"><span style="font-size:26px">☁️</span><div class="f">'+(AU?'<b>'+esc(AU.email)+'</b><div class="mu">Sincronizado en la nube</div>':'<div class="mu">Sin cuenta: tus datos están solo en este teléfono.</div>')+'</div>'+(AU?'<button class="btn sec sm" data-act="logout">Cerrar sesión</button>':'<button class="btn sm" data-m="auth" data-am="up">Crear cuenta</button>')+'</div>'+
-   connCard()+aiCard()+'<button class="btn" data-act="reonb" style="margin-top:8px">Rehacer mi plan</button>'+
+   connCard()+aiCard()+'<button class="btn" data-act="reonb" style="margin-top:8px">Rehacer mi plan</button><p class="mu center" style="font-size:12px;margin:10px 0 0"><span>Versión</span> __VERSION__</p>'+
    '<p class="mu center" style="margin:16px 10px">Estimaciones con la fórmula Mifflin-St Jeor. La dosis y el ritmo de tu tratamiento los define tu médico.</p>';
 }
 
@@ -2052,7 +2053,37 @@ function localEstimate(desc){
 }
 var toast=null,toastT=null;
 function autoAdd(m){S.meals.push(m);modal=null;toast='✓ '+esc(m.n)+' · '+m.k+' kcal · P '+m.p+' g';clearTimeout(toastT);toastT=setTimeout(function(){toast=null;var t=$('toast');if(t)t.remove();},6000);save();}
-function mealFrom(r,fallback){return{d:today(),t:nowT(),n:r.nombre||fallback,k:Math.round(num(r.kcal,0)),p:Math.round(num(r.proteina_g,0)),c:Math.round(num(r.carbohidratos_g,0)),f:Math.round(num(r.grasas_g,0)),fi:Math.round(num(r.fibra_g,0)),az:r.azucar_g==null?null:Math.round(num(r.azucar_g,0)),na:r.sodio_mg==null?null:Math.round(num(r.sodio_mg,0))};}
+// La IA a veces responde con texto, ```json, varios objetos, rangos ("450-550") o claves en inglés.
+// aiObj saca el objeto JSON útil de cualquier respuesta; normMeal lleva los nombres de campo a los de la app.
+function aiObj(t){
+  t=String(t||'').replace(/```(?:json)?/gi,'');var c=[],st=-1,dep=0,ins=false,es=false;
+  for(var i=0;i<t.length;i++){var ch=t[i];
+    if(ins){if(es)es=false;else if(ch==='\\')es=true;else if(ch==='"')ins=false;continue;}
+    if(ch==='"'){if(dep>0)ins=true;}else if(ch==='{'){if(dep===0)st=i;dep++;}else if(ch==='}'&&dep>0){dep--;if(dep===0)c.push(t.slice(st,i+1));}}
+  if(dep>0&&st>=0)c.push(t.slice(st)+'}'.repeat(dep)); // respuesta cortada
+  var out=null;
+  c.forEach(function(x){var o=null;try{o=JSON.parse(x);}catch(e){try{o=JSON.parse(x.replace(/,\s*([}\]])/g,'$1').replace(/:\s*"?(\d+)\s*,\s*(\d+)"?(?=\s*[,}])/g,':$1.$2'));}catch(e2){}}
+    if(o&&typeof o==='object'&&!Array.isArray(o)){if(!out||(!(normMeal(out).kcal>0)&&normMeal(o).kcal>0))out=o;}});
+  if(!out)throw{code:'parse',raw:t.slice(0,300)};return out;
+}
+var MKEYS={kcal:['kcal','calorias','calorías','calories','calorie','energia','energía','kcal_total','total_kcal','calorias_totales'],
+  proteina_g:['proteina_g','proteína_g','proteina','proteína','proteinas','proteínas','protein','protein_g'],
+  carbohidratos_g:['carbohidratos_g','carbohidratos','carbohidrato','carbos','carbs','carbs_g','carbohydrates','carbohydrates_g'],
+  grasas_g:['grasas_g','grasas','grasa','lipidos','lípidos','fat','fat_g','fats'],fibra_g:['fibra_g','fibra','fiber','fiber_g','fibre'],
+  azucar_g:['azucar_g','azúcar_g','azucar','azúcar','azucares','azúcares','sugar','sugar_g','sugars'],sodio_mg:['sodio_mg','sodio','sodium','sodium_mg']};
+function nval(v){if(v==null||typeof v==='object')return null;if(typeof v==='number')return v;var x=String(v).replace(/(\d),(\d)/g,'$1.$2'),m=x.match(/(\d+(?:\.\d+)?)\s*(?:-|–|a|to)\s*(\d+(?:\.\d+)?)/);if(m)return(+m[1]+ +m[2])/2;m=x.match(/\d+(?:\.\d+)?/);return m?+m[0]:null;}
+function pickK(o,keys){var lk={};Object.keys(o).forEach(function(k){lk[k.toLowerCase().trim()]=o[k];});for(var i=0;i<keys.length;i++){var v=nval(lk[keys[i]]);if(v!=null)return v;}return null;}
+function normMeal(o){
+  o=o||{};var tot=o.total||o.totales||o.totals||o.resumen||o.nutrientes||o.nutrition||o;if(typeof tot!=='object')tot=o;
+  var lo={};Object.keys(o).forEach(function(k){lo[k.toLowerCase()]=o[k];});var r={nombre:lo.nombre||lo.name||lo.descripcion||lo.descripción||lo.plato||tot.nombre};
+  Object.keys(MKEYS).forEach(function(k){var v=pickK(tot,MKEYS[k]);if(v==null&&tot!==o)v=pickK(o,MKEYS[k]);r[k]=v;});
+  var arr=o.alimentos||o.items||o.foods||o.componentes||o.ingredientes;
+  if(Array.isArray(arr)&&arr.length){
+    Object.keys(MKEYS).forEach(function(k){if(r[k]==null){var sm=0,any=false;arr.forEach(function(it){var v=it&&typeof it==='object'?pickK(it,MKEYS[k]):null;if(v!=null){sm+=v;any=true;}});if(any)r[k]=sm;}});
+    if(!r.nombre)r.nombre=arr.map(function(it){return it&&(it.nombre||it.name||it.alimento);}).filter(Boolean).join(', ');}
+  return r;
+}
+function mealFrom(r,fallback){r=normMeal(r);return{d:today(),t:nowT(),n:r.nombre||fallback,k:Math.round(num(r.kcal,0)),p:Math.round(num(r.proteina_g,0)),c:Math.round(num(r.carbohidratos_g,0)),f:Math.round(num(r.grasas_g,0)),fi:Math.round(num(r.fibra_g,0)),az:r.azucar_g==null?null:Math.round(num(r.azucar_g,0)),na:r.sodio_mg==null?null:Math.round(num(r.sodio_mg,0))};}
 function quickAdd(desc,msgEl,done){
   var local=function(why){var r=localEstimate(desc);if(r){if(done)done();autoAdd(mealFrom(r,desc));return true;}
     [].forEach.call(document.querySelectorAll('.sheet button[disabled],#qm'),function(x){x.disabled=false;});
@@ -2237,7 +2268,7 @@ document.addEventListener('change',function(e){
    .catch(function(err){if(fin&&!(err&&err.code==='nofood'))return;fin=true;clearTimeout(tmo);
      if(err&&(err.code==='noauth'||err.code==='off'))return phShow(esc(err.message));
      if(isPW(err))return phShow(esc(err.code==='premium'?T('Calcular desde la foto es Premium. Escribe qué es (ej: 2 arepas con queso) y lo calculo gratis.'):err.message)+PBTN);
-     phShow(esc(T(err&&err.code==='rate_limited'?'Demasiadas fotos seguidas, espera un momento.':err&&err.code==='nofood'?'No reconocí comida en la foto. Intenta con otra más cerca y con buena luz, o escríbelo a mano.':'No pude analizar la foto. Escríbelo a mano.'))+(err&&err.code==='api'&&err.message?'<br><small>('+esc(String(err.message).slice(0,80))+')</small>':''));});
+     phShow(esc(T(err&&err.code==='rate_limited'?'Demasiadas fotos seguidas, espera un momento.':err&&err.code==='nofood'?'No reconocí comida en la foto. Intenta con otra más cerca y con buena luz, o escríbelo a mano.':'No pude analizar la foto. Escríbelo a mano.'))+(err&&err.code==='parse'&&err.raw?'<br><small>('+esc(err.raw.slice(0,120))+')</small>':'')+(err&&err.code==='api'&&err.message?'<br><small>('+esc(String(err.message).slice(0,80))+')</small>':''));});
 });
 
 if(aiOn()){llm=makeLLM();ai=llm;}
