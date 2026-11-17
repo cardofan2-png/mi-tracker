@@ -582,6 +582,20 @@ function fW(kg){return nf(rW(kg),1)+' '+uW();}
 function fR(r){return U()?String(Math.round(r*LB*10)/10):String(r).replace('.',',');}
 function fH(cm){if(!U())return cm+' cm';var i=Math.round(cm/2.54);return Math.floor(i/12)+'′ '+(i%12)+'″';}
 var I18N={
+"La foto está tardando demasiado. Revisa tu conexión e inténtalo de nuevo, o escríbelo a mano.":["The photo is taking too long. Check your connection and try again, or type it in.", "A foto está demorando demais. Verifique sua conexão e tente de novo, ou escreva à mão."],
+"No reconocí comida en la foto. Intenta con otra más cerca y con buena luz, o escríbelo a mano.":["I couldn’t recognize food in the photo. Try another one closer and with good light, or type it in.", "Não reconheci comida na foto. Tente outra mais de perto e com boa luz, ou escreva à mão."],
+"Volver a autorizar y actualizar":["Authorize again and update", "Autorizar de novo e atualizar"],
+"Peso sano para tu estatura":["Healthy weight for your height", "Peso saudável para sua altura"],
+"peso de referencia":["reference weight", "peso de referência"],
+"Tienes {0} por encima del peso sano para tu estatura":["You are {0} above the healthy weight for your height", "Você está {0} acima do peso saudável para sua altura"],
+"Te recomendamos bajarlos antes de pasar a mantener: así reduces el riesgo cardiovascular y metabólico.":["We recommend losing it before switching to maintenance: it lowers your cardiovascular and metabolic risk.", "Recomendamos perdê-los antes de passar à manutenção: assim você reduz o risco cardiovascular e metabólico."],
+"Mejor bajar {0}":["Better to lose {0}", "Melhor perder {0}"],
+"Te faltan {0} para el peso sano de tu estatura":["You are {0} short of the healthy weight for your height", "Faltam {0} para o peso saudável da sua altura"],
+"Te recomendamos subirlos de forma gradual y consultar a tu médico: el bajo peso aumenta el riesgo de perder músculo y de desnutrición.":["We recommend gaining it gradually and checking with your doctor: being underweight raises the risk of muscle loss and malnutrition.", "Recomendamos ganhá-los aos poucos e consultar seu médico: o baixo peso aumenta o risco de perda de músculo e desnutrição."],
+"Mejor subir {0}":["Better to gain {0}", "Melhor ganhar {0}"],
+"Tu peso está dentro del rango sano para tu estatura. ¡Buen momento para mantenerlo!":["Your weight is within the healthy range for your height. A great time to maintain it!", "Seu peso está dentro da faixa saudável para sua altura. Ótimo momento para mantê-lo!"],
+"Mantener":["Maintain", "Manter"],
+"Si prefieres mantener tu peso actual, toca Continuar.":["If you’d rather maintain your current weight, tap Continue.", "Se preferir manter seu peso atual, toque em Continuar."],
 "Gratis":["Free", "Grátis"],
 "{0} al día":["{0} a day", "{0} por dia"],
 "Incluidas en las 80":["Included in the 80", "Incluídas nas 80"],
@@ -1303,9 +1317,22 @@ function goalEval(t){
 }
 function tgTxt(d){return gM()?(d<0?'+'+fW(-d):'—'):(d>0?'−'+fW(d):'—');}
 function tgCol(d){return gM()?(d<0?'var(--ok)':'var(--mu)'):(d>0?'var(--bad)':'var(--mu)');}
+// Peso sano según la estatura (OMS: IMC 18,5–24,9; referencia ≈ IMC 22, punto medio del rango)
+function wHealth(w,h){var h2=Math.pow(h/100,2),mn=Math.ceil(18.5*h2*10)/10,mx=Math.floor(24.9*h2*10)/10;return{mn:mn,mx:mx,opt:Math.round(22*h2),bmi:w/h2,over:Math.round(Math.max(0,w-mx)*10)/10,under:Math.round(Math.max(0,mn-w)*10)/10};}
+function wAdvice(H,cta){ // cta: acción de los botones ('setgoal' en el registro, 'goal2' en el inicio)
+  var rng='<p class="mu" style="font-size:13px;margin:8px 0 0">⚖️ '+T('Peso sano para tu estatura')+': <b>'+fW(H.mn)+' – '+fW(H.mx)+'</b> · '+T('peso de referencia')+' ≈ <b>'+fW(H.opt)+'</b> (IMC 22, OMS)</p>';
+  if(H.over>0)return '<div class="alert" style="margin:0">⚠️ <b>'+Tf('Tienes {0} por encima del peso sano para tu estatura',[fW(H.over)])+'</b> (IMC '+H.bmi.toFixed(1)+'). '+T('Te recomendamos bajarlos antes de pasar a mantener: así reduces el riesgo cardiovascular y metabólico.')+rng+'<button class="btn sm" style="display:block;margin-top:10px" data-act="'+cta+'" data-g="lose" data-kg="'+H.mx+'">⬇️ '+Tf('Mejor bajar {0}',[fW(H.over)])+'</button></div>';
+  if(H.under>0)return '<div class="alert" style="margin:0">⚠️ <b>'+Tf('Te faltan {0} para el peso sano de tu estatura',[fW(H.under)])+'</b> (IMC '+H.bmi.toFixed(1)+'). '+T('Te recomendamos subirlos de forma gradual y consultar a tu médico: el bajo peso aumenta el riesgo de perder músculo y de desnutrición.')+rng+'<button class="btn sm" style="display:block;margin-top:10px" data-act="'+cta+'" data-g="gain" data-kg="'+H.mn+'">⬆️ '+Tf('Mejor subir {0}',[fW(H.under)])+'</button></div>';
+  return '<div class="okbox" style="margin:0">✅ '+T('Tu peso está dentro del rango sano para tu estatura. ¡Buen momento para mantenerlo!')+rng+'</div>';
+}
+function keepCheck(){
+  return '<div class="center fade" style="margin-top:3vh">'+owl(110)+'<h1 style="margin:12px 10px 14px;font-size:26px">'+T('Mantener')+' '+fW(tmp.w)+'</h1></div>'+wAdvice(wHealth(tmp.w,tmp.h),'setgoal')+
+   '<p class="mu center" style="font-size:13px;margin-top:12px">'+T('Si prefieres mantener tu peso actual, toca Continuar.')+'</p>';
+}
 function keepCard(){ // Hábitos del National Weight Control Registry; recuperación tras suspender semaglutida: STEP 1 extensión
   var o=kOff(),out=Math.abs(o)>KEEPB,glp=S.tr.stage&&S.tr.stage!=='none';
-  return '<div class="card"><h3 style="margin:0 0 6px">⚖️ '+T('Tu plan de mantenimiento')+'</h3>'+
+  var H=wHealth(curW(),S.prof.h);
+  return '<div class="card"><h3 style="margin:0 0 6px">⚖️ '+T('Tu plan de mantenimiento')+'</h3>'+((H.over>0||H.under>0)?'<div style="margin-bottom:10px">'+wAdvice(H,'goal2')+'</div>':'')+
    (out?'<div class="alert" style="margin:0 0 10px">'+(o>0?T('Subiste más de 2 kg sobre tu peso de referencia. Vuelve unas semanas a un déficit suave (≈300 kcal/día) y más pasos hasta regresar al rango.'):T('Bajaste más de 2 kg bajo tu peso de referencia. Suma una porción extra al día hasta regresar al rango.'))+'</div>':'')+
    '<ul style="margin:0;padding-left:20px;list-style:disc;line-height:1.5;font-size:14px">'+
    ['Pésate 1 vez por semana, el mismo día y a la misma hora.','Si subes 1,5 kg sobre tu referencia, actúa esa misma semana.','Muévete unos 60 minutos al día (caminar cuenta).','Proteína en cada comida y fuerza 2 días por semana para cuidar el músculo.','Desayuna y mantén horarios de comida parecidos los fines de semana.'].map(function(x){return '<li>'+T(x)+'</li>';}).join('')+'</ul>'+
@@ -1405,8 +1432,8 @@ var STEPS=[
   {q:'¿Usas alguna app de salud?',body:function(){var im=S.hc&&S.hc.imp;
     return '<div class="card center" style="margin-top:6px"><div style="font-size:40px">⌚ ❤️ ⚖️</div><b>Health Connect · Samsung Health · Google Fit</b><p class="mu" style="font-size:15px;margin:8px 0 12px">Si la conectas, traigo tu peso, estatura y actividad para completar tu plan.</p>'+
      '<p class="mu" style="font-size:13px;margin:-4px 0 12px">'+T('¿Usas Google Fit? En Google Fit activa «Sincronizar con Health Connect» para que tus datos lleguen aquí.')+'</p>'+
-     (im?'<div class="found">'+(im.w?'<div>✓ '+T('Peso')+': '+fW(im.w)+'</div>':'')+(im.h?'<div>✓ '+T('Estatura')+': '+fH(im.h)+'</div>':'')+(im.steps?'<div>✓ '+T('Pasos promedio')+': '+im.steps.toLocaleString(LOC())+'/'+T('día')+'</div>':'')+'</div>':
-      '<button class="btn" data-act="hcimp"'+(hcBusy?' disabled':'')+'>🔐 '+T(hcBusy?'Trayendo tus datos…':'Autorizar y traer mis datos')+'</button>')+
+     (im?'<div class="found">'+(im.w?'<div>✓ '+T('Peso')+': '+fW(im.w)+'</div>':'')+(im.h?'<div>✓ '+T('Estatura')+': '+fH(im.h)+'</div>':'')+(im.steps?'<div>✓ '+T('Pasos promedio')+': '+im.steps.toLocaleString(LOC())+'/'+T('día')+'</div>':'')+'</div>':'')+
+      '<button class="btn" data-act="hcimp"'+(hcBusy?' disabled':'')+(im?' style="margin-top:10px"':'')+'>🔐 '+T(hcBusy?'Trayendo tus datos…':im?'Volver a autorizar y actualizar':'Autorizar y traer mis datos')+'</button>'+
      hcHelp()+'</div><p class="mu center">Si no usas ninguna, toca Continuar y llenas tú los datos.</p>';},ok:function(){return true;}},
   {q:'¿Cómo te identificas?',key:'sex',body:function(){return [['M','Masculino','Mochi'],['F','Femenino','Michi']].map(function(o){return '<button class="opt'+(tmp.sex===o[0]?' on':'')+'" data-o="'+o[0]+'" style="padding:10px 20px">'+cat(84,0,null,0,o[0])+'<span>'+o[1]+'<br><span class="mu" style="font-weight:500">'+o[2]+'</span></span><span class="ck">✓</span></button>';}).join('');},ok:function(){return tmp.sex!=null;}},
   {intro:true,body:function(){return '<div class="center fade" style="margin-top:8vh">'+owl(170)+'<div class="bub np" style="display:inline-block;font-size:22px;padding:20px 24px;margin-top:26px;line-height:1.3">🩺 '+T('Si ya consultaste a tu médico y tienes tu protocolo, te ayudo a llevar tu registro con tus datos.')+'</div></div>';},ok:function(){return true;}},
@@ -1421,6 +1448,7 @@ var STEPS=[
   {q:'¿Cuál es tu estatura?',body:function(){return hRuler(tmp.h||165);},read:function(){tmp.h=hVal();},ok:function(){return true;}},
   {q:'¿Cuál es tu peso actual?',body:function(){return wRuler(tmp.w||70);},read:function(){tmp.w=wVal();},ok:function(){return true;}},
   {q:'¿Cuál es tu objetivo?',key:'goal',body:function(){return [['lose','⬇️','Bajar de peso','Déficit calórico moderado'],['gain','⬆️','Ganar peso de forma saludable','Superávit moderado, proteína y fuerza'],['keep','↔️','Mantener mi peso','Plan para no subir ni recuperar lo perdido']].map(function(o){return '<button class="opt'+(tmp.goal===o[0]?' on':'')+'" data-o="'+o[0]+'"><span style="font-size:32px">'+o[1]+'</span><span>'+o[2]+'<br><span class="mu" style="font-weight:500">'+o[3]+'</span></span><span class="ck">✓</span></button>';}).join('');},ok:function(){return tmp.goal!=null;}},
+  {intro:true,skip:function(){return tmp.goal!=='keep';},body:keepCheck,ok:function(){return true;}},
   {q:'¿Qué peso deseas alcanzar?',skip:function(){if(tmp.goal==='keep'){tmp.target=tmp.w;return true;}return false;},body:function(){var tv=tmp.target||tmp.w||70;if(gM()&&tv<=tmp.w)tv=Math.round(tmp.w)+3;if(!gM()&&tmp.target>tmp.w)tv=tmp.w;var d=(tmp.w-tv);return wRuler(tv)+'<div class="center" style="margin-top:18px"><div id="ob-v" style="font-size:34px;font-weight:800;color:'+tgCol(d)+'">'+tgTxt(d)+'</div><div class="mu" style="font-size:16px">'+(gM()?'para ganar':'para perder')+'</div><div id="ob-s" class="card" style="margin-top:12px;padding:14px">'+goalLive(tv)+'</div></div>';},
     live:function(){var g=wVal(),d=tmp.w-g,e=$('ob-v');e.textContent=tgTxt(d);e.style.color=tgCol(d);var k=goalEval({w:tmp.w,h:tmp.h,target:g,stage:tmp.stage,med:tmp.med,goal:tmp.goal}).k;if(k!==tmp._gk||Math.abs(g-(tmp._gg||0))>0.4){tmp._gk=k;tmp._gg=g;$('ob-s').innerHTML=goalLive(g);}},read:function(){tmp.target=wVal();},ok:function(){return true;}},
   {intro:true,skip:function(){return tmp.goal==='keep';},body:goalCheck,ok:function(){return true;}},
@@ -1635,7 +1663,7 @@ function vModal(){
   if(m==='auth'){var up=tmp.am==='up';h='<h3 style="margin-bottom:14px">'+(up?'Crear cuenta':'Entrar')+'</h3>'+field('Correo','<input id="au-e" type="email" autocomplete="email" inputmode="email">')+field('Contraseña','<input id="au-p" type="password" autocomplete="'+(up?'new-password':'current-password')+'" placeholder="'+(up?'Mínimo 6 caracteres':'')+'">')+
     '<div class="mu center" id="au-msg" style="min-height:20px;margin-bottom:8px"></div><button class="btn" data-act="'+(up?'signup':'signin')+'">'+(up?'Crear cuenta':'Entrar')+'</button>'+(up?'':'<button class="link2" data-act="reset">Olvidé mi contraseña</button>')+'<button class="link2" data-m="auth" data-am="'+(up?'in':'up')+'">'+(up?'¿Ya tienes cuenta? Entra':'¿No tienes cuenta? Créala')+'</button>';}
   if(m==='meal'&&pend) h=review();
-  else if(m==='meal') h='<h3 style="margin-bottom:14px">Agregar comida</h3><div class="snap"><img id="ai-prev" alt=""><div class="snap-in"><div style="font-size:34px">📸</div><b>Toma una foto de tu comida</b><div class="mu">Mochi calcula calorías, proteína, carbohidratos, grasas y fibra.</div></div><div class="row" style="margin-top:12px"><button class="btn sm f" data-act="aicam">📷 Tomar foto</button><button class="btn sec sm f" data-act="aigal">🖼️ Galería</button></div>'+(AIQ&&AIQ.premium?'':'<div class="mu" style="font-size:12px;margin-top:6px">📷 '+(AIQ&&AIQ.fotos&&AIQ.fotos.usados!=null?Tf('Te quedan {0} de {1} fotos gratis hoy',[Math.max(0,AIQ.fotos.max-AIQ.fotos.usados),AIQ.fotos.max]):Tf('{0} fotos gratis al día',[AIQ&&AIQ.fotos?AIQ.fotos.max:2]))+' · <button class="link2" type="button" data-m="premium" style="display:inline;padding:0">⭐ '+T('Más con Premium')+'</button></div>')+'</div><input type="file" id="ai-file" accept="image/*" capture="environment" style="display:none"><input type="file" id="ai-gal" accept="image/*" style="display:none"><button class="btn sec" data-act="bc" style="margin-bottom:8px">🏷️ Escanear código de barras</button><input type="file" id="bc-file" accept="image/*" capture="environment" style="display:none"><form id="bcf" class="row" style="display:none;margin-bottom:8px"><input class="f" id="bc-code" inputmode="numeric" placeholder="Código de barras"><button class="btn sm" type="submit">Buscar</button></form><div class="mu center" id="ai-msg" style="margin:6px 0"></div>'+
+  else if(m==='meal') h='<h3 style="margin-bottom:14px">Agregar comida</h3><div class="snap'+(phSt?' has'+(phSt.busy?' busy':''):'')+'"><img id="ai-prev" alt=""'+(phSt?' src="'+phSt.src+'"':'')+'><div class="snap-in"><div style="font-size:34px">📸</div><b>Toma una foto de tu comida</b><div class="mu">Mochi calcula calorías, proteína, carbohidratos, grasas y fibra.</div></div><div class="row" style="margin-top:12px"><button class="btn sm f" data-act="aicam">📷 Tomar foto</button><button class="btn sec sm f" data-act="aigal">🖼️ Galería</button></div>'+(AIQ&&AIQ.premium?'':'<div class="mu" style="font-size:12px;margin-top:6px">📷 '+(AIQ&&AIQ.fotos&&AIQ.fotos.usados!=null?Tf('Te quedan {0} de {1} fotos gratis hoy',[Math.max(0,AIQ.fotos.max-AIQ.fotos.usados),AIQ.fotos.max]):Tf('{0} fotos gratis al día',[AIQ&&AIQ.fotos?AIQ.fotos.max:2]))+' · <button class="link2" type="button" data-m="premium" style="display:inline;padding:0">⭐ '+T('Más con Premium')+'</button></div>')+'</div><input type="file" id="ai-file" accept="image/*" capture="environment" style="display:none"><input type="file" id="ai-gal" accept="image/*" style="display:none"><button class="btn sec" data-act="bc" style="margin-bottom:8px">🏷️ Escanear código de barras</button><input type="file" id="bc-file" accept="image/*" capture="environment" style="display:none"><form id="bcf" class="row" style="display:none;margin-bottom:8px"><input class="f" id="bc-code" inputmode="numeric" placeholder="Código de barras"><button class="btn sm" type="submit">Buscar</button></form><div class="mu center" id="ai-msg" style="margin:6px 0">'+(phSt&&phSt.html||'')+'</div>'+
     field('O cuéntale a Mochi qué comiste','<div class="row"><input class="f" id="f-n" placeholder="Ej: 3 huevos cocidos con aguacate">'+MIC('f-n','meal','ai-msg')+'</div>')+
     '<details class="man"><summary>✏️ Prefiero poner los números yo</summary><div class="grid2" style="margin-top:10px">'+field('Calorías','<input id="f-k" type="number" inputmode="numeric">')+field('Proteína g','<input id="f-p" type="number" inputmode="numeric">')+field('Carbohidratos g','<input id="f-c" type="number" inputmode="numeric">')+field('Grasas g','<input id="f-f" type="number" inputmode="numeric">')+field('Fibra g','<input id="f-fi" type="number" inputmode="numeric">')+'</div></details><button class="btn" data-act="meal">Agregar</button>';
   if(m==='dose') h='<h3 style="margin-bottom:4px">Registrar aplicación</h3><div class="mu" style="margin-bottom:14px">'+(S.tr.med?esc(S.tr.med)+' '+esc(S.tr.mg)+(S.tr.mg?' mg':''):'Primero configura tu medicamento')+'</div>'+
@@ -1947,7 +1975,9 @@ function sleepSection(){
 }
 /* ---------- Revisión de la comida por foto: aporte al plan y alertas ---------- */
 // ponytail: límites OMS para azúcar (≤10% de las calorías) y sodio (<2.000 mg/día); el resto sale del plan del usuario
-var pend=null,pendQ=1,pendImg='';
+var pend=null,pendQ=1,pendImg='',phSt=null;
+// muestra el estado de la foto; si la ventana no está abierta, la vuelve a abrir para que el resultado no se pierda
+function phShow(html,busy){if(!phSt)return;if(html!=null)phSt.html=html;phSt.busy=!!busy;if(modal!=='meal'||!$('ai-msg')){modal='meal';render();return;}var sn=document.querySelector('.snap'),pv=$('ai-prev');if(pv&&pv.getAttribute('src')!==phSt.src)pv.src=phSt.src;if(sn){sn.classList.add('has');sn.classList.toggle('busy',phSt.busy);}$('ai-msg').innerHTML=phSt.html;}
 function review(){
   var P=plan(),t=today(),ms=S.meals.filter(function(x){return x.d===t;}),sum=function(k){return ms.reduce(function(a,x){return a+(x[k]||0);},0);},m=pend,q=pendQ,al=[],ok=[];
   var R=[['k','Calorías','kcal',P.kcal,gM()?'min':'max','#5b3df5'],['p','Proteína','g',P.prot,'min','#f59e0b'],['c','Carbohidratos','g',P.carb,'max','#22a861'],['f','Grasas','g',P.fat,'max','#f5c518'],['fi','Fibra','g',P.fib,'min','#14b8a6'],
@@ -2103,7 +2133,7 @@ document.addEventListener('input',function(e){
   if(/^v-(mg|ml|dose|u)$/.test(id)){S.vial=S.vial||{};S.vial[id.slice(2)]=e.target.value;$('v-out').innerHTML=vialCalc();try{localStorage.setItem('mt-state',JSON.stringify(S));}catch(er){}}
 });
 document.addEventListener('click',function(e){
-  if(e.target.classList&&e.target.classList.contains('ov')){modal=null;pend=null;tmp.sym=[];render();return;}
+  if(e.target.classList&&e.target.classList.contains('ov')){modal=null;pend=null;phSt=null;tmp.sym=[];render();return;}
   var b=e.target.closest('button,[data-tab],[data-m]');if(!b)return;
   var d=b.dataset;
   if(d.mic){voz(b);return;}
@@ -2133,7 +2163,7 @@ document.addEventListener('click',function(e){
   if(d.fp!=null){S.fastPlan=+d.fp?{h:+d.fp,eat:(S.fastPlan&&S.fastPlan.eat)||'12:00'}:null;save();return;}
   if(d.fh){S.fast={st:Date.now(),h:+d.fh};modal=null;save();return;}
   if(d.site){[].forEach.call(document.querySelectorAll('[data-site]'),function(x){x.classList.remove('on');});b.classList.add('on');return;}
-  if(d.close&&!d.water){modal=null;render();return;}
+  if(d.close&&!d.water){modal=null;phSt=null;render();return;}
   if(d.delph!=null){PH.splice(+d.delph,1);savePH();render();return;}
   var a=d.act,ok=true,nextM=null;
   if(a==='aicam'||a==='aigal'){pick(a==='aicam'?'ai-file':'ai-gal');return;}
@@ -2161,6 +2191,8 @@ document.addEventListener('click',function(e){
   if(a==='logout'){setAU(null);AIQ=null;render();return;}
   if(a==='reonb'){startOnb();return;}
   if(a==='hc'){hcConnect();return;}
+  if(a==='setgoal'){tmp.goal=d.g;tmp.target=+d.kg;tmp.rate=d.g==='gain'?0.25:0.5;obNav(1,true);return;}
+  if(a==='goal2'){S.prof.goal=d.g;S.prof.target=+d.kg;S.prof.rate=d.g==='gain'?0.25:0.5;save();render();return;}
   if(a==='tokeep'){S.prof.goal='keep';S.prof.target=Math.round(curW()*10)/10;save();render();return;}
   if(a==='hcimp'){if(!NATIVE){hcErr=T('Esto pide el permiso de Health Connect y solo funciona en la app instalada en Android. En iPhone llegará con Apple Salud en la app nativa.');if(!S.onb&&STEPS[step]&&STEPS[step].read)STEPS[step].read();render();return;}if(!S.onb&&STEPS[step]&&STEPS[step].read)STEPS[step].read();tmp.dev=true;hcImport();return;}
   if(a==='hcstore'){window.open('https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata','_system');return;}
@@ -2193,13 +2225,19 @@ document.addEventListener('change',function(e){
   if(e.target.id==='sc-file'&&f){scaleRead(f);return;}
   if(e.target.id==='bc-file'&&f){createImageBitmap(f).then(function(b){return new BarcodeDetector().detect(b);}).then(function(r){if(!r.length)throw 0;offLookup(r[0].rawValue);}).catch(function(){$('ai-msg').textContent=T('No pude leer el código. Escríbelo:');$('bcf').style.display='flex';});return;}
   if((e.target.id!=='ai-file'&&e.target.id!=='ai-gal')||!e.target.files[0])return;
-  var msg=$('ai-msg'),pv=$('ai-prev');pv.src=URL.createObjectURL(e.target.files[0]);pv.parentNode.classList.add('has');
-  if(!ai){msg.textContent=T(MS_AI?'Para leer la foto, crea tu cuenta o inicia sesión en Mi plan. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.':'La lectura de fotos con IA estará disponible muy pronto. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.');$('f-n').focus();return;}
-  if(AIQ&&!AIQ.premium&&AIQ.fotos&&AIQ.fotos.usados>=AIQ.fotos.max){msg.innerHTML=esc(pwText('limitf'))+PBTN;$('f-n').focus();return;}
-  msg.textContent=T('Analizando la foto…');pv.parentNode.classList.add('busy');
-  ai.json('Mira la foto de comida. Identifica cada alimento, estima la porción visible en gramos y suma los valores de todo el plato. Responde SOLO JSON: {"nombre":"descripción corta en '+({es:'español',en:'inglés',pt:'portugués'}[S.lang]||'español')+' con porción","kcal":entero,"proteina_g":entero,"carbohidratos_g":entero,"grasas_g":entero,"fibra_g":entero,"azucar_g":entero,"sodio_mg":entero}.',{images:[e.target.files[0]]})
-   .then(function(r){var m=mealFrom(r,T('Comida'));if(!m.k)throw{};pend=m;pendQ=1;pendImg=pv.src;render();window.scrollTo(0,0);})
-   .catch(function(err){var sn=document.querySelector('.snap');if(sn)sn.classList.remove('busy');if(err&&(err.code==='noauth'||err.code==='off')){msg.textContent=err.message;$('f-n').focus();return;}if(isPW(err)){msg.innerHTML=esc(err.code==='premium'?T('Calcular desde la foto es Premium. Escribe qué es (ej: 2 arepas con queso) y lo calculo gratis.'):err.message)+PBTN;return;}msg.textContent=T(err&&err.code==='rate_limited'?'Demasiadas fotos seguidas, espera un momento.':'No pude analizar la foto. Escríbelo a mano.');});
+  // El estado de la foto vive en phSt: si la pantalla se vuelve a dibujar (p. ej. al volver de la cámara y sincronizar
+  // Health Connect), la foto, el "Analizando…" y los errores siguen visibles.
+  phSt={src:URL.createObjectURL(e.target.files[0]),html:'',busy:false};phShow();
+  if(!ai){phShow(esc(T(MS_AI?'Para leer la foto, crea tu cuenta o inicia sesión en Mi plan. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.':'La lectura de fotos con IA estará disponible muy pronto. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.')));return;}
+  if(AIQ&&!AIQ.premium&&AIQ.fotos&&AIQ.fotos.usados>=AIQ.fotos.max){phShow(esc(pwText('limitf'))+PBTN);return;}
+  phShow(esc(T('Analizando la foto…')),true);var fin=false;
+  var tmo=setTimeout(function(){if(!fin){fin=true;phShow(esc(T('La foto está tardando demasiado. Revisa tu conexión e inténtalo de nuevo, o escríbelo a mano.')));}},60000);
+  ai.json('Mira la foto de comida. Identifica cada alimento, estima la porción visible en gramos y suma los valores de todo el plato. Responde SOLO JSON, sin texto adicional: {"nombre":"descripción corta en '+({es:'español',en:'inglés',pt:'portugués'}[S.lang]||'español')+' con porción","kcal":entero,"proteina_g":entero,"carbohidratos_g":entero,"grasas_g":entero,"fibra_g":entero,"azucar_g":entero,"sodio_mg":entero}. Si no hay comida en la foto, responde {"kcal":0}.',{images:[e.target.files[0]]})
+   .then(function(r){if(fin)return;fin=true;clearTimeout(tmo);var m=mealFrom(r,T('Comida'));if(!m.k)throw{code:'nofood'};pend=m;pendQ=1;pendImg=phSt&&phSt.src;phSt=null;modal='meal';render();window.scrollTo(0,0);})
+   .catch(function(err){if(fin&&!(err&&err.code==='nofood'))return;fin=true;clearTimeout(tmo);
+     if(err&&(err.code==='noauth'||err.code==='off'))return phShow(esc(err.message));
+     if(isPW(err))return phShow(esc(err.code==='premium'?T('Calcular desde la foto es Premium. Escribe qué es (ej: 2 arepas con queso) y lo calculo gratis.'):err.message)+PBTN);
+     phShow(esc(T(err&&err.code==='rate_limited'?'Demasiadas fotos seguidas, espera un momento.':err&&err.code==='nofood'?'No reconocí comida en la foto. Intenta con otra más cerca y con buena luz, o escríbelo a mano.':'No pude analizar la foto. Escríbelo a mano.'))+(err&&err.code==='api'&&err.message?'<br><small>('+esc(String(err.message).slice(0,80))+')</small>':''));});
 });
 
 if(aiOn()){llm=makeLLM();ai=llm;}
