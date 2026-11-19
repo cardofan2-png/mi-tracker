@@ -43,9 +43,10 @@ const marcas = [
   ['Instrucción de solo JSON a la IA', app, 'Respondes ÚNICAMENTE con un objeto JSON válido'],
   ['Versión visible en Perfil', app, '<span>Versión</span> __VERSION__'],
   ['Video de bienvenida de Mochi', app, 'function intro()'],
-  ['Video de inicio sin plan (nuevo o al rehacer el plan)', app, 'if(!S.onb)intro();'],
+  ['Video de inicio siempre al abrir la app', app, 'intro(); // video de inicio: SIEMPRE al abrir la app'],
   ['Video al rehacer el plan', app, "S.onb=false;render();intro();"],
-  ['Video sin textos encima', app, "''; // sin textos: el video ya da la bienvenida"],
+  ['Intro = solo el video subido, sin textos ni animación de respaldo', app, 'Solo el video que subió Ricardo (bienvenida.mp4)'],
+  ['Video cargado en memoria (blob) para reproducir en cualquier celular', app, "fetch('bienvenida.mp4')"],
 ];
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }
