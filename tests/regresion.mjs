@@ -42,6 +42,10 @@ const marcas = [
   ['Nutrientes con nombres en ES/EN y listas', app, 'function normMeal(o)'],
   ['Instrucción de solo JSON a la IA', app, 'Respondes ÚNICAMENTE con un objeto JSON válido'],
   ['Versión visible en Perfil', app, '<span>Versión</span> __VERSION__'],
+  ['Video de bienvenida de Mochi', app, 'function intro()'],
+  ['Video de inicio sin plan (nuevo o al rehacer el plan)', app, 'if(!S.onb)intro();'],
+  ['Video al rehacer el plan', app, "S.onb=false;render();intro();"],
+  ['Video sin textos encima', app, "''; // sin textos: el video ya da la bienvenida"],
 ];
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }
