@@ -31,14 +31,16 @@ jobs:
       - run: npx cap sync android
       - name: Compilar
         working-directory: android
-        run: chmod +x gradlew && ./gradlew assembleRelease --no-daemon
+        run: chmod +x gradlew && ./gradlew assembleRelease bundleRelease --no-daemon
       - name: Publicar descarga
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
           F=MichiSalud-v1.${{ github.run_number }}.apk
           cp android/app/build/outputs/apk/release/app-release.apk $F
           cp $F MichiSalud.apk
+          # .aab = el archivo que se sube a Play Console (Play no acepta .apk para apps nuevas)
+          cp android/app/build/outputs/bundle/release/app-release.aab MichiSalud-PlayStore-v1.${{ github.run_number }}.aab
           gh release delete ultima -y --cleanup-tag || true
-          gh release create ultima $F MichiSalud.apk --latest -t "Michi Salud v1.${{ github.run_number }}" -n "Descarga $F en tu Android e instálala."
+          gh release create ultima $F MichiSalud.apk MichiSalud-PlayStore-v1.${{ github.run_number }}.aab --latest -t "Michi Salud v1.${{ github.run_number }}" -n "APK: descárgalo en tu Android e instálalo. AAB: súbelo a Play Console."
       - uses: actions/upload-artifact@v4
         with: { name: MichiSalud-apk, path: MichiSalud.apk }
