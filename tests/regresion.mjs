@@ -47,6 +47,7 @@ const marcas = [
   ['Video al rehacer el plan', app, "S.onb=false;render();intro();"],
   ['Intro = solo el video subido, sin textos ni animación de respaldo', app, 'Solo el video que subió Ricardo (bienvenida.mp4)'],
   ['Video cargado en memoria (blob) para reproducir en cualquier celular', app, "fetch('bienvenida.mp4')"],
+  ['Video de bienvenida con el nombre Mochi en arco', app, 'con el nombre "Mochi" apareciendo en arco'],
   ['Play: eliminar cuenta y datos desde la app', app, "a==='delacc'"],
   ['Play: borrar datos en la nube antes que la cuenta', app, "accounts:delete?key="],
   ['Play: política de privacidad publicada', f('www/privacidad.html'), 'Health Connect'],
