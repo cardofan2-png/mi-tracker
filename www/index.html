@@ -323,6 +323,9 @@ var pwWhy='';
 function pwText(c){return c==='limit'?Tf(PWMSG.limit,[AIQ&&AIQ.max||8]):c==='limitf'?Tf(PWMSG.limitf,[AIQ&&AIQ.fotos&&AIQ.fotos.max||2]):T(PWMSG[c]);}
 function paywall(why){pwWhy=why||'';modal='premium';render();}
 function isPW(e){return !!e&&(e.code==='limit'||e.code==='limitf'||e.code==='premium'||e.code==='budget');}
+// Palabras que en otro país significan drogas o algo vulgar: la app las cambia aunque la IA las use
+var MALAS=[[/\s*\((?:huevos\s+)?pericos?\)/gi,''],[/huevos?\s+(?:a\s+la\s+)?pericos?/gi,'huevos revueltos con tomate y cebolla'],[/\bpericos?\b/gi,'huevos revueltos con tomate y cebolla'],[/pico\s+de\s+gallo/gi,'salsa fresca de tomate, cebolla y cilantro']];
+function limpio(t){MALAS.forEach(function(m){t=t.replace(m[0],function(x){var r=m[1],k=x.search(/\S/);return k>=0&&/[A-ZÁÉÍÓÚÑ]/.test(x[k])?r.charAt(0).toUpperCase()+r.slice(1):r;});});return t.replace(/huevos revueltos con tomate y cebolla(\s+)huevos revueltos con tomate y cebolla/gi,'Huevos revueltos con tomate y cebolla');}
 function aiCall(msgs,max,kind,sys){
   var am=msgs.map(function(x){return{role:x.role,content:typeof x.content==='string'?x.content:x.content.map(function(q){return q.img?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:q.img}}:{type:'text',text:q.text};})};});
   if(!MS_AI)return Promise.reject({code:'off',message:T('La IA de Mochi estará disponible muy pronto.')});
@@ -336,7 +339,9 @@ function aiCall(msgs,max,kind,sys){
       if(r.status===429)throw{code:'rate_limited',message:T('Estoy recibiendo muchas preguntas. Intenta de nuevo en un momento.')};
       if(!r.ok)throw{code:'api',message:em||String(r.status)};
       return j;});})
-    .then(function(j){return (j.content||[]).map(function(c){return c.text||'';}).join('');});
+    .then(function(j){var t=limpio((j.content||[]).map(function(c){return c.text||'';}).join(''));
+      if(j.stop_reason==='max_tokens'){var k=Math.max(t.lastIndexOf('. '),t.lastIndexOf('.\n'),t.lastIndexOf('! '),t.lastIndexOf('?\n'),t.lastIndexOf('\n'));if(k>0)t=t.slice(0,k+1);} // nunca mostrar una frase a medias
+      return t;});
 }
 // Estado del cupo (para mostrar "te quedan X consultas")
 function aiStatus(){
@@ -349,7 +354,7 @@ function imgB64(file){ // reduce la foto a 1024 px para enviarla rápido
   return new Promise(function(res,rej){var u=URL.createObjectURL(file),im=new Image();im.onload=function(){var k=Math.min(1,1024/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',0.82).split(',')[1]);};im.onerror=rej;im.src=u;});
 }
 function makeLLM(){
-  var f=function(msgs,o){return aiCall(msgs,800,o&&o.kind).then(function(t){if(o&&o.onText)o.onText({text:t});return{text:t};});};
+  var f=function(msgs,o){return aiCall(msgs,1200,o&&o.kind).then(function(t){if(o&&o.onText)o.onText({text:t});return{text:t};});};
   f.json=function(prompt,o){var imgs=(o&&o.images)||[];return Promise.all(imgs.map(imgB64)).then(function(bs){
       return aiCall([{role:'user',content:bs.map(function(b){return{img:b};}).concat([{text:prompt}])}],1000,null,'Eres un nutricionista experto en comida latinoamericana. Respondes ÚNICAMENTE con un objeto JSON válido en una sola línea: sin texto antes ni después, sin markdown, con números (no rangos ni unidades).');})
     .then(function(t){try{localStorage.setItem('mt-lastai',String(t).slice(0,2000));}catch(e){}return aiObj(t);});};
@@ -583,6 +588,20 @@ function fW(kg){return nf(rW(kg),1)+' '+uW();}
 function fR(r){return U()?String(Math.round(r*LB*10)/10):String(r).replace('.',',');}
 function fH(cm){if(!U())return cm+' cm';var i=Math.round(cm/2.54);return Math.floor(i/12)+'′ '+(i%12)+'″';}
 var I18N={
+"Eliminar mi cuenta y mis datos":["Delete my account and data", "Excluir minha conta e meus dados"],
+"Borrar mis datos de este teléfono":["Delete my data from this phone", "Apagar meus dados deste celular"],
+"Eliminar mi cuenta":["Delete my account", "Excluir minha conta"],
+"Borrar mis datos":["Delete my data", "Apagar meus dados"],
+"Se borran para siempre tu cuenta, tus datos guardados en la nube y todo lo que hay en este teléfono: perfil, pesos, comidas, dosis, medidas, ayunos y chats con Mochi. No se puede deshacer.":["Your account, your cloud data and everything on this phone are permanently deleted: profile, weights, meals, doses, measurements, fasts and chats with Mochi. This cannot be undone.", "Sua conta, seus dados na nuvem e tudo o que está neste celular são apagados para sempre: perfil, pesos, refeições, doses, medidas, jejuns e conversas com o Mochi. Não pode ser desfeito."],
+"Se borra para siempre todo lo que la app guardó en este teléfono: perfil, pesos, comidas, dosis, medidas, ayunos y chats con Mochi. No se puede deshacer.":["Everything the app saved on this phone is permanently deleted: profile, weights, meals, doses, measurements, fasts and chats with Mochi. This cannot be undone.", "Tudo o que o app salvou neste celular é apagado para sempre: perfil, pesos, refeições, doses, medidas, jejuns e conversas com o Mochi. Não pode ser desfeito."],
+"Lo que la app escribió en Health Connect o Apple Salud (por ejemplo, el agua) queda allá; puedes borrarlo desde esas apps.":["What the app wrote to Health Connect or Apple Health (for example, water) stays there; you can delete it from those apps.", "O que o app gravou no Health Connect ou no Apple Saúde (por exemplo, a água) fica lá; você pode apagar nesses apps."],
+"Escribe tu contraseña para confirmar":["Enter your password to confirm", "Digite sua senha para confirmar"],
+"Escribe tu contraseña para confirmar.":["Enter your password to confirm.", "Digite sua senha para confirmar."],
+"Eliminar mi cuenta definitivamente":["Permanently delete my account", "Excluir minha conta definitivamente"],
+"Borrar mis datos definitivamente":["Permanently delete my data", "Apagar meus dados definitivamente"],
+"Cancelar":["Cancel", "Cancelar"],
+"Eliminando…":["Deleting…", "Excluindo…"],
+"No se pudieron borrar tus datos en la nube. Revisa tu conexión e inténtalo de nuevo.":["Your cloud data couldn’t be deleted. Check your connection and try again.", "Não foi possível apagar seus dados na nuvem. Verifique sua conexão e tente de novo."],
 "¡Hola, bienvenido!":["Hi, welcome!","Olá, bem-vindo!"],
 "Vamos a conocernos":["Let’s get to know each other","Vamos nos conhecer"],
 "¡Hola! Vamos a conocernos":["Hi! Let’s get to know each other","Olá! Vamos nos conhecer"],
@@ -696,7 +715,8 @@ var I18N={
 "🍽️ Plan de comidas de hoy":["🍽️ Today’s meal plan", "🍽️ Plano de refeições de hoje"],
 "🥘 Receta con lo que me falta":["🥘 Recipe for what I’m missing", "🥘 Receita com o que me falta"],
 "Arma mi plan de comidas para lo que queda de hoy según mis calorías y proteína restantes, con porciones.":["Build my meal plan for the rest of today based on my remaining calories and protein, with portions.", "Monte meu plano de refeições para o resto de hoje com base nas calorias e proteína que faltam, com porções."],
-"Dame una receta fácil y económica que me ayude a completar la proteína que me falta hoy, con ingredientes comunes en Colombia y cantidades.":["Give me an easy, affordable recipe to help me reach the protein I’m missing today, with common ingredients and amounts.", "Me dê uma receita fácil e barata que me ajude a completar a proteína que falta hoje, com ingredientes comuns e quantidades."],
+"Dame una receta fácil y económica que me ayude a completar la proteína que me falta hoy, con ingredientes fáciles de conseguir donde vivo y cantidades.":["Give me an easy, affordable recipe to help me reach the protein I’m missing today, with ingredients that are easy to find where I live, and amounts.", "Me dê uma receita fácil e barata que me ajude a completar a proteína que falta hoje, com ingredientes fáceis de encontrar onde eu moro e quantidades."],
+"Si el malestar es fuerte, aparece de repente, empeora o no mejora en unas horas, consulta a un médico. Ve a urgencias si tienes dolor en el pecho, dificultad para respirar, desmayo, confusión, vómitos que no paran o sangrado.":["If the discomfort is severe, comes on suddenly, gets worse or doesn’t improve within a few hours, see a doctor. Go to the emergency room if you have chest pain, trouble breathing, fainting, confusion, vomiting that won’t stop or bleeding.", "Se o mal-estar for forte, surgir de repente, piorar ou não melhorar em algumas horas, procure um médico. Vá ao pronto-socorro se tiver dor no peito, falta de ar, desmaio, confusão, vômitos que não param ou sangramento."],
 "Calcular desde la foto es Premium. Escribe qué es (ej: 2 arepas con queso) y lo calculo gratis.":["Calculating from a photo is Premium. Type what it is (e.g.: 2 arepas with cheese) and I’ll calculate it for free.", "Calcular pela foto é Premium. Escreva o que é (ex.: 2 arepas com queijo) que eu calculo grátis."],
 "Leer la captura de la báscula es Premium.":["Reading the scale screenshot is Premium.", "Ler a captura da balança é Premium."],
 "IA de Mochi sin quedarte corto: hasta 80 consultas al día":["Mochi’s AI without running short: up to 80 questions a day", "IA do Mochi sem ficar na mão: até 80 consultas por dia"],
@@ -1638,7 +1658,7 @@ function vPerfil(){
    '<h2>Metas diarias</h2>'+goalsGrid(P)+
    '<div class="card" style="margin-top:12px"><div class="mu">'+(P.hc?'⌚ '+Tf('Calculado con tu reloj: reposo + la mitad de tus {0} kcal activas promedio de los últimos 7 días.',[S.hc.avgActive])+' ':'')+Tf('Gastas unas <b>{0} kcal</b> al día. Al ritmo elegido llegarías a {1} hacia el <b>{2}</b>.',[P.tdee,fW(p.target),fmtY(P.eta)])+'</div></div>'+
    '<h2>Cuenta</h2><div class="card row"><span style="font-size:26px">☁️</span><div class="f">'+(AU?'<b>'+esc(AU.email)+'</b><div class="mu">Sincronizado en la nube</div>':'<div class="mu">Sin cuenta: tus datos están solo en este teléfono.</div>')+'</div>'+(AU?'<button class="btn sec sm" data-act="logout">Cerrar sesión</button>':'<button class="btn sm" data-m="auth" data-am="up">Crear cuenta</button>')+'</div>'+
-   connCard()+aiCard()+'<button class="btn" data-act="reonb" style="margin-top:8px">Rehacer mi plan</button><p class="mu center" style="font-size:12px;margin:10px 0 0"><span>Versión</span> __VERSION__</p>'+
+   connCard()+aiCard()+'<button class="btn" data-act="reonb" style="margin-top:8px">Rehacer mi plan</button><button class="link2" data-m="delacc" style="display:block;margin:14px auto 0;color:var(--bad)">'+T(AU?'Eliminar mi cuenta y mis datos':'Borrar mis datos de este teléfono')+'</button><p class="mu center" style="font-size:12px;margin:10px 0 0"><span>Versión</span> __VERSION__</p>'+
    '<p class="mu center" style="margin:16px 10px">Estimaciones con la fórmula Mifflin-St Jeor. La dosis y el ritmo de tu tratamiento los define tu médico.</p>';
 }
 
@@ -1669,6 +1689,11 @@ function vModal(){
   var m=modal,h='',t=today();
   if(m==='menu') h='<h3 style="margin-bottom:14px">¿Qué quieres registrar?</h3><div class="grid3">'+[['meal','🍽️','Comida'],['dose','💉','Aplicación'],['weight',BASC,'Peso'],['sym','🩺','Síntoma'],['water','💧','Agua'],['sleep','🌙','Sueño'],['inv','📦','Inventario'],['meas',MSIL,'Medidas'],['bowel','🚽','Deposición'],['supp','💊','Suplementos'],['fast','⏳','Ayuno'],['vial','🧪','Calculadora']].map(function(x){return '<button class="act" data-m="'+x[0]+'"><span>'+x[1]+'</span>'+x[2]+'</button>';}).join('')+'</div>';
   if(m==='lvl'){var L=lvl();h='<div class="center fade">'+cat(170,L)+'<h3 style="font-size:24px;margin:6px 0">'+T('¡Mochi subió al nivel')+' '+(L+1)+'!</h3><p class="mu" style="font-size:16px">'+T((kM()?LVLK:gM()?LVLG:LVLTXT)[L])+'</p><button class="btn" data-close="1">'+T('¡Vamos!')+'</button></div>';}
+  if(m==='delacc'){h='<h3 style="margin-bottom:10px">'+T(AU?'Eliminar mi cuenta':'Borrar mis datos')+'</h3>'+
+    '<p style="margin:0 0 10px">'+T(AU?'Se borran para siempre tu cuenta, tus datos guardados en la nube y todo lo que hay en este teléfono: perfil, pesos, comidas, dosis, medidas, ayunos y chats con Mochi. No se puede deshacer.':'Se borra para siempre todo lo que la app guardó en este teléfono: perfil, pesos, comidas, dosis, medidas, ayunos y chats con Mochi. No se puede deshacer.')+'</p>'+
+    '<p class="mu" style="font-size:13px;margin:0 0 12px">'+T('Lo que la app escribió en Health Connect o Apple Salud (por ejemplo, el agua) queda allá; puedes borrarlo desde esas apps.')+'</p>'+
+    (AU?field('Escribe tu contraseña para confirmar','<input id="del-p" type="password" autocomplete="current-password">'):'')+
+    '<div class="mu center" id="del-msg" style="min-height:20px;margin-bottom:8px"></div><button class="btn" data-act="delacc" style="background:var(--bad)">'+T(AU?'Eliminar mi cuenta definitivamente':'Borrar mis datos definitivamente')+'</button><button class="link2" data-close="1">'+T('Cancelar')+'</button>';}
   if(m==='auth'){var up=tmp.am==='up';h='<h3 style="margin-bottom:14px">'+(up?'Crear cuenta':'Entrar')+'</h3>'+field('Correo','<input id="au-e" type="email" autocomplete="email" inputmode="email">')+field('Contraseña','<input id="au-p" type="password" autocomplete="'+(up?'new-password':'current-password')+'" placeholder="'+(up?'Mínimo 6 caracteres':'')+'">')+
     '<div class="mu center" id="au-msg" style="min-height:20px;margin-bottom:8px"></div><button class="btn" data-act="'+(up?'signup':'signin')+'">'+(up?'Crear cuenta':'Entrar')+'</button>'+(up?'':'<button class="link2" data-act="reset">Olvidé mi contraseña</button>')+'<button class="link2" data-m="auth" data-am="'+(up?'in':'up')+'">'+(up?'¿Ya tienes cuenta? Entra':'¿No tienes cuenta? Créala')+'</button>';}
   if(m==='meal'&&pend) h=review();
@@ -2011,7 +2036,7 @@ function review(){
 }
 /* ---------- Estimación automática de comidas ---------- */
 function estimate(desc){
-  return llm.json('Estima la información nutricional de lo que comió una persona en Colombia: "'+desc.replace(/"/g,"'")+'". Si no dice cantidad, asume una porción típica. Suma todos los alimentos mencionados. Responde SOLO JSON: {"nombre":"descripción corta en '+({es:'español',en:'inglés',pt:'portugués'}[S.lang]||'español')+' con porciones","kcal":entero,"proteina_g":entero,"carbohidratos_g":entero,"grasas_g":entero,"fibra_g":entero}.',{modelTier:'default'});
+  return llm.json('Estima la información nutricional de lo que comió una persona en '+pais().n+': "'+desc.replace(/"/g,"'")+'". Si no dice cantidad, asume una porción típica. Suma todos los alimentos mencionados. Responde SOLO JSON: {"nombre":"descripción corta en '+({es:'español',en:'inglés',pt:'portugués'}[S.lang]||'español')+' con porciones","kcal":entero,"proteina_g":entero,"carbohidratos_g":entero,"grasas_g":entero,"fibra_g":entero}.',{modelTier:'default'});
 }
 
 /* ---------- Tabla propia de alimentos (funciona sin IA y sin internet) ----------
@@ -2113,14 +2138,23 @@ function ctx(){
    'Síntomas recientes: '+(S.sym.slice(-5).map(function(x){return x.d+': '+(x.s.join(', ')||'ninguno')+(x.i?' ('+x.i+'/10)':'');}).join('; ')||'ninguno')+'.\n'+
    'Hoy ('+t+'): '+sum('k')+' kcal, '+sum('p')+' g proteína, '+((S.water[t]||0)/1000)+' L de agua. Comidas: '+(ms.map(function(m){return m.n;}).join(', ')||'ninguna')+'.'+(dietTxt(S.diet,S.dietOther)?'\nRestricciones de alimentación (respétalas siempre en tus sugerencias): '+dietTxt(S.diet,S.dietOther)+'.':'')+(eatWin()?'\nAyuno intermitente '+S.fastPlan.h+':'+(24-S.fastPlan.h)+', come de '+hhmm(eatWin()[0])+' a '+hhmm(eatWin()[1])+'. Sugiere comidas solo dentro de esa ventana.':'');
 }
-function sys(){return (isFem()?'Eres Michi, una gata simpática':'Eres Mochi, un gato simpático')+' y el asistente de la app Michi Salud para personas en tratamiento para bajar de peso (incluidos medicamentos GLP-1) o subirlo de forma saludable.'+(kM()?' Este usuario quiere MANTENER su peso: ayúdale a sostener hábitos y a reaccionar si sube más de 1,5 kg.':'')+(gM()?' Este usuario quiere GANAR peso de forma saludable: prioriza superávit moderado, proteína y entrenamiento de fuerza.':'')+' Responde en '+({es:'español de Colombia',en:'inglés',pt:'portugués de Brasil'}[S.lang]||'español')+', cálido y directo, en máximo 120 palabras, con viñetas cortas si ayudan. Usa los datos del usuario cuando sirvan. No eres médico: nunca indiques, cambies ni ajustes dosis de medicamentos; para eso remite a su médico. Ante señales de alarma (dolor abdominal fuerte y persistente, dolor que va a la espalda, vómitos que no ceden, signos de deshidratación, reacción alérgica) dile que busque atención médica de inmediato. Da ideas prácticas de comidas altas en proteína con alimentos comunes en Colombia cuando pregunten por comida.'+(U()?' El usuario usa libras y pies; los datos te llegan en kg y cm, conviértelos al responder.':'');}
+// País del usuario (para el vocabulario de la IA): región del idioma del teléfono, si no la zona horaria
+var TZC={Bogota:'CO',Mexico_City:'MX',Monterrey:'MX',Cancun:'MX',Tijuana:'MX',Lima:'PE',Santiago:'CL',Buenos_Aires:'AR',Caracas:'VE',Guayaquil:'EC',Madrid:'ES',Canary:'ES',Montevideo:'UY',Asuncion:'PY',La_Paz:'BO',Panama:'PA',Costa_Rica:'CR',Guatemala:'GT',El_Salvador:'SV',Tegucigalpa:'HN',Managua:'NI',Santo_Domingo:'DO',Puerto_Rico:'PR',Havana:'CU',Sao_Paulo:'BR',Lisbon:'PT',New_York:'US',Chicago:'US',Denver:'US',Los_Angeles:'US',Phoenix:'US',London:'GB',Toronto:'CA'};
+function pais(){var c='';try{(navigator.languages||[navigator.language]).some(function(l){var m=String(l||'').match(/^[a-z]{2,3}[-_]([A-Z]{2})$/i);if(m)c=m[1].toUpperCase();return !!c;});}catch(e){}
+  if(!c||c==='419'){try{c=TZC[(Intl.DateTimeFormat().resolvedOptions().timeZone||'').split('/').pop()]||'';}catch(e){}}
+  var n='';try{n=c?new Intl.DisplayNames(['es'],{type:'region'}).of(c):'';}catch(e){}
+  return {c:c,n:n||'un país de habla '+({en:'inglesa',pt:'portuguesa'}[S.lang]||'hispana')+' (sin datos exactos: usa vocabulario neutro)'};}
+// Señales de un síntoma en la pregunta (es/en/pt): si la IA no cerró con la advertencia, la app la agrega
+var SINTOMA=/dolor|duele|mare|n[aá]usea|v[oó]mit|fiebre|sangr|desmay|pecho|respir|ahog|diarrea|estre[ñn]|alergi|hinch|palpita|presi[oó]n|migra[ñn]|cabeza|cansancio|fatiga|deshidrat|pain|hurt|ache|dizz|nause|vomit|fever|bleed|faint|chest|breath|rash|swell|dor |d[oó]i|tontura|enjoo|febre|sangue|desmai|falta de ar/i;
+function cierreMedico(q,t){if(!t||/⚠️/.test(t)||!SINTOMA.test(q))return t;return t.replace(/\s+$/,'')+'\n\n⚠️ '+T('Si el malestar es fuerte, aparece de repente, empeora o no mejora en unas horas, consulta a un médico. Ve a urgencias si tienes dolor en el pecho, dificultad para respirar, desmayo, confusión, vómitos que no paran o sangrado.');}
+function sys(){return (isFem()?'Eres Michi, una gata simpática':'Eres Mochi, un gato simpático')+' y el asistente de la app Michi Salud para personas en tratamiento para bajar de peso (incluidos medicamentos GLP-1) o subirlo de forma saludable.'+(kM()?' Este usuario quiere MANTENER su peso: ayúdale a sostener hábitos y a reaccionar si sube más de 1,5 kg.':'')+(gM()?' Este usuario quiere GANAR peso de forma saludable: prioriza superávit moderado, proteína y entrenamiento de fuerza.':'')+' El usuario vive en '+pais().n+'. Responde en '+({es:'español',en:'inglés',pt:'portugués'}[S.lang]||'español')+' con el vocabulario de ese país, cálido y directo, en máximo 120 palabras, con viñetas cortas si ayudan. Vocabulario: evita jergas, regionalismos y nombres de platos locales que en otro país signifiquen otra cosa o no se entiendan; nombra las comidas solo por sus ingredientes y preparación (por ejemplo «huevos revueltos con tomate y cebolla», no «huevos pericos») y no uses nombres locales de platos, ni siquiera entre paréntesis. Nunca escribas, en ningún país, palabras con doble sentido de drogas, sexual o vulgar en algún país de habla hispana, como: perico, perica, coca (salvo la marca Coca-Cola), merca, hierba (di «hierbas aromáticas»), polla, concha, bicho, cajeta, paja, pija, pico de gallo (di «salsa fresca de tomate, cebolla y cilantro»), chucha, cuca, chimba, papaya como jerga. Ante la duda, usa la palabra más neutra. Usa alimentos fáciles de conseguir en ese país. Usa los datos del usuario cuando sirvan. No eres médico: nunca indiques, cambies ni ajustes dosis de medicamentos; para eso remite a su médico. Si el usuario menciona un síntoma, malestar o algo que pueda ser peligroso, termina SIEMPRE con una línea final que empiece por «⚠️» indicando cuándo consultar a un médico y cuándo ir a urgencias (por ejemplo: dolor fuerte, repentino o que no cede, dolor en el pecho, dificultad para respirar, desmayo, confusión, vómitos que no paran, deshidratación, sangrado, fiebre alta o reacción alérgica); escribe esa línea completa aunque tengas que acortar el resto. No diagnostiques. Da ideas prácticas de comidas altas en proteína cuando pregunten por comida.'+(U()?' El usuario usa libras y pies; los datos te llegan en kg y cm, conviértelos al responder.':'');}
 function mdLite(t){
   var h=esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
   var out='',inL=false;h.split('\n').forEach(function(l){var m=l.match(/^\s*[-•*]\s+(.*)/);if(m){if(!inL){out+='<ul>';inL=true;}out+='<li>'+m[1]+'</li>';}else{if(inL){out+='</ul>';inL=false;}out+=l?l+'<br>':'<br>';}});
   if(inL)out+='</ul>';return out.replace(/(<br>)+$/,'');
 }
 var SUGG=['¿Qué ceno hoy con la proteína que me falta?','¿Cómo manejo las náuseas?','Ideas de desayuno alto en proteína','¿Voy bien con mi plan?'];
-var PLANQ=[['🍽️ Plan de comidas de hoy','Arma mi plan de comidas para lo que queda de hoy según mis calorías y proteína restantes, con porciones.'],['🥘 Receta con lo que me falta','Dame una receta fácil y económica que me ayude a completar la proteína que me falta hoy, con ingredientes comunes en Colombia y cantidades.']];
+var PLANQ=[['🍽️ Plan de comidas de hoy','Arma mi plan de comidas para lo que queda de hoy según mis calorías y proteína restantes, con porciones.'],['🥘 Receta con lo que me falta','Dame una receta fácil y económica que me ayude a completar la proteína que me falta hoy, con ingredientes fáciles de conseguir donde vivo y cantidades.']];
 function vIA(){
   return '<div class="top"><div class="row">'+owl(46)+'<div><h1 style="font-size:24px">Mochi</h1><div class="mu">Tu asistente con IA</div></div></div>'+(chat.length?'<button class="btn sec sm" data-act="clearchat">Nueva</button>':'')+'</div>'+
    (llm?'':'<div class="alert">'+T('La IA de Mochi estará disponible muy pronto.')+'</div>')+
@@ -2138,7 +2172,7 @@ function ask(q,kind){
   var msgs=chat.slice(0,-1).map(function(m,i){return{role:m.role,content:i===0?sys()+'\n\nDatos actuales del usuario:\n'+ctx()+'\n\nMensaje del usuario: '+m.content:m.content};});
   if(chat.length>3) msgs[msgs.length-1].content='(Datos actualizados: '+ctx()+')\n\n'+q;
   llm(msgs,{kind:kind,modelTier:'default',cache:false,onText:function(r){chat[chat.length-1].content=r.text;var el=$('last');if(el){el.innerHTML=mdLite(r.text);scrollChat();}}})
-   .then(function(r){chat[chat.length-1].content=r.text;})
+   .then(function(r){chat[chat.length-1].content=cierreMedico(q,r.text);})
    .catch(function(e){if(isPW(e))pw=e.code;chat[chat.length-1].content=e&&(e.code==='noauth'||e.code==='rate_limited'||isPW(e))&&e.message?e.message:T(e&&e.code==='rate_limited'?'Estoy recibiendo muchas preguntas. Intenta de nuevo en un momento.':'No pude responder ahora. Intenta de nuevo.');})
    .then(function(){busy=false;try{localStorage.setItem('mt-chat',JSON.stringify(chat.slice(-30)));}catch(e){}if(pw){paywall(pw);return;}if(tab==='ia'){render();scrollChat();var i=$('q');if(i)i.focus();}});
 }
@@ -2227,6 +2261,18 @@ document.addEventListener('click',function(e){
       fbAuth(a==='signup'?'signUp':'signInWithPassword',{email:em,password:pw,returnSecureToken:true}).then(function(){return a==='signup'?fbPush():fbPull(true);}).then(function(){modal=null;render();aiStatus();});
     pr.catch(function(e){msg.textContent=auErr(e);});return;}
   if(a==='buy'){var pm=$('pw-msg');if(pm)pm.textContent=T('Muy pronto podrás suscribirte desde aquí. Te avisaremos cuando esté disponible.');return;}
+  if(a==='delacc'){var dm=$('del-msg'),wipe=function(){try{Object.keys(localStorage).filter(function(k){return k.indexOf('mt-')===0;}).forEach(function(k){localStorage.removeItem(k);});}catch(e){}location.reload();};
+    if(!AU){wipe();return;}
+    var pw=($('del-p')||{}).value||'';if(!pw){dm.textContent=T('Escribe tu contraseña para confirmar.');return;}
+    b.disabled=true;dm.textContent=T('Eliminando…');
+    // 1) inicio de sesión reciente (Google lo exige para borrar), 2) datos en la nube, 3) la cuenta, 4) este teléfono
+    fbAuth('signInWithPassword',{email:AU.email,password:pw,returnSecureToken:true})
+     .then(function(){return fetch(fbDoc(),{method:'DELETE',headers:{authorization:'Bearer '+AU.tok}}).then(function(r){if(!r.ok&&r.status!==404)throw 'DATA';});})
+     .then(function(){return MS_AI?fetch(MS_AI,{method:'DELETE',headers:{authorization:'Bearer '+AU.tok}}).catch(function(){}):0;}) // contadores de la IA
+     .then(function(){return fbPost('https://identitytoolkit.googleapis.com/v1/accounts:delete?key='+FB.key,{idToken:AU.tok});})
+     .then(function(){setAU(null);wipe();})
+     .catch(function(e){b.disabled=false;dm.textContent=e==='DATA'?T('No se pudieron borrar tus datos en la nube. Revisa tu conexión e inténtalo de nuevo.'):auErr(e);});
+    return;}
   if(a==='logout'){setAU(null);AIQ=null;render();return;}
   if(a==='reonb'){startOnb();return;}
   if(a==='hc'){hcConnect();return;}

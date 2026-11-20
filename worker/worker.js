@@ -8,7 +8,7 @@
 //   Premium: PREMIUM_DAILY consultas por día (chat y fotos juntos); planes/recetas solo Premium.
 const PROJECT = 'mi-tracker-a6d2e';
 const JWKS = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
-const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type, authorization', 'access-control-allow-methods': 'GET, POST, OPTIONS' };
+const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type, authorization', 'access-control-allow-methods': 'GET, POST, DELETE, OPTIONS' };
 const out = (status, obj) => new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json', ...cors } });
 const b64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
 
@@ -53,6 +53,10 @@ export class Cupos {
       this.sql.exec('INSERT INTO gasto (mes, usd) VALUES (?, ?) ON CONFLICT (mes) DO UPDATE SET usd = usd + excluded.usd', mes, q.usd);
       return Response.json({ ok: true });
     }
+    if (q.op === 'borrar') { // el usuario eliminó su cuenta: se borran sus contadores de uso
+      this.sql.exec('DELETE FROM uso WHERE uid = ?', q.uid);
+      return Response.json({ ok: true });
+    }
     if (q.op === 'devolver') { // Anthropic falló: no se descuenta la consulta
       this.sql.exec('UPDATE uso SET n = MAX(n - 1, 0) WHERE uid = ? AND dia = ?', q.uid, dia);
       return Response.json({ ok: true });
@@ -83,6 +87,7 @@ export default {
       const e = await ask({ op: 'estado' }), f = premium ? {} : await ask({ op: 'estado', dia: diaF });
       return out(200, { cupo: cupo(e.usados, f.usados), disponible: premium || e.gastado < tope });
     }
+    if (req.method === 'DELETE') { await ask({ op: 'borrar' }); return out(200, { ok: true }); } // eliminar cuenta
     if (req.method !== 'POST') return out(405, { error: 'POST' });
 
     let b;
