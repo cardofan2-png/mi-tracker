@@ -47,6 +47,17 @@ const marcas = [
   ['Video al rehacer el plan', app, "S.onb=false;render();intro();"],
   ['Intro = solo el video subido, sin textos ni animación de respaldo', app, 'Solo el video que subió Ricardo (bienvenida.mp4)'],
   ['Video cargado en memoria (blob) para reproducir en cualquier celular', app, "fetch('bienvenida.mp4')"],
+  ['Play: eliminar cuenta y datos desde la app', app, "a==='delacc'"],
+  ['Play: borrar datos en la nube antes que la cuenta', app, "accounts:delete?key="],
+  ['Play: política de privacidad publicada', f('www/privacidad.html'), 'Health Connect'],
+  ['Play: página web para eliminar la cuenta', f('www/eliminar-cuenta.html'), 'cardofan2@gmail.com'],
+  ['Servidor: borrar contadores de la IA', wk, "op: 'borrar'"],
+  ['IA: vocabulario del país del usuario', app, "' El usuario vive en '+pais().n"],
+  ['IA: comidas por ingredientes, sin regionalismos', app, 'no «huevos pericos»'],
+  ['IA: advertencia médica al final si hay síntomas', app, 'function cierreMedico(q,t)'],
+  ['IA: sin «perico» ni palabras de doble sentido (filtro)', app, 'function limpio(t)'],
+  ['IA: lista de palabras prohibidas en el prompt', app, 'Nunca escribas, en ningún país, palabras con doble sentido'],
+  ['IA: nunca mostrar una frase cortada', app, "j.stop_reason==='max_tokens'"],
 ];
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }
