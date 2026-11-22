@@ -62,6 +62,7 @@ const marcas = [
   ['IA: advertencia médica al final si hay síntomas', app, 'function cierreMedico(q,t)'],
   ['IA: sin «perico» ni palabras de doble sentido (filtro)', app, 'function limpio(t)'],
   ['IA: lista de palabras prohibidas en el prompt', app, 'Nunca escribas, en ningún país, palabras con doble sentido'],
+  ['Recordatorios sin alarma exacta (no abre Alarmas y recordatorios)', app, 'n.isExactNotification=false'],
   ['IA: nunca mostrar una frase cortada', app, "j.stop_reason==='max_tokens'"],
 ];
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));

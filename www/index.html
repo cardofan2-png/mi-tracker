@@ -447,6 +447,8 @@ function scheduleReminders(){
       mealSched().forEach(function(m,i){var at=new Date();at.setDate(at.getDate()+d);at.setHours(m[0],m[1]+20,0,0);if(at<=now||(d===0&&mealsAfter(t,m[0]-2)))return;
         list.push({id:200+d*10+i,title:T('Mochi se está quedando sin energía 😴'),body:T('¿Ya registraste tu '+m[2]+'? Tómale una foto y listo.'),largeIcon:'mochi_zz',schedule:{at:at,allowWhileIdle:true}});});
     }
+    // Sin isExactNotification:false el complemento abre «Alarmas y recordatorios» cada vez (la app no pide alarmas exactas: política de Play)
+    list.forEach(function(n){n.isExactNotification=false;});
     return LN.schedule({notifications:list});
   }).catch(function(){});
 }
