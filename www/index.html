@@ -2183,11 +2183,28 @@ function scrollChat(){window.scrollTo(0,document.body.scrollHeight);}
 /* ---------- Render ---------- */
 var TABS={inicio:['home',vInicio],tratamiento:['syr',vTrat],ayuno:['fast',vAyuno],ia:['chat',vIA],progreso:['chart',vProg],perfil:['user',vPerfil]};
 if(!TABS[tab])tab='inicio';
+// iPhone nativo: los textos de Health Connect / Samsung / Google Fit / Play Store pasan a Apple Salud (Android no cambia)
+var IOS=NATIVE&&!!Capacitor.getPlatform&&Capacitor.getPlatform()==='ios',IOSR=null,IOSL=null;
+function iosx(h){
+  if(!IOS||!h)return h;
+  if(IOSR===null||IOSL!==S.lang){IOSL=S.lang;var x=li()<0?0:li()+1;IOSR=[
+    ['¿Usas Google Fit? En Google Fit activa «Sincronizar con Health Connect» para que tus datos lleguen aquí.',['¿Usas otra app de salud o una báscula inteligente? Actívale «Guardar en Salud» para que sus datos lleguen aquí.','Use another health app or a smart scale? Turn on “Write to Health” so its data reaches here.','Usa outro app de saúde ou uma balança inteligente? Ative “Gravar no Saúde” para os dados chegarem aqui.']],
+    ['Tu báscula y tu reloj deben tener activada la sincronización con Health Connect (en Samsung Health: Ajustes → Health Connect).',['Tu báscula y tu reloj deben guardar sus datos en la app Salud del iPhone.','Your scale and watch must save their data to the iPhone Health app.','Sua balança e seu relógio precisam salvar os dados no app Saúde do iPhone.']],
+    ['Tu smartwatch (Galaxy Watch, Pixel Watch y otros) entra por Health Connect: pasos, ritmo cardiaco, ejercicios y agua. Los recordatorios del teléfono también le llegan al reloj.',['Tu Apple Watch entra por la app Salud: pasos, ritmo cardiaco, ejercicios y agua. Los recordatorios del teléfono también le llegan al reloj.','Your Apple Watch connects through the Health app: steps, heart rate, workouts and water. Phone reminders also reach your watch.','Seu Apple Watch entra pelo app Saúde: passos, frequência cardíaca, exercícios e água. Os lembretes do telefone também chegam ao relógio.']],
+    ['Allí entra a Permisos de apps → Michi Salud → Permitir todo. Luego vuelve y toca Conectar otra vez.',['En el iPhone ve a Ajustes → Salud → Acceso a datos y dispositivos → Michi Salud → Activar todo. Luego vuelve y toca Conectar otra vez.','On the iPhone go to Settings → Health → Data Access & Devices → Michi Salud → Turn On All. Then come back and tap Connect again.','No iPhone vá em Ajustes → Saúde → Acesso a Dados e Dispositivos → Michi Salud → Ativar tudo. Depois volte e toque em Conectar de novo.']],
+    ['No diste permisos. Puedes activarlos en Ajustes de Health Connect.',['No diste permisos. Puedes activarlos en Ajustes → Salud → Acceso a datos y dispositivos.','You didn’t grant permissions. You can turn them on in Settings → Health → Data Access & Devices.','Você não deu permissões. Pode ativá-las em Ajustes → Saúde → Acesso a Dados e Dispositivos.']],
+    ['Health Connect no está disponible en este teléfono. Instálalo desde la Play Store.',['La app Salud no está disponible en este dispositivo.','The Health app isn’t available on this device.','O app Saúde não está disponível neste dispositivo.']],
+    ['Health Connect · Samsung Health · Google Fit',['Apple Salud · Apple Watch','Apple Health · Apple Watch','Apple Saúde · Apple Watch']],
+    ['Báscula, reloj, Samsung Health y más',['Báscula, Apple Watch y más','Scale, Apple Watch and more','Balança, Apple Watch e mais']]
+  ].reduce(function(o,r){o.push([T(r[0]),r[1][x]]);if(T(r[0])!==r[0])o.push([r[0],r[1][x]]);return o;},[]);IOSR.push(['Health Connect o Apple Salud',['Apple Salud','Apple Health','Apple Saúde'][x]],['Health Connect or Apple Health','Apple Health'],['Health Connect ou no Apple Saúde','Apple Saúde'],['Health Connect',['Apple Salud','Apple Health','Apple Saúde'][x]]);}
+  IOSR.forEach(function(r){h=h.split(r[0]).join(r[1]);});
+  return h.replace(/<button[^>]*data-act="hc(set|store)"[^>]*>[\s\S]*?<\/button>/g,''); // ajustes/instalar Health Connect no existen en iPhone
+}
 function render(){
   clearInterval(tick);
-  if(!S.onb){ if(!tmp.name&&step===0&&tmp.w==null) startOnbSilent(); document.body.innerHTML=vOnb()+(modal?vModal():''); rInit(); return; }
-  document.body.innerHTML='<div class="wrap fade"><div class="langbar">'+langPill()+'</div>'+TABS[tab][1]()+'<div id="st-msg"></div></div>'+
-   '<nav>'+Object.keys(TABS).map(function(k){return '<button data-tab="'+k+'" class="'+(k===tab?'on':'')+'">'+IC[TABS[k][0]]+'</button>';}).join('')+'</nav><button class="fab" data-m="menu">+</button>'+(modal?vModal():'')+(toast?'<div class="toast" id="toast"><span>'+toast+'</span><button data-act="undo">'+T('Deshacer')+'</button></div>':'');
+  if(!S.onb){ if(!tmp.name&&step===0&&tmp.w==null) startOnbSilent(); document.body.innerHTML=iosx(vOnb()+(modal?vModal():'')); rInit(); return; }
+  document.body.innerHTML=iosx('<div class="wrap fade"><div class="langbar">'+langPill()+'</div>'+TABS[tab][1]()+'<div id="st-msg"></div></div>'+
+   '<nav>'+Object.keys(TABS).map(function(k){return '<button data-tab="'+k+'" class="'+(k===tab?'on':'')+'">'+IC[TABS[k][0]]+'</button>';}).join('')+'</nav><button class="fab" data-m="menu">+</button>'+(modal?vModal():'')+(toast?'<div class="toast" id="toast"><span>'+toast+'</span><button data-act="undo">'+T('Deshacer')+'</button></div>':''));
   [].forEach.call(document.querySelectorAll('nav,.fab'),function(x){x.style.display=(modal||(tab==='ia'&&x.classList.contains('fab')))?'none':'';});
   if(!$('rl'))RC=null;rInit();if($('cd')||$('fastc')) tick=setInterval(function(){var c=$('cd');if(c)c.textContent=countdown();var f=$('fastc');if(f&&S.fast)f.textContent=fastTxt();},1000);
 }
