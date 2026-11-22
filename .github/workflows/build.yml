@@ -29,18 +29,34 @@ jobs:
       - run: cp node_modules/@capacitor/core/dist/capacitor.js www/
       - run: sed -i "s/__VERSION__/1.${{ github.run_number }}/g" www/index.html
       - run: npx cap sync android
-      - name: Compilar
+      - name: Compilar APK
         working-directory: android
-        run: chmod +x gradlew && ./gradlew assembleRelease bundleRelease --no-daemon
+        run: chmod +x gradlew && ./gradlew assembleRelease --no-daemon
+      # AAB para Play Console, firmado con la llave de subida guardada en los secretos de GitHub
+      - name: Compilar AAB para Play
+        working-directory: android
+        env: { KS_B64: '${{ secrets.PLAY_UPLOAD_KEYSTORE }}', PLAY_PASS: '${{ secrets.PLAY_UPLOAD_PASSWORD }}' }
+        run: |
+          if [ -z "$KS_B64" ]; then
+            if [ "$GITHUB_REF" = refs/heads/main ]; then echo "::warning::Faltan los secretos PLAY_UPLOAD_KEYSTORE / PLAY_UPLOAD_PASSWORD: no se genera el AAB"; exit 0; fi
+            # rama de prueba: llave temporal solo para comprobar que la firma funciona (ese AAB no se publica)
+            PLAY_PASS=prueba123; keytool -genkeypair -keystore "$RUNNER_TEMP/up.jks" -alias upload -keyalg RSA -keysize 2048 -validity 10000 -storepass $PLAY_PASS -keypass $PLAY_PASS -dname CN=prueba
+          else echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/up.jks"; fi
+          PLAY_KS="$RUNNER_TEMP/up.jks" PLAY_PASS="$PLAY_PASS" ./gradlew bundleRelease --no-daemon
+          rm -f "$RUNNER_TEMP/up.jks"
+          keytool -printcert -jarfile app/build/outputs/bundle/release/app-release.aab | grep -E "Owner|SHA256:" | head -2
       - name: Publicar descarga
+        if: github.ref == 'refs/heads/main'
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
           F=MichiSalud-v1.${{ github.run_number }}.apk
           cp android/app/build/outputs/apk/release/app-release.apk $F
           cp $F MichiSalud.apk
+          A=android/app/build/outputs/bundle/release/app-release.aab; FILES="$F MichiSalud.apk"
           # .aab = el archivo que se sube a Play Console (Play no acepta .apk para apps nuevas)
-          cp android/app/build/outputs/bundle/release/app-release.aab MichiSalud-PlayStore-v1.${{ github.run_number }}.aab
+          if [ -f $A ]; then cp $A MichiSalud-PlayStore-v1.${{ github.run_number }}.aab; FILES="$FILES MichiSalud-PlayStore-v1.${{ github.run_number }}.aab"; fi
           gh release delete ultima -y --cleanup-tag || true
-          gh release create ultima $F MichiSalud.apk MichiSalud-PlayStore-v1.${{ github.run_number }}.aab --latest -t "Michi Salud v1.${{ github.run_number }}" -n "APK: descárgalo en tu Android e instálalo. AAB: súbelo a Play Console."
+          gh release create ultima $FILES --latest -t "Michi Salud v1.${{ github.run_number }}" -n "APK: descárgalo en tu Android e instálalo. AAB: súbelo a Play Console."
       - uses: actions/upload-artifact@v4
+        if: github.ref == 'refs/heads/main'
         with: { name: MichiSalud-apk, path: MichiSalud.apk }

@@ -27,11 +27,21 @@ android {
             keyAlias 'mitracker'
             keyPassword 'e3dd823d446fb028efb5dacb6ab0f7cd'
         }
+        // Llave de subida a Google Play: solo existe en los secretos de GitHub, nunca en el repo (que es público)
+        if (System.getenv("PLAY_KS")) {
+            play {
+                storeFile file(System.getenv("PLAY_KS"))
+                storePassword System.getenv("PLAY_PASS")
+                keyAlias 'upload'
+                keyPassword System.getenv("PLAY_PASS")
+            }
+        }
     }
     buildTypes {
         debug { signingConfig signingConfigs.mitracker }
         release {
-            signingConfig signingConfigs.mitracker
+            // APK para instalar a mano: llave de siempre (actualiza encima). AAB para Play: llave de subida secreta
+            signingConfig System.getenv("PLAY_KS") ? signingConfigs.play : signingConfigs.mitracker
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
