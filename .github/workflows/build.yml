@@ -41,7 +41,11 @@ jobs:
             if [ "$GITHUB_REF" = refs/heads/main ]; then echo "::warning::Faltan los secretos PLAY_UPLOAD_KEYSTORE / PLAY_UPLOAD_PASSWORD: no se genera el AAB"; exit 0; fi
             # rama de prueba: llave temporal solo para comprobar que la firma funciona (ese AAB no se publica)
             PLAY_PASS=prueba123; keytool -genkeypair -keystore "$RUNNER_TEMP/up.jks" -alias upload -keyalg RSA -keysize 2048 -validity 10000 -storepass $PLAY_PASS -keypass $PLAY_PASS -dname CN=prueba
-          else echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/up.jks"; fi
+          else
+            # tolera espacios o saltos de línea al pegar desde el celular
+            PLAY_PASS=$(printf '%s' "$PLAY_PASS" | tr -d ' \r\n'); printf '%s' "$KS_B64" | tr -d ' \r\n' | base64 -d > "$RUNNER_TEMP/up.jks" 2>/dev/null || true
+            keytool -list -keystore "$RUNNER_TEMP/up.jks" -storepass "$PLAY_PASS" -alias upload >/dev/null 2>&1 || { echo "::error::La llave de Play no abre: revisa que PLAY_UPLOAD_KEYSTORE y PLAY_UPLOAD_PASSWORD estén pegados completos"; exit 1; }
+          fi
           PLAY_KS="$RUNNER_TEMP/up.jks" PLAY_PASS="$PLAY_PASS" ./gradlew bundleRelease --no-daemon
           rm -f "$RUNNER_TEMP/up.jks"
           keytool -printcert -jarfile app/build/outputs/bundle/release/app-release.aab | grep -E "Owner|SHA256:" | head -2
