@@ -1,7 +1,7 @@
 name: Compilar iPhone
 on:
   push:
-    branches: [main, v135]
+    branches: [main]
   workflow_dispatch:
 jobs:
   ios:

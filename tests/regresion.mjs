@@ -65,6 +65,12 @@ const marcas = [
   ['Recordatorios sin alarma exacta (no abre Alarmas y recordatorios)', app, 'n.isExactNotification=false'],
   ['IA: nunca mostrar una frase cortada', app, "j.stop_reason==='max_tokens'"],
 ];
+marcas.push(
+  ['iPhone: textos de Apple Salud en vez de Health Connect', app, 'function iosx(h)'],
+  ['iPhone: permiso de Salud en Info.plist', f('ios/App/App/Info.plist'), 'NSHealthShareUsageDescription'],
+  ['iPhone: capacidad HealthKit', f('ios/App/App/App.entitlements'), 'com.apple.developer.healthkit'],
+  ['iPhone: compila con Xcode 26', f('.github/workflows/ios.yml'), "xcode-version: '26'"],
+);
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }
 console.log('✔ Regresión: las ' + marcas.length + ' mejoras aprobadas siguen en su lugar.');
