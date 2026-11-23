@@ -7,7 +7,7 @@ const app = f('www/index.html'), main = f('android/app/src/main/java/com/ricardo
   man = f('android/app/src/main/AndroidManifest.xml'), pkg = f('package.json'), wk = f('worker/worker.js'), wt = f('worker/wrangler.toml');
 const marcas = [
   ['✕ en todas las ventanas', app, 'class="mx" data-close="1"'],
-  ['Guía de medidas con Mochi', app, 'function measGuide'],
+  ['Guía de medidas con Moki', app, 'function measGuide'],
   ['Silueta con cinta métrica', app, 'var MSIL='],
   ['Báscula de baño en Peso', app, "['weight',BASC,'Peso']"],
   ['Horas en un renglón (solo horarios)', app, '.hor .ht{flex:0 0 auto'],
@@ -42,7 +42,7 @@ const marcas = [
   ['Nutrientes con nombres en ES/EN y listas', app, 'function normMeal(o)'],
   ['Instrucción de solo JSON a la IA', app, 'Respondes ÚNICAMENTE con un objeto JSON válido'],
   ['Versión visible en Perfil', app, '<span>Versión</span> __VERSION__'],
-  ['Video de bienvenida de Mochi', app, 'function intro()'],
+  ['Video de bienvenida de Moki', app, 'function intro()'],
   ['Video de inicio siempre al abrir la app', app, 'intro(); // video de inicio: SIEMPRE al abrir la app'],
   ['Video al rehacer el plan', app, "S.onb=false;render();intro();"],
   ['Intro = solo el video subido, sin textos ni animación de respaldo', app, 'Solo el video que subió Ricardo (bienvenida.mp4)'],
@@ -51,7 +51,7 @@ const marcas = [
   ['Play: solo permisos de salud usados', man, 'android.permission.health.READ_BLOOD_GLUCOSE" tools:node="remove"'],
   ['Play: sin alarmas exactas', man, 'android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove"'],
   ['Play: se compila el AAB', f('.github/workflows/build.yml'), 'bundleRelease'],
-  ['Video de bienvenida con el nombre Mochi en arco', app, 'con el nombre "Mochi" apareciendo en arco'],
+  ['Video de bienvenida con el nombre Moki en arco', app, 'con el nombre "Moki" apareciendo en arco'],
   ['Play: eliminar cuenta y datos desde la app', app, "a==='delacc'"],
   ['Play: borrar datos en la nube antes que la cuenta', app, "accounts:delete?key="],
   ['Play: política de privacidad publicada', f('www/privacidad.html'), 'Health Connect'],
@@ -70,6 +70,10 @@ marcas.push(
   ['iPhone: permiso de Salud en Info.plist', f('ios/App/App/Info.plist'), 'NSHealthShareUsageDescription'],
   ['iPhone: capacidad HealthKit', f('ios/App/App/App.entitlements'), 'com.apple.developer.healthkit'],
   ['iPhone: compila con Xcode 26', f('.github/workflows/ios.yml'), "xcode-version: '26'"],
+);
+marcas.push(
+  ['Nombre de la app: Mokifit', app, '<title>Mokifit</title>'],
+  ['La gata se llama Michi (regla de género con Moki)', app, "t.replace(/\\bMoki\\b/g,'Michi')"],
 );
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }

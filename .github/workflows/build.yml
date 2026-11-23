@@ -53,14 +53,14 @@ jobs:
         if: github.ref == 'refs/heads/main'
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
-          F=MichiSalud-v1.${{ github.run_number }}.apk
+          F=Mokifit-v1.${{ github.run_number }}.apk
           cp android/app/build/outputs/apk/release/app-release.apk $F
-          cp $F MichiSalud.apk
-          A=android/app/build/outputs/bundle/release/app-release.aab; FILES="$F MichiSalud.apk"
+          cp $F Mokifit.apk; cp $F MichiSalud.apk  # nombre viejo: los enlaces ya compartidos siguen funcionando
+          A=android/app/build/outputs/bundle/release/app-release.aab; FILES="$F Mokifit.apk MichiSalud.apk"
           # .aab = el archivo que se sube a Play Console (Play no acepta .apk para apps nuevas)
-          if [ -f $A ]; then cp $A MichiSalud-PlayStore-v1.${{ github.run_number }}.aab; FILES="$FILES MichiSalud-PlayStore-v1.${{ github.run_number }}.aab"; fi
+          if [ -f $A ]; then cp $A Mokifit-PlayStore-v1.${{ github.run_number }}.aab; FILES="$FILES Mokifit-PlayStore-v1.${{ github.run_number }}.aab"; fi
           gh release delete ultima -y --cleanup-tag || true
-          gh release create ultima $FILES --latest -t "Michi Salud v1.${{ github.run_number }}" -n "APK: descárgalo en tu Android e instálalo. AAB: súbelo a Play Console."
+          gh release create ultima $FILES --latest -t "Mokifit v1.${{ github.run_number }}" -n "APK: descárgalo en tu Android e instálalo. AAB: súbelo a Play Console."
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/main'
-        with: { name: MichiSalud-apk, path: MichiSalud.apk }
+        with: { name: Mokifit-apk, path: Mokifit.apk }

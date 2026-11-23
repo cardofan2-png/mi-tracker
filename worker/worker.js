@@ -1,4 +1,4 @@
-// IA de Michi Salud: recibe la conversación de la app, verifica que el usuario tenga sesión
+// IA de Mokifit: recibe la conversación de la app, verifica que el usuario tenga sesión
 // (token de Firebase), aplica los cupos y la reenvía a Anthropic con la clave guardada aquí.
 // La app nunca ve la clave.
 //
