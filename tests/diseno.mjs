@@ -1,4 +1,4 @@
-// Prueba de diseño de Mokifit: recorre la bienvenida, las 6 pestañas y todas las ventanas
+// Prueba de diseño de MokiFit: recorre la bienvenida, las 6 pestañas y todas las ventanas
 // en varios tamaños de pantalla e idiomas. Falla (y no se compila el APK) si algo se sale de la
 // pantalla o si una ventana no tiene ✕ para cerrarse.
 // Uso: node tests/diseno.mjs   (requiere playwright con chromium)

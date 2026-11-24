@@ -60,7 +60,7 @@ jobs:
           # .aab = el archivo que se sube a Play Console (Play no acepta .apk para apps nuevas)
           if [ -f $A ]; then cp $A Mokifit-PlayStore-v1.${{ github.run_number }}.aab; FILES="$FILES Mokifit-PlayStore-v1.${{ github.run_number }}.aab"; fi
           gh release delete ultima -y --cleanup-tag || true
-          gh release create ultima $FILES --latest -t "Mokifit v1.${{ github.run_number }}" -n "APK: descárgalo en tu Android e instálalo. AAB: súbelo a Play Console."
+          gh release create ultima $FILES --latest -t "MokiFit v1.${{ github.run_number }}" -n "APK: descárgalo en tu Android e instálalo. AAB: súbelo a Play Console."
       - uses: actions/upload-artifact@v4
         if: github.ref == 'refs/heads/main'
         with: { name: Mokifit-apk, path: Mokifit.apk }

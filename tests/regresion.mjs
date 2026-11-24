@@ -72,7 +72,7 @@ marcas.push(
   ['iPhone: compila con Xcode 26', f('.github/workflows/ios.yml'), "xcode-version: '26'"],
 );
 marcas.push(
-  ['Nombre de la app: Mokifit', app, '<title>Mokifit</title>'],
+  ['Nombre de la app: MokiFit', app, '<title>MokiFit</title>'],
   ['La gata se llama Michi (regla de género con Moki)', app, "t.replace(/\\bMoki\\b/g,'Michi')"],
 );
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
