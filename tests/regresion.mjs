@@ -86,6 +86,10 @@ marcas.push(
   ['Enlaces viejos a Tratamiento/Ayuno abren Plan', app, "var PSUB={tratamiento:'trat',ayuno:'ayuno'}"],
 );
 marcas.push(
+  ['Android bloquea capturas y grabación (FLAG_SECURE)', main, 'WindowManager.LayoutParams.FLAG_SECURE'],
+  ['iPhone tapa la app al grabar pantalla y en apps recientes', f('ios/App/App/SceneDelegate.swift'), 'UIScreen.capturedDidChangeNotification'],
+);
+marcas.push(
   ['Parte 3: Progreso y Perfil con tarjetas', app, '/* Parte 3: Progreso y Perfil */'],
   ['Progreso: tarjeta verde «Cambio total» con gráfica y meta', app, 'function progHero(P,st,cw)'],
   ['Progreso: cuadrícula IMC/Medidas/Sueño/Informe', app, 'function progTiles(P)'],
