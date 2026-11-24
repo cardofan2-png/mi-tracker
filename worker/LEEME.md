@@ -1,6 +1,6 @@
-# IA incluida de Michi Salud (Cloudflare Worker)
+# IA incluida de Mokifit (Cloudflare Worker)
 
-Guarda tu clave de Anthropic en el servidor. Los usuarios solo necesitan su cuenta de Michi Salud (Firebase); nadie ve la clave.
+Guarda tu clave de Anthropic en el servidor. Los usuarios solo necesitan su cuenta de Mokifit (Firebase); nadie ve la clave.
 
 **Publicado en:** https://michi-salud-ia.cardofan2.workers.dev (ya configurado en la app).
 
@@ -15,7 +15,7 @@ Guarda tu clave de Anthropic en el servidor. Los usuarios solo necesitan su cuen
    - `ANTHROPIC_API_KEY`
 5. GitHub → **Actions → "Publicar IA (Cloudflare)" → Run workflow**. Al terminar, la URL sale en el registro:
    `https://michi-salud-ia.<tu-subdominio>.workers.dev`
-6. Pásame esa URL (o pégala en `www/index.html`, en `var MS_AI=''`). Con eso la opción "Michi Salud" aparece en la app y queda por defecto.
+6. Pásame esa URL (o pégala en `www/index.html`, en `var MS_AI=''`). Con eso la opción "Mokifit" aparece en la app y queda por defecto.
 
 ## Cupos y controles de costo
 Se ajustan en `wrangler.toml` → `[vars]`:

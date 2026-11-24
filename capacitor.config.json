@@ -1,6 +1,6 @@
 {
   "appId": "com.ricardo.mitracker",
-  "appName": "Michi Salud",
+  "appName": "Mokifit",
   "webDir": "www",
   "android": {
     "allowMixedContent": false
