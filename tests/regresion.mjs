@@ -8,8 +8,11 @@ const app = f('www/index.html'), main = f('android/app/src/main/java/com/ricardo
 const marcas = [
   ['✕ en todas las ventanas', app, 'class="mx" data-close="1"'],
   ['Guía de medidas con Moki', app, 'function measGuide'],
-  ['Silueta con cinta métrica', app, 'var MSIL='],
-  ['Báscula de baño en Peso', app, "['weight',BASC,'Peso']"],
+  ['Medidas con ícono propio (cinta)', app, "['meas','Medidas','Medidas']"],
+  ['Emojis → íconos propios en toda la app', app, 'function emIcons(root)'],
+  ['Báscula de baño en Peso (ícono propio)', app, "['weight','Peso','Peso']"],
+  ['Íconos propios de MokiFit en barra y menú', app, "function ico(n,sz,col,mode)"],
+  ['Tema oscuro con tarjetas de color', app, "Parte 4: tema oscuro con tarjetas de color"],
   ['Horas en un renglón (solo horarios)', app, '.hor .ht{flex:0 0 auto'],
   ['Diseño adaptable', app, 'Adaptable'],
   ['Tope de letra grande 115%', main, 'setTextZoom(115)'],
@@ -72,8 +75,14 @@ marcas.push(
   ['iPhone: compila con Xcode 26', f('.github/workflows/ios.yml'), "xcode-version: '26'"],
 );
 marcas.push(
-  ['Nombre de la app: Mokifit', app, '<title>Mokifit</title>'],
+  ['Nombre de la app: MokiFit', app, '<title>MokiFit</title>'],
   ['La gata se llama Michi (regla de género con Moki)', app, "t.replace(/\\bMoki\\b/g,'Michi')"],
+);
+marcas.push(
+  ['Navegación Mi día: 5 pestañas con ＋ central', app, "var NAV=[['inicio','home','Hoy'],['plan','syr','Plan'],null,['progreso','chart','Progreso'],['perfil','user','Perfil']]"],
+  ['Plan junta Tratamiento y Ayuno', app, 'function vPlan()'],
+  ['Burbuja de Moki abre el chat', app, 'class="mokib" data-tab="ia"'],
+  ['Enlaces viejos a Tratamiento/Ayuno abren Plan', app, "var PSUB={tratamiento:'trat',ayuno:'ayuno'}"],
 );
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }

@@ -1,6 +1,6 @@
 {
   "appId": "com.ricardo.mitracker",
-  "appName": "Mokifit",
+  "appName": "MokiFit",
   "webDir": "www",
   "android": {
     "allowMixedContent": false

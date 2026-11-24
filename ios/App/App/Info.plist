@@ -3,25 +3,25 @@
 <plist version="1.0">
 <dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Mokifit usa la cámara para la foto de tu comida, leer códigos de barras y tus fotos de progreso.</string>
+	<string>MokiFit usa la cámara para la foto de tu comida, leer códigos de barras y tus fotos de progreso.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Mokifit abre tus fotos solo cuando eliges una foto de comida o de progreso.</string>
+	<string>MokiFit abre tus fotos solo cuando eliges una foto de comida o de progreso.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Mokifit guarda en tus fotos las imágenes de progreso que tú decides exportar.</string>
+	<string>MokiFit guarda en tus fotos las imágenes de progreso que tú decides exportar.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Mokifit usa el micrófono solo cuando dictas por voz.</string>
+	<string>MokiFit usa el micrófono solo cuando dictas por voz.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Mokifit convierte tu voz en texto cuando dictas una comida o un mensaje.</string>
+	<string>MokiFit convierte tu voz en texto cuando dictas una comida o un mensaje.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Mokifit lee tu peso, estatura, sueño, agua, pasos, calorías activas, frecuencia cardiaca y entrenamientos de Salud para mostrar tu progreso y ajustar tus metas.</string>
+	<string>MokiFit lee tu peso, estatura, sueño, agua, pasos, calorías activas, frecuencia cardiaca y entrenamientos de Salud para mostrar tu progreso y ajustar tus metas.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>Mokifit guarda en Salud el agua que registras en la app.</string>
+	<string>MokiFit guarda en Salud el agua que registras en la app.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>Mokifit</string>
+        <string>MokiFit</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
