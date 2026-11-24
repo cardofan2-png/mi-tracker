@@ -85,6 +85,14 @@ marcas.push(
   ['Burbuja de Moki abre el chat', app, 'class="mokib" data-tab="ia"'],
   ['Enlaces viejos a Tratamiento/Ayuno abren Plan', app, "var PSUB={tratamiento:'trat',ayuno:'ayuno'}"],
 );
+marcas.push(
+  ['Parte 3: Progreso y Perfil con tarjetas', app, '/* Parte 3: Progreso y Perfil */'],
+  ['Progreso: tarjeta verde «Cambio total» con gráfica y meta', app, 'function progHero(P,st,cw)'],
+  ['Progreso: cuadrícula IMC/Medidas/Sueño/Informe', app, 'function progTiles(P)'],
+  ['Progreso: informe desde la tarjeta azul', app, 'data-act="report" style="color:#1b3f9e"'],
+  ['Perfil: ajustes en lista con íconos propios', app, 'function srow(n,t,sub,right,extra,attr)'],
+  ['Perfil: tarjeta Premium solo si no es Premium', app, "(MS_AI&&!prem?'<div class=\"card ctile pfpr\""],
+);
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (/Michi/.test(app) || /Michi/.test(wk)) { console.error('✘ Moki para todos: volvió a aparecer el nombre «Michi» en la app o en la IA'); process.exit(1); }
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }
