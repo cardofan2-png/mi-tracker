@@ -76,7 +76,8 @@ marcas.push(
 );
 marcas.push(
   ['Nombre de la app: MokiFit', app, '<title>MokiFit</title>'],
-  ['La gata se llama Michi (regla de género con Moki)', app, "t.replace(/\\bMoki\\b/g,'Michi')"],
+  ['Moki para todos: la mascota se llama Moki en hombres y mujeres', app, "T('Moki dice')"],
+  ['Moki para todos: la IA se presenta como Moki', app, "'Eres Moki, un gato simpático y el asistente"],
 );
 marcas.push(
   ['Navegación Mi día: 5 pestañas con ＋ central', app, "var NAV=[['inicio','home','Hoy'],['plan','syr','Plan'],null,['progreso','chart','Progreso'],['perfil','user','Perfil']]"],
@@ -85,5 +86,6 @@ marcas.push(
   ['Enlaces viejos a Tratamiento/Ayuno abren Plan', app, "var PSUB={tratamiento:'trat',ayuno:'ayuno'}"],
 );
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
+if (/Michi/.test(app) || /Michi/.test(wk)) { console.error('✘ Moki para todos: volvió a aparecer el nombre «Michi» en la app o en la IA'); process.exit(1); }
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }
 console.log('✔ Regresión: las ' + marcas.length + ' mejoras aprobadas siguen en su lugar.');
