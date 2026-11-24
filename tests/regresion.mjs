@@ -76,7 +76,7 @@ marcas.push(
   ['La gata se llama Michi (regla de género con Moki)', app, "t.replace(/\\bMoki\\b/g,'Michi')"],
 );
 marcas.push(
-  ['Navegación Mi día: 5 pestañas con ＋ central', app, "var NAV=[['inicio','home','Hoy'],['plan','syr','Plan'],null,['progreso','chart','Progreso'],['perfil','user','Yo']]"],
+  ['Navegación Mi día: 5 pestañas con ＋ central', app, "var NAV=[['inicio','home','Hoy'],['plan','syr','Plan'],null,['progreso','chart','Progreso'],['perfil','user','Perfil']]"],
   ['Plan junta Tratamiento y Ayuno', app, 'function vPlan()'],
   ['Burbuja de Moki abre el chat', app, 'class="mokib" data-tab="ia"'],
   ['Enlaces viejos a Tratamiento/Ayuno abren Plan', app, "var PSUB={tratamiento:'trat',ayuno:'ayuno'}"],
