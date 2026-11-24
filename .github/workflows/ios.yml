@@ -3,9 +3,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      mac:
+        description: 'Máquina: macos-15 (ARM) o macos-15-intel si GitHub no tiene ARM disponibles'
+        default: macos-15
 jobs:
   ios:
-    runs-on: macos-15
+    # ponytail: si GitHub no tiene Mac ARM, se relanza a mano con mac=macos-15-intel
+    runs-on: ${{ inputs.mac || 'macos-15' }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       # Apple exige Xcode 26 / SDK iOS 26 para subir a App Store Connect desde el 28-abr-2026
