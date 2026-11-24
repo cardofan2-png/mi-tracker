@@ -8,7 +8,8 @@ const app = f('www/index.html'), main = f('android/app/src/main/java/com/ricardo
 const marcas = [
   ['✕ en todas las ventanas', app, 'class="mx" data-close="1"'],
   ['Guía de medidas con Moki', app, 'function measGuide'],
-  ['Silueta con cinta métrica', app, 'var MSIL='],
+  ['Medidas con ícono propio (cinta)', app, "['meas','Medidas','Medidas']"],
+  ['Emojis → íconos propios en toda la app', app, 'function emIcons(root)'],
   ['Báscula de baño en Peso (ícono propio)', app, "['weight','Peso','Peso']"],
   ['Íconos propios de MokiFit en barra y menú', app, "function ico(n,sz,col,mode)"],
   ['Tema oscuro con tarjetas de color', app, "Parte 4: tema oscuro con tarjetas de color"],
