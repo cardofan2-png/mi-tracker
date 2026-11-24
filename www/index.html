@@ -250,6 +250,20 @@ input[type=time]::-webkit-datetime-edit,input[type=date]::-webkit-datetime-edit{
 .mtip small{color:var(--mu);font-size:12px}
 @media (max-width:380px){.mfig{width:110px;height:110px}.mfig .mimg{width:110px!important;height:110px!important}.mtip{font-size:13px}.mtip small{display:none}}
 .msil{width:1.6em;height:1.6em;display:inline-block;vertical-align:top;margin:-.22em 0 -.18em}
+
+/* Navegación «Mi día»: 5 pestañas con nombre, ＋ central coral y burbuja de Moki */
+nav.nav5{left:12px;right:12px;margin:0 auto;transform:none;width:auto;max-width:496px;bottom:max(12px,env(safe-area-inset-bottom));height:68px;border-radius:24px;padding:0 6px;gap:0;display:flex;align-items:center;justify-content:space-around}
+nav.nav5 button{flex:1 1 0;max-width:76px;width:auto!important;height:58px!important;aspect-ratio:auto;border-radius:16px;background:none!important;box-shadow:none!important;color:#7d7896;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:600 11px 'Plus Jakarta Sans',system-ui,sans-serif}
+nav.nav5 .ni{width:46px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+nav.nav5 button.on{color:var(--p);font-weight:800}nav.nav5 button.on .ni{background:var(--pl)}
+nav.nav5 .navadd{flex:0 0 60px;max-width:60px;height:60px!important;margin-top:-30px;border-radius:22px;background:var(--warm)!important;color:#fff;box-shadow:0 10px 24px rgba(255,138,91,.45)!important}
+.mokib{position:fixed;right:16px;bottom:100px;width:56px;height:56px;border-radius:50%;background:#fff;box-shadow:0 8px 24px rgba(40,24,110,.18);z-index:5;display:flex;align-items:center;justify-content:center;padding:0}
+.mokib img{width:44px;height:44px}
+.composer{bottom:96px}
+.seg{display:flex;gap:4px;padding:4px;margin:14px 0 4px;border-radius:16px;background:#fff;box-shadow:0 2px 10px rgba(40,24,110,.05)}
+.seg button{flex:1;height:42px;border-radius:12px;background:none;color:var(--tx);font-weight:700;font-size:15px}
+.seg button.on{background:var(--p);color:#fff}
+.fab{display:none}
 </style>
 </head>
 <body>
@@ -329,11 +343,11 @@ function limpio(t){MALAS.forEach(function(m){t=t.replace(m[0],function(x){var r=
 function aiCall(msgs,max,kind,sys){
   var am=msgs.map(function(x){return{role:x.role,content:typeof x.content==='string'?x.content:x.content.map(function(q){return q.img?{type:'image',source:{type:'base64',media_type:'image/jpeg',data:q.img}}:{type:'text',text:q.text};})};});
   if(!MS_AI)return Promise.reject({code:'off',message:T('La IA de Moki estará disponible muy pronto.')});
-  if(!AU)return Promise.reject({code:'noauth',message:T('Crea tu cuenta o inicia sesión en Mi plan para hablar con')+' '+(isFem()?'Michi':'Moki')+'.'});
+  if(!AU)return Promise.reject({code:'noauth',message:T('Crea tu cuenta o inicia sesión en la pestaña Yo para hablar con')+' '+(isFem()?'Michi':'Moki')+'.'});
   return fbTok().then(function(t){return fetch(MS_AI,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+t},body:JSON.stringify({max_tokens:max||800,messages:am,kind:kind||undefined,system:sys||undefined})});})
     .then(function(r){return r.json().catch(function(){return{};}).then(function(j){
       if(j.cupo){AIQ=AIQ||{ok:true};AIQ.premium=j.cupo.premium;AIQ.max=j.cupo.max;if(j.cupo.usados!=null)AIQ.usados=j.cupo.usados;if(j.cupo.fotos){AIQ.fotos=AIQ.fotos||{};AIQ.fotos.max=j.cupo.fotos.max;if(j.cupo.fotos.usados!=null)AIQ.fotos.usados=j.cupo.fotos.usados;}}
-      if(r.status===401){setAU(null);AIQ=null;throw{code:'noauth',message:T('Tu sesión venció. Inicia sesión de nuevo en Mi plan.')};}
+      if(r.status===401){setAU(null);AIQ=null;throw{code:'noauth',message:T('Tu sesión venció. Inicia sesión de nuevo en la pestaña Yo.')};}
       var em=j.error&&(j.error.message||j.error),c=r.status===402?'premium':r.status===429&&em==='LIMIT'?'limit':r.status===429&&em==='LIMIT_FOTO'?'limitf':r.status===503&&em==='BUDGET'?'budget':'';
       if(c){if(c==='budget'&&AIQ)AIQ.ok=false;throw{code:c,message:pwText(c)};}
       if(r.status===429)throw{code:'rate_limited',message:T('Estoy recibiendo muchas preguntas. Intenta de nuevo en un momento.')};
@@ -589,7 +603,7 @@ function toKg(v){return Math.round((U()?v/LB:v)*1000)/1000;}            // núme
 function fW(kg){return nf(rW(kg),1)+' '+uW();}
 function fR(r){return U()?String(Math.round(r*LB*10)/10):String(r).replace('.',',');}
 function fH(cm){if(!U())return cm+' cm';var i=Math.round(cm/2.54);return Math.floor(i/12)+'′ '+(i%12)+'″';}
-var I18N={
+var I18N={"Plan":["Plan","Plano"],"Yo":["Me","Eu"],"Registrar":["Log","Registrar"],"Navegación":["Navigation","Navegação"],"Hablar con":["Talk to","Falar com"],
 "Eliminar mi cuenta y mis datos":["Delete my account and data", "Excluir minha conta e meus dados"],
 "Borrar mis datos de este teléfono":["Delete my data from this phone", "Apagar meus dados deste celular"],
 "Eliminar mi cuenta":["Delete my account", "Excluir minha conta"],
@@ -731,7 +745,7 @@ var I18N={
 "Ahora no":["Not now", "Agora não"],
 "Muy pronto podrás suscribirte desde aquí. Te avisaremos cuando esté disponible.":["You’ll be able to subscribe here very soon. We’ll let you know when it’s available.", "Em breve você poderá assinar por aqui. Avisaremos quando estiver disponível."],
 'No reconocí esos alimentos. Escríbelos más simple (ej: 2 huevos y 1 arepa) o pon los números.':['I didn’t recognize those foods. Write them more simply (e.g.: 2 eggs and 1 arepa) or enter the numbers.','Não reconheci esses alimentos. Escreva de forma mais simples (ex.: 2 ovos e 1 arepa) ou coloque os números.'],
-'Sin una IA conectada no puedo leer la foto. Escribe qué es (ej: 2 arepas con queso) y lo calculo. Para que se analice sola, conecta una IA en Mi plan.':['Without a connected AI I can’t read the photo. Type what it is (e.g.: 2 arepas with cheese) and I’ll calculate it. To analyze photos automatically, connect an AI in My plan.','Sem uma IA conectada não consigo ler a foto. Escreva o que é (ex.: 2 arepas com queijo) e eu calculo. Para analisar sozinho, conecte uma IA em Meu plano.'],
+'Sin una IA conectada no puedo leer la foto. Escribe qué es (ej: 2 arepas con queso) y lo calculo. Para que se analice sola, conecta una IA en la pestaña Yo.':['Without a connected AI I can’t read the photo. Type what it is (e.g.: 2 arepas with cheese) and I’ll calculate it. To analyze photos automatically, connect an AI in the Me tab.','Sem uma IA conectada não consigo ler a foto. Escreva o que é (ex.: 2 arepas com queijo) e eu calculo. Para analisar sozinho, conecte uma IA na aba Eu.'],
 'Activa con tu Claude de claude.ai (sin clave)':['Active with your Claude from claude.ai (no key)','Ativa com seu Claude do claude.ai (sem chave)'],
 'Inteligencia artificial':['Artificial intelligence','Inteligência artificial'],'Activa con':['Active with','Ativa com'],'Elige la IA que tengas o prefieras':['Choose the AI you have or prefer','Escolha a IA que você tem ou prefere'],
 'Clave de API':['API key','Chave de API'],'compatible con OpenAI':['OpenAI-compatible','compatível com OpenAI'],'guardada':['saved','salva'],'Dirección (URL base)':['Address (base URL)','Endereço (URL base)'],
@@ -753,7 +767,7 @@ var I18N={
 'O cuéntale a Moki qué comiste':['Or tell Moki what you ate','Ou conte ao Moki o que você comeu'],'Prefiero poner los números yo':['I’d rather enter the numbers myself','Prefiro colocar os números eu mesmo'],'Deshacer':['Undo','Desfazer'],
 'Toma una foto de tu comida':['Take a photo of your meal','Tire uma foto da sua refeição'],'Moki calcula calorías, proteína, carbohidratos, grasas y fibra.':['Moki calculates calories, protein, carbs, fats and fiber.','O Moki calcula calorias, proteínas, carboidratos, gorduras e fibras.'],
 'Tomar foto':['Take photo','Tirar foto'],'Galería':['Gallery','Galeria'],
-'Para analizar fotos, agrega tu clave de IA en Mi plan → Conexiones.':['To analyze photos, add your AI key in My plan → Connections.','Para analisar fotos, adicione sua chave de IA em Meu plano → Conexões.'],
+'Para analizar fotos, agrega tu clave de IA en Yo → Conexiones.':['To analyze photos, add your AI key in Me → Connections.','Para analisar fotos, adicione sua chave de IA em Eu → Conexões.'],
 'El análisis de fotos funciona en la app instalada con tu clave de IA.':['Photo analysis works in the installed app with your AI key.','A análise de fotos funciona no app instalado com sua chave de IA.'],
 'Responder':['Answer','Responder'],'¿Usas alguna app de salud?':['Do you use a health app?','Você usa algum app de saúde?'],
 'Si la conectas, traigo tu peso, estatura y actividad para completar tu plan.':['If you connect it, I’ll bring in your weight, height and activity to complete your plan.','Se você conectar, eu trago seu peso, altura e atividade para completar seu plano.'],
@@ -780,7 +794,7 @@ var I18N={
 'Muy activo':['Very active','Muito ativo'],'ejercicio intenso diario':['intense daily exercise','exercício intenso diário'],
 '¿Conectamos tu reloj y tu báscula?':['Shall we connect your watch and scale?','Vamos conectar seu relógio e sua balança?'],
 'Importa tu peso, pasos y actividad desde Health Connect para que tu plan se ajuste solo.':['Import your weight, steps and activity from Health Connect so your plan adjusts automatically.','Importe seu peso, passos e atividade do Health Connect para que seu plano se ajuste sozinho.'],
-'Puedes hacerlo después en Mi plan.':['You can do it later in My plan.','Você pode fazer isso depois em Meu plano.'],
+'Puedes hacerlo después en la pestaña Yo.':['You can do it later in the Me tab.','Você pode fazer isso depois na aba Eu.'],
 'Guarda tu progreso':['Save your progress','Salve seu progresso'],'Crea una cuenta con tu correo para no perder tus datos y usarlos en otro celular.':['Create an account with your email so you don’t lose your data and can use it on another phone.','Crie uma conta com seu e-mail para não perder seus dados e usá-los em outro celular.'],
 'Crear cuenta con correo':['Sign up with email','Criar conta com e-mail'],'Crear cuenta':['Sign up','Criar conta'],'Entrar':['Log in','Entrar'],'Correo':['Email','E-mail'],'Contraseña':['Password','Senha'],'Mínimo 6 caracteres':['At least 6 characters','Mínimo 6 caracteres'],
 'Olvidé mi contraseña':['I forgot my password','Esqueci minha senha'],'¿Ya tienes cuenta? Entra':['Already have an account? Log in','Já tem conta? Entre'],'¿No tienes cuenta? Créala':['No account? Create one','Não tem conta? Crie uma'],'Entrando…':['Working…','Entrando…'],
@@ -885,7 +899,7 @@ var I18N={
 'No pude calcularlo. Intenta describirlo distinto o ponlo a mano.':['I couldn’t calculate it. Try describing it differently or enter it manually.','Não consegui calcular. Tente descrever de outro jeito ou preencha à mão.'],
 '¿Qué ceno hoy con la proteína que me falta?':['What should I have for dinner with the protein I still need?','O que janto hoje com a proteína que me falta?'],'¿Cómo manejo las náuseas?':['How do I handle nausea?','Como lido com a náusea?'],'Ideas de desayuno alto en proteína':['High-protein breakfast ideas','Ideias de café da manhã rico em proteína'],'¿Voy bien con mi plan?':['Am I on track with my plan?','Estou indo bem no meu plano?'],
 'Tu asistente con IA':['Your AI assistant','Seu assistente com IA'],'Nueva':['New','Nova'],
-'Para usar a Moki, agrega tu clave de IA en Mi plan → Conexiones.':['To use Moki, add your AI key in My plan → Connections.','Para usar o Moki, adicione sua chave de IA em Meu plano → Conexões.'],
+'Para usar a Moki, agrega tu clave de IA en Yo → Conexiones.':['To use Moki, add your AI key in Me → Connections.','Para usar o Moki, adicione sua chave de IA em Eu → Conexões.'],
 'El asistente no está disponible en esta vista. Abre la app desde Claude para usarlo.':['The assistant isn’t available in this view. Open the app from Claude to use it.','O assistente não está disponível nesta visualização. Abra o app pelo Claude para usá-lo.'],
 'Moki no reemplaza a tu médico.':['Moki doesn’t replace your doctor.','O Moki não substitui seu médico.'],'Escríbele a Moki…':['Message Moki…','Escreva para o Moki…'],
 'Estoy recibiendo muchas preguntas. Intenta de nuevo en un momento.':['I’m getting a lot of questions. Try again in a moment.','Estou recebendo muitas perguntas. Tente de novo em um momento.'],'No pude responder ahora. Intenta de nuevo.':['I couldn’t answer right now. Try again.','Não consegui responder agora. Tente de novo.'],
@@ -895,9 +909,9 @@ var I18N={
 'No se pudo conectar.':['Couldn’t connect.','Não foi possível conectar.'],'Error al sincronizar':['Sync error','Erro ao sincronizar'],
 'Hora de tu aplicación 💉':['Time for your injection 💉','Hora da sua aplicação 💉'],'Tu dosis':['Your dose','Sua dose'],'sitio sugerido':['suggested site','local sugerido'],
 '¿Ya registraste tus comidas? 🍽️':['Have you logged your meals? 🍽️','Já registrou suas refeições? 🍽️'],'Escríbelas en MokiFit y te calculo las calorías.':['Type them in MokiFit and I’ll calculate the calories.','Escreva no MokiFit que eu calculo as calorias.'],
-'Crea tu cuenta o inicia sesión en Mi plan para hablar con':["Create your account or sign in under My plan to talk with", "Crie sua conta ou entre em Meu plano para falar com"],
+'Crea tu cuenta o inicia sesión en la pestaña Yo para hablar con':["Create your account or sign in in the Me tab to talk with", "Crie sua conta ou entre na aba Eu para falar com"],
 'Llegaste al límite de consultas de hoy. Vuelve mañana.':["You’ve reached today’s question limit. Come back tomorrow.", "Você atingiu o limite de perguntas de hoje. Volte amanhã."],
-'Tu sesión venció. Inicia sesión de nuevo en Mi plan.':["Your session expired. Sign in again under My plan.", "Sua sessão expirou. Entre de novo em Meu plano."],
+'Tu sesión venció. Inicia sesión de nuevo en la pestaña Yo.':["Your session expired. Sign in again in the Me tab.", "Sua sessão expirou. Entre de novo na aba Eu."],
 'Incluida con tu cuenta. No necesitas ninguna clave.':["Included with your account. No key needed.", "Incluída na sua conta. Não precisa de nenhuma chave."],
 'Incluida: solo crea tu cuenta o inicia sesión arriba.':["Included: just create your account or sign in above.", "Incluída: só crie sua conta ou entre acima."],
 'Necesita tu cuenta':["Needs your account", "Precisa da sua conta"],
@@ -959,7 +973,7 @@ var I18N={
 "Leer báscula":["Read scale", "Ler balança"],
 "Revisa la lectura":["Check the reading", "Confira a leitura"],
 "Corrige lo que no coincida con tu báscula.":["Fix anything that doesn’t match your scale.", "Corrija o que não bater com sua balança."],
-"Para leer la captura necesitas la IA activa en Mi plan.":["To read the screenshot you need the AI turned on in My plan.", "Para ler a captura você precisa da IA ativa em Meu plano."],
+"Para leer la captura necesitas la IA activa en la pestaña Yo.":["To read the screenshot you need the AI turned on in the Me tab.", "Para ler a captura você precisa da IA ativa na aba Eu."],
 "Leyendo la captura…":["Reading the screenshot…", "Lendo a captura…"],
 "No pude leer la captura. Intenta con una más nítida.":["I couldn’t read the screenshot. Try a sharper one.", "Não consegui ler a captura. Tente uma mais nítida."],
 "Tu peso está estable":["Your weight is holding steady", "Seu peso está estável"],
@@ -1147,7 +1161,7 @@ var I18N={
 "Me levanto":["I get up", "Eu levanto"],
 "Autorizo usar mis datos de sueño, actividad y peso de mis apps y dispositivos (reloj, anillo, báscula u otros).":["I authorize using my sleep, activity and weight data from my apps and devices (watch, ring, scale or others).", "Autorizo usar meus dados de sono, atividade e peso dos meus apps e dispositivos (relógio, anel, balança ou outros)."],
 "Conectar mis dispositivos":["Connect my devices", "Conectar meus dispositivos"],
-"Puedes cambiarlo cuando quieras en Mi plan.":["You can change it anytime in My plan.", "Você pode mudar quando quiser em Meu plano."],
+"Puedes cambiarlo cuando quieras en la pestaña Yo.":["You can change it anytime in the Me tab.", "Você pode mudar quando quiser na aba Eu."],
 "Siempre te recordaremos tomar agua":["We’ll always remind you to drink water", "Sempre vamos te lembrar de beber água"],
 "Tu meta: {0} L al día":["Your goal: {0} L a day", "Sua meta: {0} L por dia"],
 "Sugerencias para que sea más fácil":["Tips to make it easier", "Dicas para facilitar"],
@@ -1493,7 +1507,7 @@ var STEPS=[
   {q:'El sueño, el descanso y la actividad física son clave para tu salud',body:function(){return '<div class="card"><div style="font-size:30px;text-align:center">😴 🏃 ⌚</div><p class="mu" style="font-size:15px;margin:8px 0 12px">'+T('Dormir 7 horas o más y moverte cada día te ayudan a bajar grasa y no músculo. Dime tu horario de sueño:')+'</p>'+
     '<div class="grid2">'+field(T('Me acuesto'),'<input id="ob-bed" type="time" value="'+(tmp.bed||'22:30')+'">')+field(T('Me levanto'),'<input id="ob-wake" type="time" value="'+(tmp.wake||'06:30')+'">')+'</div></div>'+
     '<label class="okl"><input type="checkbox" id="ob-dev"'+(tmp.dev?' checked':'')+'><span>'+T('Autorizo usar mis datos de sueño, actividad y peso de mis apps y dispositivos (reloj, anillo, báscula u otros).')+'</span></label>'+
-    ((true)?(S.hc&&S.hc.on?'<div class="okbox">✓ '+T('Dispositivos conectados con Health Connect.')+hcImpTxt()+'</div>':'<button class="btn sec" data-act="hcimp"'+(hcBusy?' disabled':'')+'>⌚ '+T(hcBusy?'Trayendo tus datos…':'Conectar mis dispositivos')+'</button>')+hcHelp():'')+'<p class="mu center" style="font-size:13px">'+T('Puedes cambiarlo cuando quieras en Mi plan.')+'</p>';},
+    ((true)?(S.hc&&S.hc.on?'<div class="okbox">✓ '+T('Dispositivos conectados con Health Connect.')+hcImpTxt()+'</div>':'<button class="btn sec" data-act="hcimp"'+(hcBusy?' disabled':'')+'>⌚ '+T(hcBusy?'Trayendo tus datos…':'Conectar mis dispositivos')+'</button>')+hcHelp():'')+'<p class="mu center" style="font-size:13px">'+T('Puedes cambiarlo cuando quieras en la pestaña Yo.')+'</p>';},
     read:function(){tmp.bed=$('ob-bed').value||'22:30';tmp.wake=$('ob-wake').value||'06:30';tmp.dev=$('ob-dev').checked;},ok:function(){return true;}},
   {intro:true,body:function(){var P=plan({sex:tmp.sex,age:tmp.age,h:tmp.h,act:tmp.act,target:tmp.target,rate:tmp.rate,goal:tmp.goal},tmp.w);return '<div class="center fade" style="margin-top:3vh">'+cat(120,0,'sed',0)+'<h1 style="font-size:26px;margin:12px 6px 4px">💧 '+T('Siempre te recordaremos tomar agua')+'</h1><p class="mu" style="font-size:16px;margin:0 0 12px">'+Tf('Tu meta: {0} L al día',[nf(P.water,1)])+'</p></div>'+
     '<div class="card"><b>'+T('Sugerencias para que sea más fácil')+'</b><ul style="margin:8px 0 0 18px;padding:0">'+H2OTIPS.map(function(t){return '<li style="margin:6px 0">'+T(t)+'</li>';}).join('')+'</ul></div>';},ok:function(){return true;}},
@@ -1655,7 +1669,7 @@ function vProg(){
 }
 function vPerfil(){
   var P=plan(),p=S.prof,a=ACT.filter(function(x){return x[0]===p.act;})[0]||ACT[0];
-  return '<div class="top"><h1>Mi plan</h1></div>'+
+  return '<div class="top"><h1>Yo</h1></div>'+
    '<div class="card row">'+owl(70)+'<div class="f"><h3>'+esc(S.name)+'</h3><div class="mu">'+(p.sex==='F'?'Mujer':'Hombre')+' · '+p.age+' años · '+fH(p.h)+'<br>'+a[1]+' · '+fR(p.rate)+' '+uW()+'/sem</div></div></div>'+
    '<h2>Metas diarias</h2>'+goalsGrid(P)+
    '<div class="card" style="margin-top:12px"><div class="mu">'+(P.hc?'⌚ '+Tf('Calculado con tu reloj: reposo + la mitad de tus {0} kcal activas promedio de los últimos 7 días.',[S.hc.avgActive])+' ':'')+Tf('Gastas unas <b>{0} kcal</b> al día. Al ritmo elegido llegarías a {1} hacia el <b>{2}</b>.',[P.tdee,fW(p.target),fmtY(P.eta)])+'</div></div>'+
@@ -1868,7 +1882,7 @@ function bodyModal(){
    BODYF.map(function(f){return field(T(f[1])+(f[2]&&f[2]!=='años'?' ('+(f[2]==='kg'?uW():f[2])+')':''),'<input id="bd-'+f[0]+'" type="number" step="0.1" inputmode="decimal" value="'+(r[f[0]]!=null?(f[2]==='kg'?rW(r[f[0]]):r[f[0]]):'')+'">');}).join('')+'</div><button class="btn" data-act="bodysave">'+T('Guardar')+'</button>';
 }
 function scaleRead(f){
-  var m=$('sc-msg');if(!ai){m.textContent=T('Para leer la captura necesitas la IA activa en Mi plan.');return;}
+  var m=$('sc-msg');if(!ai){m.textContent=T('Para leer la captura necesitas la IA activa en la pestaña Yo.');return;}
   if(AIQ&&!AIQ.premium){m.innerHTML=esc(T('Leer la captura de la báscula es Premium.'))+PBTN;return;}
   m.textContent=T('Leyendo la captura…');
   ai.json('Esta es una captura de la app de una báscula inteligente. Extrae los valores y responde SOLO un JSON con estas claves (null si no aparece): {"fecha":"AAAA-MM-DD","peso_kg":n,"grasa_pct":n,"musculo_kg":n,"agua_pct":n,"grasa_visceral":n,"hueso_kg":n,"edad_metabolica":n}. Si los pesos están en libras, conviértelos a kg.',{images:[f]}).then(function(j){
@@ -2181,8 +2195,16 @@ function ask(q,kind){
 function scrollChat(){window.scrollTo(0,document.body.scrollHeight);}
 
 /* ---------- Render ---------- */
-var TABS={inicio:['home',vInicio],tratamiento:['syr',vTrat],ayuno:['fast',vAyuno],ia:['chat',vIA],progreso:['chart',vProg],perfil:['user',vPerfil]};
-if(!TABS[tab])tab='inicio';
+// Navegación (propuesta A «Mi día»): Hoy · Plan · ＋ · Progreso · Yo; Moki (ia) se abre desde su burbuja flotante
+var TABS={inicio:['home',vInicio],plan:['syr',vPlan],progreso:['chart',vProg],perfil:['user',vPerfil],ia:['chat',vIA]};
+var NAV=[['inicio','home','Hoy'],['plan','syr','Plan'],null,['progreso','chart','Progreso'],['perfil','user','Yo']];
+var PSUB={tratamiento:'trat',ayuno:'ayuno'},planSub='trat'; // los enlaces viejos a Tratamiento/Ayuno abren Plan en esa sección
+function goTab(t){if(PSUB[t]){planSub=PSUB[t];t='plan';}tab=TABS[t]?t:'inicio';}
+goTab(tab);
+function vPlan(){
+  return '<div class="seg" role="tablist" aria-label="'+T('Plan')+'">'+[['tratamiento','trat','Tratamiento'],['ayuno','ayuno','Ayuno']].map(function(x){return '<button role="tab" aria-selected="'+(planSub===x[1])+'" data-tab="'+x[0]+'" class="'+(planSub===x[1]?'on':'')+'">'+T(x[2])+'</button>';}).join('')+'</div>'+(planSub==='ayuno'?vAyuno():vTrat());
+}
+goTab(tab);
 // iPhone nativo: los textos de Health Connect / Samsung / Google Fit / Play Store pasan a Apple Salud (Android no cambia)
 var IOS=NATIVE&&!!Capacitor.getPlatform&&Capacitor.getPlatform()==='ios',IOSR=null,IOSL=null;
 function iosx(h){
@@ -2204,8 +2226,9 @@ function render(){
   clearInterval(tick);
   if(!S.onb){ if(!tmp.name&&step===0&&tmp.w==null) startOnbSilent(); document.body.innerHTML=iosx(vOnb()+(modal?vModal():'')); rInit(); return; }
   document.body.innerHTML=iosx('<div class="wrap fade"><div class="langbar">'+langPill()+'</div>'+TABS[tab][1]()+'<div id="st-msg"></div></div>'+
-   '<nav>'+Object.keys(TABS).map(function(k){return '<button data-tab="'+k+'" class="'+(k===tab?'on':'')+'">'+IC[TABS[k][0]]+'</button>';}).join('')+'</nav><button class="fab" data-m="menu">+</button>'+(modal?vModal():'')+(toast?'<div class="toast" id="toast"><span>'+toast+'</span><button data-act="undo">'+T('Deshacer')+'</button></div>':''));
-  [].forEach.call(document.querySelectorAll('nav,.fab'),function(x){x.style.display=(modal||(tab==='ia'&&x.classList.contains('fab')))?'none':'';});
+   '<nav class="nav5" aria-label="'+T('Navegación')+'">'+NAV.map(function(x){return x?'<button data-tab="'+x[0]+'" class="'+(x[0]===tab?'on':'')+'"'+(x[0]===tab?' aria-current="page"':'')+'><span class="ni">'+IC[x[1]]+'</span><span class="nl">'+T(x[2])+'</span></button>':'<button class="navadd" data-m="menu" aria-label="'+T('Registrar')+'"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>';}).join('')+'</nav>'+
+   '<button class="mokib" data-tab="ia" aria-label="'+T('Hablar con')+' '+(isFem()?'Michi':'Moki')+'"><img src="'+(isFem()?MOCHI.faceF:MOCHI.face)+'" alt=""></button>'+(modal?vModal():'')+(toast?'<div class="toast" id="toast"><span>'+toast+'</span><button data-act="undo">'+T('Deshacer')+'</button></div>':''));
+  [].forEach.call(document.querySelectorAll('nav,.mokib'),function(x){x.style.display=(modal||(tab==='ia'&&x.classList.contains('mokib')))?'none':'';});
   if(!$('rl'))RC=null;rInit();if($('cd')||$('fastc')) tick=setInterval(function(){var c=$('cd');if(c)c.textContent=countdown();var f=$('fastc');if(f&&S.fast)f.textContent=fastTxt();},1000);
 }
 function startOnbSilent(){var p=S.prof;tmp={name:S.name,sex:p.sex,stage:S.tr.stage||'start',med:S.tr.med,mg:S.tr.mg,freq:+S.tr.freq||7,age:p.age,h:p.h,w:curW(),target:p.target,rate:p.rate,goal:p.goal||'lose',act:p.act,worries:(S.worries||[]).slice(),why:(S.why||[]).slice(),focus:(S.focus||[]).slice(),legal:!!S.legal,diet:(S.diet||[]).slice(),dother:S.dietOther||'',bed:(S.sleepGoal||{}).bed||'22:30',wake:(S.sleepGoal||{}).wake||'06:30',dev:!!S.devOk,fastH:S.fastPlan?S.fastPlan.h:(S.legal?0:null),eat:(S.fastPlan||{}).eat||'12:00'};}
@@ -2238,7 +2261,7 @@ document.addEventListener('click',function(e){
     if(s.read&&s.multi)s.read();
     if(s.multi){tmp[k]=tmp[k]||[];var i=tmp[k].indexOf(v);i>=0?tmp[k].splice(i,1):tmp[k].push(v);if(s.only)tmp[k]=v===s.only?(i>=0?[]:[s.only]):tmp[k].filter(function(x){return x!==s.only;});} else{if(s.read)s.read();tmp[k]=v;}
     render();return;}
-  if(d.tab){tab=d.tab;modal=null;history.replaceState(null,'','#'+tab);render();window.scrollTo(0,0);return;}
+  if(d.tab){goTab(d.tab);modal=null;history.replaceState(null,'','#'+tab);render();window.scrollTo(0,0);return;}
   if(d.m){modal=d.m;tmp.sym=[];tmp.symShow=null;tmp.bt=null;if(d.m==='sleep'){tmp.sq=null;tmp.sh=[];}tmp.mw=tmp.md=null;tmp.am=d.am||'in';if(d.cam){render();pick('ai-file');return;}if(d.voz){render();var mb=document.querySelector('.sheet .mic');if(mb)voz(mb);return;}render();return;}
   if(d.q){ask(d.q,d.kind);return;}
   if(d.lv){lvlRange=+d.lv;render();return;}
@@ -2332,7 +2355,7 @@ document.addEventListener('change',function(e){
   // El estado de la foto vive en phSt: si la pantalla se vuelve a dibujar (p. ej. al volver de la cámara y sincronizar
   // Health Connect), la foto, el "Analizando…" y los errores siguen visibles.
   phSt={src:URL.createObjectURL(e.target.files[0]),html:'',busy:false};phShow();
-  if(!ai){phShow(esc(T(MS_AI?'Para leer la foto, crea tu cuenta o inicia sesión en Mi plan. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.':'La lectura de fotos con IA estará disponible muy pronto. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.')));return;}
+  if(!ai){phShow(esc(T(MS_AI?'Para leer la foto, crea tu cuenta o inicia sesión en la pestaña Yo. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.':'La lectura de fotos con IA estará disponible muy pronto. Mientras, escribe qué es (ej: 2 arepas con queso) y lo calculo.')));return;}
   if(AIQ&&!AIQ.premium&&AIQ.fotos&&AIQ.fotos.usados>=AIQ.fotos.max){phShow(esc(pwText('limitf'))+PBTN);return;}
   phShow(esc(T('Analizando la foto…')),true);var fin=false;
   var tmo=setTimeout(function(){if(!fin){fin=true;phShow(esc(T('La foto está tardando demasiado. Revisa tu conexión e inténtalo de nuevo, o escríbelo a mano.')));}},60000);

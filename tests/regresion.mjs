@@ -75,6 +75,12 @@ marcas.push(
   ['Nombre de la app: MokiFit', app, '<title>MokiFit</title>'],
   ['La gata se llama Michi (regla de género con Moki)', app, "t.replace(/\\bMoki\\b/g,'Michi')"],
 );
+marcas.push(
+  ['Navegación Mi día: 5 pestañas con ＋ central', app, "var NAV=[['inicio','home','Hoy'],['plan','syr','Plan'],null,['progreso','chart','Progreso'],['perfil','user','Yo']]"],
+  ['Plan junta Tratamiento y Ayuno', app, 'function vPlan()'],
+  ['Burbuja de Moki abre el chat', app, 'class="mokib" data-tab="ia"'],
+  ['Enlaces viejos a Tratamiento/Ayuno abren Plan', app, "var PSUB={tratamiento:'trat',ayuno:'ayuno'}"],
+);
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }
 console.log('✔ Regresión: las ' + marcas.length + ' mejoras aprobadas siguen en su lugar.');
