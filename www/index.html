@@ -283,6 +283,84 @@ button.card{display:flex;width:100%;text-align:left;border:0;font:inherit;color:
 .dl{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid #f0edf6}.dl b{display:block;font-size:15px}.dl .mu{display:block;font-size:12.5px}.dl>.f,.nowc>.f{flex:1;min-width:0}
 .dl.ok .di{background:#ddf5ee}.dl.past{opacity:.5}
 .okc{width:26px;height:26px;border-radius:50%;background:#ddf5ee;color:#0f7a57;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:none}
+
+/* ===== Parte 4: tema oscuro con tarjetas de color e íconos propios ===== */
+:root{--trk:#efedf5;--grid:#eceaf3;--lg:#fff8ec;--sf:#f6f4fd;--c2:#f3f1f8;--ln:rgba(91,61,245,.07)}
+/* íconos */
+.ict{width:40px;height:40px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.ict.sol{width:54px;height:54px;border-radius:18px;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+.ict.onc{width:34px;height:34px;border-radius:12px;background:rgba(255,255,255,.18)}
+.tile .tlh .ict{width:34px;height:34px;border-radius:12px}
+/* tarjetas */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.tile{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--ln);border-radius:26px;padding:16px;min-height:178px;color:var(--tx);cursor:default}
+.tile[style]{color:#fff}
+.tile[data-m],.tile[data-tab]{cursor:pointer}
+.tile.wide{grid-column:1/-1;min-height:0}
+.tile[style]{border-color:transparent}
+.tlh{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;margin-bottom:6px}
+.tb{font-size:34px;font-weight:800;line-height:1.05;margin-top:12px;letter-spacing:-.5px}
+.tm{font-size:13px;font-weight:600;opacity:.75;margin-top:5px}
+.wave{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(125,200,255,.45),rgba(80,160,255,.85));border-radius:45% 55% 0 0/16px 20px 0 0}
+.tact{position:absolute;left:12px;right:12px;bottom:12px;gap:6px;z-index:1}
+.tp{white-space:nowrap;border-radius:999px;padding:7px 10px;background:rgba(255,255,255,.22);color:#fff;font-weight:800;font-size:13px}
+.moon{position:absolute;right:-22px;top:-22px;width:104px;height:104px;border-radius:50%;background:rgba(165,151,255,.22)}
+.mac{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mac b{font-size:12.5px}
+.seg.seg3{width:100%;display:flex}.seg3 button{flex:1 1 0;min-width:0;padding:9px 4px;font-size:14px}
+.ctile{border-color:transparent;color:#fff}.ctile .mu{color:rgba(255,255,255,.78)}.ctile .big,.ctile b,.ctile h3{color:#fff!important}.ctile .pill{background:rgba(255,255,255,.2);color:#fff}.ctile .cd{color:#fff}
+.ctile svg text{fill:rgba(255,255,255,.75)}.ctile polyline{stroke:#fff}.ctile circle[stroke="#5b3df5"]{stroke:#fff;fill:#16a37f}.ctile line[stroke-dasharray="6 5"]{stroke:#bbf7d0}.ctile .grid3 b{color:#fff}
+</style>
+<style id="dk">
+/* Parte 4: tema oscuro (se activa según Perfil › Apariencia) */
+:root{--trk:rgba(255,255,255,.12);--grid:rgba(255,255,255,.1);--lg:rgba(255,178,107,.1);--sf:rgba(255,255,255,.05);--p:#7b61ff;--p2:#9b7bff;--pl:rgba(123,97,255,.18);--bg:#14121f;--card:#1c1d2b;--c2:#25263a;--ln:rgba(255,255,255,.08);--tx:#f4f2ff;--mu:#a7a3bf;--ok:#2fd39a;--bad:#ff6b7a;--org:#ffb057;--grad:linear-gradient(135deg,#3a5bd9 0%,#5b3df5 55%,#8b5cf6 100%);--sh:0 10px 30px rgba(0,0,0,.25);color-scheme:dark}
+html,body{background:var(--bg);color:var(--tx)}
+body{background:radial-gradient(120% 520px at 50% -120px,#1f2c62 0%,rgba(31,44,98,0) 75%),var(--bg);background-attachment:fixed}
+.card{background:var(--card);border:1px solid var(--ln);box-shadow:none;border-radius:26px}
+h2{color:var(--tx);opacity:.6}
+input,select,textarea{background:var(--c2);border-color:#34354f;color:var(--tx)}
+input::placeholder,textarea::placeholder{color:#7d7a96}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(123,97,255,.25)}
+.opt{background:var(--c2);border-color:transparent;box-shadow:none;color:var(--tx)}
+.opt.on{background:rgba(123,97,255,.2);border-color:var(--p);color:#d6ccff}
+.chip{background:var(--c2);border-color:#34354f;color:var(--tx)}
+.pill{background:var(--pl);color:#d6ccff}
+.btn.sec{background:var(--pl);color:#d6ccff}
+.btn.dark{background:var(--c2)}
+.btn.wb{background:#fff;color:#4b2fd6}
+.lp,.lm{background:var(--c2);color:var(--tx);box-shadow:0 8px 24px rgba(0,0,0,.35)}.lm button{color:var(--tx)}
+.link2,.link{color:#b7a8ff}
+.x{color:var(--mu)}
+.bar{background:rgba(255,255,255,.12)}
+.prog{background:#2c2d44}
+.tl:before{background:#2c2d44}.dot{border-color:var(--card);box-shadow:0 0 0 1px #2c2d44}
+nav.nav5{background:rgba(36,28,54,.94);box-shadow:0 14px 40px rgba(0,0,0,.45);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+nav.nav5 button{color:#a7a3bf}nav.nav5 button.on{color:#fff}nav.nav5 button.on .ni{background:rgba(255,255,255,.14)}
+.mokib{background:#2b2f5e;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.ov{background:rgba(6,4,16,.65)}
+.sheet{background:var(--card)}.grab{background:#44455f}
+.act{background:var(--c2);color:var(--tx);box-shadow:none}
+.act .ict{margin-bottom:2px}
+.bub,.say{background:var(--c2);color:var(--tx)}
+.mochi:before{background:radial-gradient(circle,rgba(255,138,91,.22) 0%,rgba(255,138,91,0) 68%)}
+.ph div,.ph button{background:var(--c2)}
+.ld{background:conic-gradient(var(--p) 0,var(--p) var(--pc,0%),#2c2d44 0)}.ld>div{background:var(--bg)}
+.seg{background:var(--c2);box-shadow:none}.seg button{color:var(--tx)}.seg button.on{background:var(--p);color:#fff}
+.rt i:after{background:#4a4a66}.rt i.M:after{background:#77779a}.rw:after{background:var(--tx)}
+.bmi i{background:var(--card)}
+.tag{background:rgba(255,107,122,.18)}
+.tog{background:var(--c2)}.tog button.on{background:var(--p);color:#fff;box-shadow:none}
+.msg.a{background:var(--c2);color:var(--tx);box-shadow:none}
+.composer .in{background:var(--c2);box-shadow:0 6px 24px rgba(0,0,0,.35)}.composer input{background:none}
+.alert{background:rgba(255,159,67,.13);color:#ffc58a;border:1px solid rgba(255,159,67,.25)}
+.snap{background:linear-gradient(135deg,rgba(123,97,255,.18),rgba(255,138,91,.14))}
+.mood.sed{background:linear-gradient(135deg,rgba(59,130,246,.22),var(--card))}.mood.zz{background:linear-gradient(135deg,rgba(123,97,255,.2),var(--card))}
+.hor .row{border-color:var(--ln)}
+.toast{background:#2a2b40}
+.strk{background:rgba(255,122,69,.18);color:#ffb08a}
+.dl{border-color:var(--ln)}.okc{background:rgba(47,211,154,.2);color:#5eead4}
+.nowc .nk{color:#8fb3ff}
+.hero{background:linear-gradient(160deg,#2a1f6b,#14123a)!important}
+.mguide{background:var(--c2);box-shadow:none}
 </style>
 </head>
 <body>
@@ -560,6 +638,14 @@ var LVLG=['Moki está empezando contigo.','¡Moki ya se siente más fuerte!','¡
 var LVLTXT=['Moki está empezando contigo.','¡Moki ya se siente más ligero!','¡Moki tiene energía de sobra!','¡Moki está en forma y feliz!','¡Lo lograron! Moki llegó a la meta contigo.'];
 // kg que faltan para la siguiente etapa
 function toNext(){if(kM())return 0;var st=startW(),cw=curW(),T=S.prof.target,l=lvl();if(l>=4||(st-T)*gdir()<=0)return 0;return Math.max(0,(cw-(st-(l+1)/4*(st-T)))*gdir());}
+var ICO={"Hoy":["v","<path d=\"M5 11.2 12 5.3l7 5.9V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19Z\"/>","<path d=\"M3 11.5 7 8V3.8l3.2 2.4h3.6L17 3.8V8l4 3.5\"/><path d=\"M5 10.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-8.5\"/><path d=\"M10 20.5v-4a2 2 0 0 1 4 0v4\"/>"],"Plan":["v","<rect x=\"5\" y=\"4.5\" width=\"14\" height=\"16.5\" rx=\"3\"/>","<rect x=\"5\" y=\"4.5\" width=\"14\" height=\"16.5\" rx=\"3\"/><path d=\"M9 4.5V3h6v1.5\"/><path d=\"m8.8 13 2.3 2.3 4.3-4.6\"/>"],"Progreso":["g","<path d=\"M5 15 9 11l3 2 6-6v12H5Z\"/>","<path d=\"M4 19.5h16\"/><path d=\"M5 15 9 11l3 2 6-6\"/><circle cx=\"18\" cy=\"7\" r=\"1.6\"/>"],"Perfil":["v","<path d=\"M7.5 9.2V4.2l2.8 2.1a5 5 0 0 1 3.4 0l2.8-2.1v5a4.5 4.5 0 0 1-9 0Z\"/>","<path d=\"M7.5 9.2V4.2l2.8 2.1a5 5 0 0 1 3.4 0l2.8-2.1v5a4.5 4.5 0 0 1-9 0Z\"/><path d=\"M4.5 21c.8-3.4 3.8-5.4 7.5-5.4s6.7 2 7.5 5.4\"/><path d=\"M10.4 9.6h.01M13.6 9.6h.01\"/>"],"Registrar":["c","<circle cx=\"12\" cy=\"12\" r=\"9\"/>","<path d=\"M12 7.5v9M7.5 12h9\"/>"],"Calorías":["c","<path d=\"M12 3c.6 3 4.8 5.2 4.8 10.3a4.8 4.8 0 0 1-9.6 0c0-2.1 1-3.7 2.1-4.7 0 1.6.8 2.6 1.8 2.9C11 9 11 6.2 12 3Z\"/>","<path d=\"M12 3c.6 3 4.8 5.2 4.8 10.3a4.8 4.8 0 0 1-9.6 0c0-2.1 1-3.7 2.1-4.7 0 1.6.8 2.6 1.8 2.9C11 9 11 6.2 12 3Z\"/><path d=\"M10.3 17.2a1.9 1.9 0 0 0 3.4-1.2c0-1.3-1-2-1.7-3-.7 1-1.7 1.7-1.7 3\"/>"],"Proteína":["a","<path d=\"M11.1 13.1a5.3 5.3 0 1 1 3.4 1.6l-2.2 2.2-2.7-2.7Z\"/>","<path d=\"M11.1 13.1a5.3 5.3 0 1 1 3.4 1.6\"/><path d=\"m12.4 14.6-4.6 4.6\"/><circle cx=\"6.4\" cy=\"18.3\" r=\"1.5\"/><circle cx=\"8.6\" cy=\"20.5\" r=\"1.5\"/>"],"Agua":["b","<path d=\"M12 3.5s6 6.4 6 10.6a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5Z\"/>","<path d=\"M12 3.5s6 6.4 6 10.6a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5Z\"/><path d=\"M9.3 14.6a2.7 2.7 0 0 0 2.2 2.5\"/>"],"Ayuno":["i","<path d=\"M12 14V7a7 7 0 0 1 6.1 3.6Z\"/>","<circle cx=\"12\" cy=\"14\" r=\"7\"/><path d=\"M10 3h4M12 3v4M12 14l3-3M18.2 6.8l1.3-1.3\"/>"],"Sueño":["i","<path d=\"M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 0 0 9.5 9.5Z\"/>","<path d=\"M19 14.5A7.5 7.5 0 1 1 9.5 5a6 6 0 0 0 9.5 9.5Z\"/><path d=\"M16.5 3.5v3M15 5h3\"/>"],"Dosis":["p","<g transform=\"rotate(45 12 12)\"><rect x=\"9.5\" y=\"6.5\" width=\"5\" height=\"9\" rx=\"1.2\"/></g>","<g transform=\"rotate(45 12 12)\"><rect x=\"9.5\" y=\"6.5\" width=\"5\" height=\"9\" rx=\"1.2\"/><path d=\"M12 6.5V3.2M10 3.2h4M12 15.5v5.3M9.5 9.5h2M9.5 12.2h2\"/></g>"],"Peso":["g","<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"5\"/>","<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"5\"/><path d=\"M8.3 10.5a3.7 3.7 0 0 1 7.4 0\"/><path d=\"m12 10.5 1.6-2\"/>"],"Actividad":["t","<path d=\"M3 17h18v-1.4c0-1.5-1-2.4-2.6-2.8l-4-1.1L12 8H9.6l-.7 1.6c-1.6 0-2.9-.5-3.9-1.6L3 8.6Z\"/>","<path d=\"M3 17h18v-1.4c0-1.5-1-2.4-2.6-2.8l-4-1.1L12 8H9.6l-.7 1.6c-1.6 0-2.9-.5-3.9-1.6L3 8.6Z\"/><path d=\"M3 20h18M10.4 11.6l1.6-.6M12 13.6l1.6-.6\"/>"],"Suplementos":["p","<g transform=\"rotate(-45 12 12)\"><path d=\"M8 12V8a4 4 0 0 1 8 0v4Z\"/></g>","<g transform=\"rotate(-45 12 12)\"><rect x=\"8\" y=\"4\" width=\"8\" height=\"16\" rx=\"4\"/><path d=\"M8 12h8\"/></g>"],"Síntomas":["c","<path d=\"M12 20s-7.5-4.5-7.5-10A4.2 4.2 0 0 1 12 7.6a4.2 4.2 0 0 1 7.5 2.4c0 5.5-7.5 10-7.5 10Z\"/>","<path d=\"M12 20s-7.5-4.5-7.5-10A4.2 4.2 0 0 1 12 7.6a4.2 4.2 0 0 1 7.5 2.4c0 5.5-7.5 10-7.5 10Z\"/><path d=\"M6.5 12.5h2.8l1.4-2.4 2 3.8 1.4-2.4h3.4\"/>"],"Comida":["c","<circle cx=\"12\" cy=\"12\" r=\"4.8\"/>","<circle cx=\"12\" cy=\"12\" r=\"4.8\"/><path d=\"M3.8 4v4.5a1.4 1.4 0 0 0 2.8 0V4M5.2 9v11\"/><path d=\"M20 20V4c-1.5 1-2.1 3-2.1 5.5V12H20\"/>"],"Carbos":["a","<path d=\"M12 7c-1.6-1.3-1.6-3.2 0-4.5 1.6 1.3 1.6 3.2 0 4.5Z\"/>","<path d=\"M12 21V7\"/><path d=\"M12 7c-1.6-1.3-1.6-3.2 0-4.5 1.6 1.3 1.6 3.2 0 4.5ZM12 11.5c-1.9 0-3.4-1.2-3.8-3 1.9 0 3.4 1.2 3.8 3Zm0 0c1.9 0 3.4-1.2 3.8-3-1.9 0-3.4 1.2-3.8 3ZM12 16c-1.9 0-3.4-1.2-3.8-3 1.9 0 3.4 1.2 3.8 3Zm0 0c1.9 0 3.4-1.2 3.8-3-1.9 0-3.4 1.2-3.8 3Z\"/>"],"Grasas":["g","<path d=\"M12 3c3 0 5 4.5 5.5 8 .7 5-2 9-5.5 9s-6.2-4-5.5-9C6.9 7.5 9 3 12 3Z\"/>","<path d=\"M12 3c3 0 5 4.5 5.5 8 .7 5-2 9-5.5 9s-6.2-4-5.5-9C6.9 7.5 9 3 12 3Z\"/><circle cx=\"12\" cy=\"14\" r=\"2.6\"/>"],"Fibra":["t","<path d=\"M5 19c0-9 5-14 14-14 0 9-5 14-14 14Z\"/>","<path d=\"M5 19c0-9 5-14 14-14 0 9-5 14-14 14Z\"/><path d=\"m5 19 8.5-8.5M10 14h3.5M13.5 10.5v3\"/>"],"Foto":["v","<rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"3.5\"/>","<rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"3.5\"/><path d=\"m8.5 7 1.3-2.5h4.4L15.5 7\"/><circle cx=\"12\" cy=\"13.5\" r=\"3.4\"/>"],"Escribir":["v","<path d=\"m4 20 1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5Z\"/>","<path d=\"m4 20 1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5Z\"/><path d=\"m13.5 7 3 3\"/>"],"Hablar":["v","<rect x=\"9\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\"/>","<rect x=\"9\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\"/><path d=\"M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6\"/>"],"Medidas":["a","<rect x=\"3\" y=\"8\" width=\"18\" height=\"8\" rx=\"2.2\"/>","<rect x=\"3\" y=\"8\" width=\"18\" height=\"8\" rx=\"2.2\"/><path d=\"M7 8v3M11 8v4.5M15 8v3M19 8v2\"/>"],"Informe":["b","<path d=\"M6 3h8l4 4v14H6Z\"/>","<path d=\"M6 3h8l4 4v14H6Z\"/><path d=\"M14 3v4h4M9 9h2M9 12.5h6M9 16h6\"/>"],"Inventario":["a","<path d=\"M3.5 7.5 12 3.5l8.5 4L12 11.5Z\"/>","<path d=\"M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4Z\"/><path d=\"M3.5 7.5 12 11.5l8.5-4M12 11.5v9\"/>"],"Vial":["p","<path d=\"M7 14h10v5a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2Z\"/>","<path d=\"M9 3h6M10 3v4l-3 4v8a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-8l-3-4V3M7 14h10\"/>"],"Digestión":["g","<path d=\"M9 3v3c0 2-3 2.5-3 6.5 0 4.5 3.5 8 8 8 3 0 5-2 5-4.5 0-2-1.5-3-3.5-3S13 11.5 13 9.5V3Z\"/>","<path d=\"M9 3v3c0 2-3 2.5-3 6.5 0 4.5 3.5 8 8 8 3 0 5-2 5-4.5 0-2-1.5-3-3.5-3S13 11.5 13 9.5V3\"/>"],"Despertar":["a","<circle cx=\"12\" cy=\"12\" r=\"4\"/>","<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4\"/>"],"Pantallas":["i","<rect x=\"7\" y=\"3\" width=\"10\" height=\"18\" rx=\"2.5\"/>","<rect x=\"7\" y=\"3\" width=\"10\" height=\"18\" rx=\"2.5\"/><path d=\"M4 4l16 16\"/>"],"Avisos":["a","<path d=\"M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15Z\"/>","<path d=\"M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15Z\"/><path d=\"M10 20.5a2 2 0 0 0 4 0\"/>"],"Ajustes":["v","<path d=\"M12.00,5.40 L13.68,3.57 L15.29,4.05 L15.67,6.51 L16.67,7.33 L19.15,7.22 L19.95,8.71 L18.47,10.71 L18.60,12.00 L20.43,13.68 L19.95,15.29 L17.49,15.67 L16.67,16.67 L16.78,19.15 L15.29,19.95 L13.29,18.47 L12.00,18.60 L10.32,20.43 L8.71,19.95 L8.33,17.49 L7.33,16.67 L4.85,16.78 L4.05,15.29 L5.53,13.29 L5.40,12.00 L3.57,10.32 L4.05,8.71 L6.51,8.33 L7.33,7.33 L7.22,4.85 L8.71,4.05 L10.71,5.53Z\"/>","<path d=\"M12.00,5.40 L13.68,3.57 L15.29,4.05 L15.67,6.51 L16.67,7.33 L19.15,7.22 L19.95,8.71 L18.47,10.71 L18.60,12.00 L20.43,13.68 L19.95,15.29 L17.49,15.67 L16.67,16.67 L16.78,19.15 L15.29,19.95 L13.29,18.47 L12.00,18.60 L10.32,20.43 L8.71,19.95 L8.33,17.49 L7.33,16.67 L4.85,16.78 L4.05,15.29 L5.53,13.29 L5.40,12.00 L3.57,10.32 L4.05,8.71 L6.51,8.33 L7.33,7.33 L7.22,4.85 L8.71,4.05 L10.71,5.53Z\"/><circle cx=\"12\" cy=\"12\" r=\"2.8\"/>"],"Moki":["v","<path d=\"M4.5 11.5c0-3 2-5 5-5h5c3 0 5 2 5 5v.5c0 3-2 5-5 5h-3.5L7 20v-3.4c-1.6-.9-2.5-2.5-2.5-4.6Z\"/>","<path d=\"M4.5 11.5c0-3 2-5 5-5h5c3 0 5 2 5 5v.5c0 3-2 5-5 5h-3.5L7 20v-3.4c-1.6-.9-2.5-2.5-2.5-4.6Z\"/><path d=\"M6.3 7.6V3.8l3.1 2.6M17.7 7.6V3.8l-3.1 2.6\"/><path d=\"M9.5 12h.01M12 12h.01M14.5 12h.01\"/>"]};
+// Íconos propios de MokiFit: trazo redondeado + relleno suave del mismo tono
+var ICT={v:'#9b86ff',c:'#ff8a5b',b:'#5b9bff',g:'#2fd39a',a:'#fbbf24',i:'#a597ff',p:'#e879f9',t:'#2dd4bf'};
+var EMI={'☀️':'Despertar','🍽️':'Comida','⏳':'Ayuno','🍲':'Comida','💧':'Agua','💊':'Suplementos','💉':'Dosis','📵':'Pantallas','🌙':'Sueño'};
+function ico(n,sz,col,mode){var x=ICO[n];if(!x)return n||'';sz=sz||22;col=col||ICT[x[0]];
+  return '<svg class="ico" width="'+sz+'" height="'+sz+'" viewBox="0 0 24 24" fill="none" stroke="'+col+'" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(mode==='line'?'':'<g fill="'+col+'" fill-opacity="'+(mode==='solid'?.45:.22)+'" stroke="none">'+x[1]+'</g>')+x[2]+'</svg>';}
+// ícono en cuadrito de su color (suave) o sólido con ícono blanco
+function ict(n,solid,sz){var x=ICO[n],c=x?ICT[x[0]]:'#9b86ff';return '<span class="ict'+(solid?' sol':'')+'" style="background:'+(solid?c:c+'2e')+'">'+(x?ico(n,sz||20,solid?'#fff':c):n)+'</span>';}
 var IC={
   home:'<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5z"/></svg>',
   syr:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m18 2 4 4M20 4l-9.5 9.5M14 6l4 4M9 9l6 6-6.5 6.5-6-6zM2 22l3-3M7 13l2 2M10 10l2 2"/></svg>',
@@ -571,7 +657,7 @@ var IC={
 };
 function ring(v,goal,sz,sw,col,inner){
   var r=(sz-sw)/2, c=2*Math.PI*r, p=Math.min(1,goal?v/goal:0);
-  return '<div style="position:relative;width:'+sz+'px;height:'+sz+'px;margin:0 auto"><svg width="'+sz+'" height="'+sz+'" style="transform:rotate(-90deg)"><circle cx="'+sz/2+'" cy="'+sz/2+'" r="'+r+'" stroke="#efedf5" stroke-width="'+sw+'" fill="none"/>'+
+  return '<div style="position:relative;width:'+sz+'px;height:'+sz+'px;margin:0 auto"><svg width="'+sz+'" height="'+sz+'" style="transform:rotate(-90deg)"><circle cx="'+sz/2+'" cy="'+sz/2+'" r="'+r+'" style="stroke:var(--trk)" stroke-width="'+sw+'" fill="none"/>'+
   '<circle cx="'+sz/2+'" cy="'+sz/2+'" r="'+r+'" stroke="'+(v>goal&&goal?'var(--bad)':col)+'" stroke-width="'+sw+'" fill="none" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+c*(1-p)+'"/></svg>'+
   '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">'+inner+'</div></div>';
 }
@@ -622,7 +708,7 @@ function toKg(v){return Math.round((U()?v/LB:v)*1000)/1000;}            // núme
 function fW(kg){return nf(rW(kg),1)+' '+uW();}
 function fR(r){return U()?String(Math.round(r*LB*10)/10):String(r).replace('.',',');}
 function fH(cm){if(!U())return cm+' cm';var i=Math.round(cm/2.54);return Math.floor(i/12)+'′ '+(i%12)+'″';}
-var I18N={"Hola, {0}":["Hi, {0}", "Olá, {0}"],"{0} días":["{0} days", "{0} dias"],"de {0} kcal":["of {0} kcal", "de {0} kcal"],"de {0} g proteína":["of {0} g protein", "de {0} g proteína"],"de {0} L agua":["of {0} L water", "de {0} L água"],"Michi dice":["Michi says", "Michi diz"],"Moki dice":["Moki says", "Moki diz"],"Dormiste poco. Hoy toma agua, muévete un poco y acuéstate más temprano.":["You slept little. Today drink water, move a bit and go to bed earlier.", "Você dormiu pouco. Hoje beba água, mexa-se um pouco e deite mais cedo."],"Hoy te pasaste {0} kcal. Mañana es otro día: no te castigues.":["You went {0} kcal over today. Tomorrow is another day: don’t be hard on yourself.", "Hoje você passou {0} kcal. Amanhã é outro dia: não se castigue."],"¡Buen día! Anota tu primera comida y arrancamos.":["Good morning! Log your first meal and let’s get going.", "Bom dia! Anote sua primeira refeição e vamos lá."],"Aún no anotas comidas hoy. Cuéntame qué comiste.":["You haven’t logged any meals today. Tell me what you ate.", "Você ainda não anotou refeições hoje. Me conte o que comeu."],"¡Vas muy bien! Te faltan {0} g de proteína.":["You’re doing great! {0} g of protein to go.", "Você está indo muito bem! Faltam {0} g de proteína."],"¡Vas muy bien! Te quedan {0} kcal hoy.":["You’re doing great! {0} kcal left today.", "Você está indo muito bem! Restam {0} kcal hoje."],"Rango de mantenimiento":["Maintenance range", "Faixa de manutenção"],"Estás {0} por encima":["You are {0} above", "Você está {0} acima"],"Estás {0} por debajo":["You are {0} below", "Você está {0} abaixo"],"{0}% del camino a {1}":["{0}% of the way to {1}", "{0}% do caminho até {1}"],"Ventana de comida abierta":["Eating window open", "Janela de alimentação aberta"],"Cierra en {0}":["Closes in {0}", "Fecha em {0}"],"A las {0}":["At {0}", "Às {0}"],"Ahora":["Now", "Agora"],"Anotar":["Log", "Anotar"],"Tomado":["Taken", "Tomado"],"Tu día":["Your day", "Seu dia"],"Borrar":["Delete", "Apagar"],"Ver menos":["Show less", "Ver menos"],"Plan":["Plan","Plano"],"Registrar":["Log","Registrar"],"Navegación":["Navigation","Navegação"],"Hablar con":["Talk to","Falar com"],
+var I18N={"Sistema":["System", "Sistema"],"«Sistema» sigue el modo claro u oscuro de tu teléfono.":["“System” follows your phone’s light or dark mode.", "“Sistema” segue o modo claro ou escuro do seu telefone."],"Apariencia":["Appearance", "Aparência"],"Oscuro":["Dark", "Escuro"],"Claro":["Light", "Claro"],"Como el sistema":["System", "Como o sistema"],"Te quedan {0}":["{0} left", "Restam {0}"],"Te pasaste {0}":["{0} over", "Passou {0}"],"de {0} g":["of {0} g", "de {0} g"],"de {0} L":["of {0} L", "de {0} L"],"Anoche · {0}% de tu meta":["Last night · {0}% of your goal", "Ontem à noite · {0}% da sua meta"],"Toca para registrar":["Tap to log", "Toque para registrar"],"Primera aplicación":["First dose", "Primeira aplicação"],"Regístrala":["Log it", "Registre"],"pasos":["steps", "passos"],"Actividad":["Activity", "Atividade"],"Hola, {0}":["Hi, {0}", "Olá, {0}"],"{0} días":["{0} days", "{0} dias"],"de {0} kcal":["of {0} kcal", "de {0} kcal"],"de {0} g proteína":["of {0} g protein", "de {0} g proteína"],"de {0} L agua":["of {0} L water", "de {0} L água"],"Michi dice":["Michi says", "Michi diz"],"Moki dice":["Moki says", "Moki diz"],"Dormiste poco. Hoy toma agua, muévete un poco y acuéstate más temprano.":["You slept little. Today drink water, move a bit and go to bed earlier.", "Você dormiu pouco. Hoje beba água, mexa-se um pouco e deite mais cedo."],"Hoy te pasaste {0} kcal. Mañana es otro día: no te castigues.":["You went {0} kcal over today. Tomorrow is another day: don’t be hard on yourself.", "Hoje você passou {0} kcal. Amanhã é outro dia: não se castigue."],"¡Buen día! Anota tu primera comida y arrancamos.":["Good morning! Log your first meal and let’s get going.", "Bom dia! Anote sua primeira refeição e vamos lá."],"Aún no anotas comidas hoy. Cuéntame qué comiste.":["You haven’t logged any meals today. Tell me what you ate.", "Você ainda não anotou refeições hoje. Me conte o que comeu."],"¡Vas muy bien! Te faltan {0} g de proteína.":["You’re doing great! {0} g of protein to go.", "Você está indo muito bem! Faltam {0} g de proteína."],"¡Vas muy bien! Te quedan {0} kcal hoy.":["You’re doing great! {0} kcal left today.", "Você está indo muito bem! Restam {0} kcal hoje."],"Rango de mantenimiento":["Maintenance range", "Faixa de manutenção"],"Estás {0} por encima":["You are {0} above", "Você está {0} acima"],"Estás {0} por debajo":["You are {0} below", "Você está {0} abaixo"],"{0}% del camino a {1}":["{0}% of the way to {1}", "{0}% do caminho até {1}"],"Ventana de comida abierta":["Eating window open", "Janela de alimentação aberta"],"Cierra en {0}":["Closes in {0}", "Fecha em {0}"],"A las {0}":["At {0}", "Às {0}"],"Ahora":["Now", "Agora"],"Anotar":["Log", "Anotar"],"Tomado":["Taken", "Tomado"],"Tu día":["Your day", "Seu dia"],"Borrar":["Delete", "Apagar"],"Ver menos":["Show less", "Ver menos"],"Plan":["Plan","Plano"],"Registrar":["Log","Registrar"],"Navegación":["Navigation","Navegação"],"Hablar con":["Talk to","Falar com"],
 "Eliminar mi cuenta y mis datos":["Delete my account and data", "Excluir minha conta e meus dados"],
 "Borrar mis datos de este teléfono":["Delete my data from this phone", "Apagar meus dados deste celular"],
 "Eliminar mi cuenta":["Delete my account", "Excluir minha conta"],
@@ -1338,7 +1424,7 @@ function levelChart(days){
   var x=function(i){return pl+i*(W-pl-pr)/n;},y=function(v){return pt+(H-pt-pb)*(1-v/mx);};
   var line=pts.map(function(v,i){return x(i).toFixed(1)+','+y(v).toFixed(1);}).join(' ');
   return '<svg viewBox="0 0 '+W+' '+H+'" width="100%"><defs><linearGradient id="lg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8b5cf6" stop-opacity=".55"/><stop offset="1" stop-color="#8b5cf6" stop-opacity=".05"/></linearGradient></defs>'+
-   [0.25,0.5,0.75].map(function(f){return '<line x1="0" x2="'+W+'" y1="'+(pt+(H-pt-pb)*f)+'" y2="'+(pt+(H-pt-pb)*f)+'" stroke="#eceaf3" stroke-dasharray="3 4"/>';}).join('')+
+   [0.25,0.5,0.75].map(function(f){return '<line x1="0" x2="'+W+'" y1="'+(pt+(H-pt-pb)*f)+'" y2="'+(pt+(H-pt-pb)*f)+'" style="stroke:var(--grid)" stroke-dasharray="3 4"/>';}).join('')+
    '<polygon points="'+x(0)+','+(H-pb)+' '+line+' '+x(n)+','+(H-pb)+'" fill="url(#lg)"/><polyline points="'+line+'" fill="none" stroke="#5b3df5" stroke-width="2.5" stroke-linejoin="round"/>'+
    '<circle cx="'+x(n)+'" cy="'+y(pts[n])+'" r="5" fill="#5b3df5" stroke="#fff" stroke-width="2"/>'+
    '<text x="'+pl+'" y="'+(H-5)+'" font-size="11" fill="#9b97ab">'+fmt(addDays(today(),-days))+'</text><text x="'+(W-pr)+'" y="'+(H-5)+'" font-size="11" fill="#9b97ab" text-anchor="end">Hoy</text></svg>';
@@ -1474,7 +1560,7 @@ function vAyuno(){
 }
 // descargo médico
 var LEGAL='MokiFit es una guía de acompañamiento, no una consulta médica. Las sugerencias de alimentación, actividad física, sueño, ayuno e hidratación, y las respuestas de la IA, no son indicaciones médicas: deben adaptarse a una valoración médica previa con tus exámenes de sangre (hormonales, metabólicos, entre otros). Tu médico define tu tratamiento, tu dosis y tu protocolo. Ante cualquier síntoma fuerte, consulta de inmediato.';
-function legalCard(){return '<div class="card row" data-m="legal" style="cursor:pointer;background:#fff8ec;box-shadow:none"><span style="font-size:22px">⚕️</span><div class="f mu" style="font-size:12px">'+T('Esto es solo una guía, no una consulta médica. Debe ir adaptada a tu valoración médica y tus exámenes.')+'</div><span style="color:var(--p);font-size:20px">›</span></div>';}
+function legalCard(){return '<div class="card row" data-m="legal" style="cursor:pointer;background:var(--lg);box-shadow:none"><span style="font-size:22px">⚕️</span><div class="f mu" style="font-size:12px">'+T('Esto es solo una guía, no una consulta médica. Debe ir adaptada a tu valoración médica y tus exámenes.')+'</div><span style="color:var(--p);font-size:20px">›</span></div>';}
 function legalModal(){return '<h3 style="margin-bottom:10px">⚕️ '+T('Importante')+'</h3><p style="font-size:15px;line-height:1.5">'+T(LEGAL)+'</p><button class="btn" data-close="1">'+T('Entendido')+'</button>';}
 var H2OTIPS=['Ten siempre una botella a la vista.','Toma un vaso al despertar y otro con cada comida.','Dale sabor con limón, pepino, hierbabuena o frutos rojos.','Las infusiones sin azúcar también cuentan.','Si tienes náuseas, toma sorbos pequeños y frecuentes.'];
 /* ---------- Onboarding ---------- */
@@ -1611,13 +1697,29 @@ function vInicio(){
   var due=mealSched().filter(function(m){return hh>=m[0]+m[1]/60+1.5;}),missing=due.filter(function(m){return !mealsAfter(t,m[0]-2);}),lazy=missing.length?missing[missing.length-1][2]:'';
   var hr=now.getHours(),greet=hr<12?'Buenos días':hr<19?'Buenas tardes':'Buenas noches',sk=streak();
   return '<div class="top"><div><div class="mu">'+now.toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})+'</div><h1>'+(S.name?Tf('Hola, {0}',[esc(S.name)]):T(greet))+'</h1></div><div class="row" style="gap:8px">'+(sk>1?'<span class="strk" title="'+Tf('{0} días seguidos registrando',[sk])+'">🔥 '+Tf('{0} días',[sk])+'</span>':'')+'<button class="x" data-tab="perfil" aria-label="'+T('Perfil')+'">'+IC.gear+'</button></div></div>'+alerts(1)+
-   mokiCard(k,pr,P,cw,pct,lazy,sed,expW)+
-   '<div class="card"><div class="rings3">'+[[k,P.kcal,'#ff7a45','🔥',String(k),Tf('de {0} kcal',[P.kcal])],[pr,P.prot,'#5b3df5','🍗',pr+' g',Tf('de {0} g proteína',[P.prot])],[wl,P.water,'#3b82f6','💧',wl.toFixed(2).replace('.',',')+' L',Tf('de {0} L agua',[String(P.water).replace('.',',')])]].map(function(x){return '<div>'+ring(x[0],x[1],76,8,x[2],'<span style="font-size:22px">'+x[3]+'</span>')+'<b class="rv">'+x[4]+'</b><div class="mu rl">'+x[5]+'</div></div>';}).join('')+'</div>'+
-    '<div class="mac">'+[['Carbos',sum('c'),P.carb,'#22a861'],['Grasas',sum('f'),P.fat,'#f5c518'],['Fibra',sum('fi'),P.fib,'#14b8a6']].map(function(x){return '<div><b>'+T(x[0])+'</b><div class="bar"><i style="width:'+Math.min(100,x[2]?x[1]/x[2]*100:0)+'%;background:'+(x[1]>x[2]?'var(--bad)':x[3])+'"></i></div><span class="mu">'+x[1]+' / '+x[2]+' g</span></div>';}).join('')+'</div>'+
-    '<div class="row" style="gap:6px;margin-top:12px;flex-wrap:nowrap"><button class="btn sec sm f" data-water="250">💧 +250 ml</button><button class="btn sec sm f" data-water="500">+500 ml</button>'+(wl?'<button class="x" data-water="-250" aria-label="−250 ml">−</button>':'')+'</div></div>'+
-   ahoraCard()+tuDia(ms)+
-   (kM()?keepCard():'')+suppCard()+actCard()+sleepCard()+legalCard();
+   mokiCard(k,pr,P,cw,pct,lazy,sed,expW)+ahoraCard()+
+   tiles([
+    tile('Calorías',T('Calorías'),'<div class="tb">'+kf(k)+'</div><div class="tm">'+Tf('de {0} kcal',[kf(P.kcal)])+'</div><div class="bar" style="margin-top:14px"><i style="width:'+Math.min(100,k/P.kcal*100)+'%;background:'+(k>P.kcal?'var(--bad)':'linear-gradient(90deg,#ff8a5b,#ffb26b)')+'"></i></div><div class="tm" style="margin-top:8px">'+(P.kcal-k>=0?Tf('Te quedan {0}',[kf(P.kcal-k)]):Tf('Te pasaste {0}',[kf(k-P.kcal)]))+'</div>'),
+    tile('Proteína',T('Proteína'),ring(pr,P.prot,96,10,'#fbbf24','<b style="font-size:19px">'+pr+' g</b>')+'<div class="tm" style="text-align:center;margin-top:6px">'+Tf('de {0} g',[P.prot])+'</div>'),
+    tile('Agua',T('Agua'),'<div class="tb">'+wl.toFixed(2).replace('.',',')+' L</div><div class="tm">'+Tf('de {0} L',[String(P.water).replace('.',',')])+'</div><div class="wave" style="height:'+Math.round(14+Math.min(1,wl/P.water)*30)+'%"></div><div class="row tact"><button class="tp" data-water="250">+250 ml</button><button class="tp" data-water="500">+500</button>'+(wl?'<button class="tp" data-water="-250" aria-label="−250 ml">−</button>':'')+'</div>','linear-gradient(160deg,#1e6fd9,#1b3f9e)'),
+    sleepTile()
+   ])+
+   '<div class="card mac">'+[['Carbos','Carbos',sum('c'),P.carb,'#fbbf24'],['Grasas','Grasas',sum('f'),P.fat,'#2fd39a'],['Fibra','Fibra',sum('fi'),P.fib,'#2dd4bf']].map(function(x){return '<div><div class="row" style="gap:6px">'+ico(x[1],16)+'<b>'+T(x[0])+'</b></div><div class="bar"><i style="width:'+Math.min(100,x[3]?x[2]/x[3]*100:0)+'%;background:'+(x[2]>x[3]?'var(--bad)':x[4])+'"></i></div><span class="mu">'+x[2]+' / '+x[3]+' g</span></div>';}).join('')+'</div>'+
+   tuDia(ms)+tiles([doseTile(),actTile()])+
+   (kM()?keepCard():'')+suppCard()+legalCard();
 }
+// Tarjetas de color de Hoy (estilo «tarjetas»): ícono propio + título + contenido
+function kf(v){return Math.round(v).toLocaleString(LOC());}
+function tile(icn,title,body,bg,attr){return '<div class="tile"'+(attr?' '+attr:'')+(bg?' style="background:'+bg+'"':'')+'><div class="tlh">'+(bg?'<span class="ict onc">'+ico(icn,18,'#fff')+'</span>':ict(icn,0,18))+'<span>'+title+'</span></div>'+body+'</div>';}
+function tiles(L){L=L.filter(Boolean);if(!L.length)return'';if(L.length%2)L[L.length-1]=L[L.length-1].replace('class="tile"','class="tile wide"');return '<div class="tiles">'+L.join('')+'</div>';}
+function sleepTile(){var l=lastSleep(),g=Math.max(420,goalMin());
+  return tile('Sueño',T('Sueño'),'<div class="moon"></div>'+(l?'<div class="tb" style="margin-top:34px">'+hm(l.min)+'</div><div class="tm">'+Tf('Anoche · {0}% de tu meta',[Math.round(l.min/g*100)])+'</div>':'<div class="tb" style="margin-top:34px;font-size:22px">'+T('¿Cómo dormiste?')+'</div><div class="tm">'+T('Toca para registrar')+'</div>'),'linear-gradient(160deg,#2c2386,#18144a)','data-m="sleep" role="button" tabindex="0"');}
+function doseTile(){var n=nextDoseAt();if(S.tr.stage==='none'||!S.tr.med)return'';
+  return tile('Dosis',T(n?'Próxima dosis':'Primera aplicación'),'<div class="tb" style="margin-top:22px;font-size:'+(n?28:20)+'px" id="cd">'+(n?countdown():T('Regístrala'))+'</div><div class="tm">'+esc(S.tr.med)+(S.tr.mg?' '+esc(S.tr.mg)+' mg':'')+'</div>','linear-gradient(160deg,#c45bb5,#7b33a0)',n?'data-tab="tratamiento" role="button" tabindex="0"':'data-m="dose" role="button" tabindex="0"');}
+function actTile(){if(!NATIVE)return'';
+  if(!S.hc||!S.hc.on)return tile('Actividad',T('Actividad'),'<div class="tm" style="margin:10px 0">'+T('Peso, pasos y calorías se llenan solos desde Health Connect.')+'</div><button class="tp" data-act="hc" style="background:var(--p)">'+T('Conectar')+'</button>');
+  var d=S.hc.day&&S.hc.day.date===today()?S.hc.day:{},st=d.steps||0;
+  return tile('Actividad',T('Actividad'),ring(st,8000,92,9,'#a3e635','<b style="font-size:16px">'+(st>=1000?(st/1000).toFixed(1).replace('.',',')+'k':st)+'</b>')+'<div class="tm" style="text-align:center;margin-top:6px">'+T('pasos')+(d.active?' · '+d.active+' kcal':'')+'</div><button class="x" data-act="hcsync" aria-label="'+T('Sincronizar')+'" style="position:absolute;right:10px;top:12px">↻</button>');}
 // Tarjeta de Moki: un solo mensaje según lo más urgente del día
 function mokiCard(k,pr,P,cw,pct,lazy,sed,expW){
   var mood=lazy||shortSleep()?'zz':sed?'sed':null,msg,act='',hh=new Date().getHours();
@@ -1643,7 +1745,7 @@ function ahoraCard(){
   else if(trat&&n&&n-now<2*864e5)a=['💉',T('Próxima aplicación'),'<span id="cd">'+countdown()+'</span>','data-tab="tratamiento"'];
   else if(nx)a=[nx[1],esc(nx[2]),Tf('A las {0}',[hhmm(nx[0])]),hAct(nx[1],nx[2])[0]||'data-tab="plan"'];
   if(!a)return'';
-  return '<button class="card nowc" '+a[3]+'><span class="di" style="background:#e3eeff">'+a[0]+'</span><span class="f"><span class="nk">'+T('Ahora')+'</span><b>'+a[1]+'</b><span class="mu">'+a[2]+'</span></span><span class="chv">›</span></button>';
+  return '<button class="card nowc" '+a[3]+'>'+ict(EMI[a[0]]||a[0])+'<span class="f"><span class="nk">'+T('Ahora')+'</span><b>'+a[1]+'</b><span class="mu">'+a[2]+'</span></span><span class="chv">›</span></button>';
 }
 // acción rápida para un horario: [atributo, texto del botón]
 function hAct(ic,txt){
@@ -1663,7 +1765,7 @@ function tuDia(ms){
   return '<div class="card dia"><div class="row" style="margin-bottom:8px"><h2 class="f" style="margin:0">'+T('Tu día')+'</h2>'+(L.length>up.length||up.length>4?'<button class="x" data-act="horall" style="font-size:14px;width:auto;padding:0 10px">'+T(open?'Ver menos':'Ver todos')+'</button>':'')+'</div>'+
    '<form id="qf" class="row" style="margin-bottom:6px"><input class="f" id="qm" placeholder="¿Qué comiste? Ej: 6 huevos cocidos y 200 g de aguacate" autocomplete="off"><button class="btn sm" type="submit">Agregar</button><button class="btn sec sm" type="button" data-m="meal" data-cam="1" aria-label="Foto" style="padding:10px 12px">📷</button>'+MIC('qm','qf','qmsg')+'</form><div class="mu" id="qmsg" style="min-height:18px"></div>'+
    (ms.length?'':'<div class="mu" style="font-size:13px;margin-bottom:6px">Escribe lo que comiste y se calculan solas las calorías, la proteína, los carbohidratos, las grasas y la fibra.</div>')+
-   it.map(function(x){return '<div class="dl'+(x[5]?' ok':'')+(x[6]?' past':'')+'"><span class="di">'+x[1]+'</span><span class="f"><b>'+x[2]+'</b><span class="mu">'+x[3]+'</span></span>'+(x[5]&&!x[4]?'<span class="okc">✓</span>':x[4])+'</div>';}).join('')+'</div>';
+   it.map(function(x){return '<div class="dl'+(x[5]?' ok':'')+(x[6]?' past':'')+'">'+ict(EMI[x[1]]||x[1])+'<span class="f"><b>'+x[2]+'</b><span class="mu">'+x[3]+'</span></span>'+(x[5]&&!x[4]?'<span class="okc">✓</span>':x[4])+'</div>';}).join('')+'</div>';
 }
 function actCard(){
   if(!NATIVE)return'';
@@ -1677,7 +1779,7 @@ function actCard(){
    ((d.workouts||[]).length?'<div class="mu" style="margin-top:12px">🏋️ '+d.workouts.map(function(w){return w.t+' '+w.min+' min'+(w.kcal?' · '+w.kcal+' kcal':'');}).join(' · ')+'</div>':'')+
    (hcErr?'<div class="alert" style="margin:10px 0 0">'+esc(hcErr)+'</div>':'')+'</div>';
 }
-function doseCard(){var n=nextDoseAt(),l=lastDose();return (S.tr.stage!=='none'?'<div class="card">'+(n?'<div class="row"><div class="f"><div class="mu">💉 Próxima aplicación</div><div class="cd" id="cd">'+countdown()+'</div></div><span class="pill">'+esc(S.tr.med)+' '+esc(S.tr.mg)+(S.tr.mg?' mg':'')+'</span></div>'+
+function doseCard(){var n=nextDoseAt(),l=lastDose();return (S.tr.stage!=='none'?'<div class="card ctile" style="background:linear-gradient(135deg,#c45bb5,#6d2fa0)">'+(n?'<div class="row"><div class="f"><div class="mu">💉 Próxima aplicación</div><div class="cd" id="cd">'+countdown()+'</div></div><span class="pill">'+esc(S.tr.med)+' '+esc(S.tr.mg)+(S.tr.mg?' mg':'')+'</span></div>'+
      '<div class="row" style="margin-top:12px"><div class="f"><div class="mu">Última dosis</div><b>'+fmt(l.d)+', '+l.t+'</b></div><div class="f"><div class="mu">Próxima dosis</div><b>'+fmt(dstr(n))+', '+l.t+'</b></div><div class="f"><div class="mu">Sitio sugerido</div><b>'+nextSite()+'</b></div></div>':
      '<div class="row"><div class="f"><h3>Registra tu primera aplicación</h3><div class="mu">Activamos la cuenta regresiva para la siguiente.</div></div><button class="btn sm" data-m="dose">Registrar</button></div>')+'</div>':'');}
 function vTrat(){
@@ -1704,7 +1806,7 @@ function weightChart(){
   var pts=ws.map(function(w){return{t:new Date(w.d+'T12:00:00').getTime(),v:w.kg};}),last=pts[pts.length-1],eta=new Date(P.eta+'T12:00:00').getTime();
   var t0=pts[0].t,t1=Math.max(eta,last.t+864e5),vs=pts.map(function(p){return p.v;}).concat(T),mn=Math.min.apply(0,vs)-1,mx=Math.max.apply(0,vs)+1;
   var W=340,H=170,pl=34,pr=10,pt=12,pb=24,x=function(t){return pl+(t-t0)/(t1-t0)*(W-pl-pr);},y=function(v){return pt+(mx-v)/(mx-mn)*(H-pt-pb);};
-  var g='';for(var i=0;i<=3;i++){var v=mn+(mx-mn)*i/3;g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#eceaf3" stroke-dasharray="3 4"/><text x="0" y="'+(y(v)+4)+'" font-size="10" fill="#9b97ab">'+Math.round(rW(v))+uW()+'</text>';}
+  var g='';for(var i=0;i<=3;i++){var v=mn+(mx-mn)*i/3;g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(v)+'" y2="'+y(v)+'" style="stroke:var(--grid)" stroke-dasharray="3 4"/><text x="0" y="'+(y(v)+4)+'" font-size="10" fill="#9b97ab">'+Math.round(rW(v))+uW()+'</text>';}
   return '<svg viewBox="0 0 '+W+' '+H+'" width="100%">'+g+
    '<line x1="'+x(last.t)+'" y1="'+y(last.v)+'" x2="'+x(eta)+'" y2="'+y(T)+'" stroke="#22a861" stroke-width="2" stroke-dasharray="6 5"/>'+
    '<polyline points="'+pts.map(function(p){return x(p.t)+','+y(p.v);}).join(' ')+'" fill="none" stroke="#5b3df5" stroke-width="3"/>'+
@@ -1715,7 +1817,7 @@ function weightChart(){
 function vProg(){
   var P=plan(),st=startW(),cw=curW(),ws=sortedW();
   return '<div class="top"><h1>Progreso</h1><button class="btn sm" data-m="weight">+ Peso</button></div>'+
-   '<div class="card"><div class="row"><div class="f"><div class="mu">Cambio total</div><div class="big" style="color:'+((st-cw)*gdir()>0?'var(--ok)':'var(--tx)')+'">'+(cw<st?'−':cw>st?'+':'')+fW(Math.abs(st-cw))+'</div></div>'+owl(70)+'</div>'+weightChart()+
+   '<div class="card ctile" style="background:linear-gradient(135deg,#0f7a57,#16a37f)"><div class="row"><div class="f"><div class="mu">Cambio total</div><div class="big" style="color:'+((st-cw)*gdir()>0?'var(--ok)':'var(--tx)')+'">'+(cw<st?'−':cw>st?'+':'')+fW(Math.abs(st-cw))+'</div></div>'+owl(70)+'</div>'+weightChart()+
     '<div class="grid3" style="margin-top:12px">'+[['Inicio',fW(st)],['Actual',fW(cw)],['Meta',fW(S.prof.target)]].map(function(x){return '<div><div class="mu" style="font-size:12px">'+x[0]+'</div><b>'+x[1]+'</b></div>';}).join('')+'</div></div>'+
    '<div class="card">'+bmiBar(P.bmi,P.bmiT)+(S.hc&&S.hc.fat?'<div class="mu" style="margin-top:10px">Grasa corporal (báscula): <b>'+String(S.hc.fat).replace('.',',')+'%</b></div>':'')+'</div>'+
    sleepSection()+plateauCard()+reportCard()+measCard()+bodyCard()+'<h2>Progreso en fotos</h2><div class="card"><div class="ph">'+PH.map(function(x,i){return '<div><img src="'+x.img+'" alt=""><span>'+(i===0&&PH.length>1?T('Inicio')+' · ':'')+fmt(x.d)+'</span><button class="x" data-delph="'+i+'">✕</button></div>';}).join('')+
@@ -1725,11 +1827,11 @@ function vProg(){
 function vPerfil(){
   var P=plan(),p=S.prof,a=ACT.filter(function(x){return x[0]===p.act;})[0]||ACT[0];
   return '<div class="top"><h1>Perfil</h1></div>'+
-   '<div class="card row">'+owl(70)+'<div class="f"><h3>'+esc(S.name)+'</h3><div class="mu">'+(p.sex==='F'?'Mujer':'Hombre')+' · '+p.age+' años · '+fH(p.h)+'<br>'+a[1]+' · '+fR(p.rate)+' '+uW()+'/sem</div></div></div>'+
+   '<div class="card row ctile" style="background:var(--grad)">'+owl(70)+'<div class="f"><h3>'+esc(S.name)+'</h3><div class="mu">'+(p.sex==='F'?'Mujer':'Hombre')+' · '+p.age+' años · '+fH(p.h)+'<br>'+a[1]+' · '+fR(p.rate)+' '+uW()+'/sem</div></div></div>'+
    '<h2>Metas diarias</h2>'+goalsGrid(P)+
    '<div class="card" style="margin-top:12px"><div class="mu">'+(P.hc?'⌚ '+Tf('Calculado con tu reloj: reposo + la mitad de tus {0} kcal activas promedio de los últimos 7 días.',[S.hc.avgActive])+' ':'')+Tf('Gastas unas <b>{0} kcal</b> al día. Al ritmo elegido llegarías a {1} hacia el <b>{2}</b>.',[P.tdee,fW(p.target),fmtY(P.eta)])+'</div></div>'+
    '<h2>Cuenta</h2><div class="card row"><span style="font-size:26px">☁️</span><div class="f">'+(AU?'<b>'+esc(AU.email)+'</b><div class="mu">Sincronizado en la nube</div>':'<div class="mu">Sin cuenta: tus datos están solo en este teléfono.</div>')+'</div>'+(AU?'<button class="btn sec sm" data-act="logout">Cerrar sesión</button>':'<button class="btn sm" data-m="auth" data-am="up">Crear cuenta</button>')+'</div>'+
-   connCard()+aiCard()+'<button class="btn" data-act="reonb" style="margin-top:8px">Rehacer mi plan</button><button class="link2" data-m="delacc" style="display:block;margin:14px auto 0;color:var(--bad)">'+T(AU?'Eliminar mi cuenta y mis datos':'Borrar mis datos de este teléfono')+'</button><p class="mu center" style="font-size:12px;margin:10px 0 0"><span>Versión</span> __VERSION__</p>'+
+   connCard()+aiCard()+themeCard()+'<button class="btn" data-act="reonb" style="margin-top:8px">Rehacer mi plan</button><button class="link2" data-m="delacc" style="display:block;margin:14px auto 0;color:var(--bad)">'+T(AU?'Eliminar mi cuenta y mis datos':'Borrar mis datos de este teléfono')+'</button><p class="mu center" style="font-size:12px;margin:10px 0 0"><span>Versión</span> __VERSION__</p>'+
    '<p class="mu center" style="margin:16px 10px">Estimaciones con la fórmula Mifflin-St Jeor. La dosis y el ritmo de tu tratamiento los define tu médico.</p>';
 }
 
@@ -1758,7 +1860,7 @@ var BASC='<svg class="msil" viewBox="2 2 28 28" aria-hidden="true"><rect x="4" y
 var MSIL='<svg class="msil" viewBox="4 1 24 30" aria-hidden="true"><circle cx="16" cy="5" r="3.2" fill="#5b3df5"/><path d="M10.5 10.5c0-1.4 1.1-2.3 2.5-2.3h6c1.4 0 2.5.9 2.5 2.3v7.2c0 .8-.5 1.4-1.2 1.6l-.6 9.4c-.1.9-.8 1.5-1.7 1.5h-.9c-.6 0-1.1-.5-1.1-1.1V21h-.4v8.1c0 .6-.5 1.1-1.1 1.1h-.9c-.9 0-1.6-.6-1.7-1.5l-.6-9.4c-.7-.2-1.2-.8-1.2-1.6z" fill="#8b5cf6"/><path d="M7.5 10.6c-.9.5-1.4 1.4-1.3 2.4l.7 5.6" stroke="#8b5cf6" stroke-width="2.2" stroke-linecap="round" fill="none"/><path d="M24.5 10.6c.9.5 1.4 1.4 1.3 2.4l-.7 5.6" stroke="#8b5cf6" stroke-width="2.2" stroke-linecap="round" fill="none"/><rect x="8.6" y="14.2" width="14.8" height="3.4" rx="1.2" fill="#ffc83d" stroke="#e0a100" stroke-width=".5"/><path d="M10.6 14.4v1.3M12.6 14.4v2M14.6 14.4v1.3M16.6 14.4v2M18.6 14.4v1.3M20.6 14.4v2" stroke="#7a5200" stroke-width=".5"/><path d="M23.2 16.6c1.6.2 2.6 1.3 2.4 2.8-.1 1.2-1 2-2.2 2.1" stroke="#ffc83d" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>';
 function vModal(){
   var m=modal,h='',t=today();
-  if(m==='menu') h='<h3 style="margin-bottom:14px">¿Qué quieres registrar?</h3><div class="grid3">'+[['meal','🍽️','Comida'],['dose','💉','Aplicación'],['weight',BASC,'Peso'],['sym','🩺','Síntoma'],['water','💧','Agua'],['sleep','🌙','Sueño'],['inv','📦','Inventario'],['meas',MSIL,'Medidas'],['bowel','🚽','Deposición'],['supp','💊','Suplementos'],['fast','⏳','Ayuno'],['vial','🧪','Calculadora']].map(function(x){return '<button class="act" data-m="'+x[0]+'"><span>'+x[1]+'</span>'+x[2]+'</button>';}).join('')+'</div>';
+  if(m==='menu') h='<h3 style="margin-bottom:14px">¿Qué quieres registrar?</h3><div class="grid3">'+[['meal','Comida','Comida'],['dose','Dosis','Aplicación'],['weight','Peso','Peso'],['sym','Síntomas','Síntoma'],['water','Agua','Agua'],['sleep','Sueño','Sueño'],['inv','Inventario','Inventario'],['meas','Medidas','Medidas'],['bowel','Digestión','Deposición'],['supp','Suplementos','Suplementos'],['fast','Ayuno','Ayuno'],['vial','Vial','Calculadora']].map(function(x){return '<button class="act" data-m="'+x[0]+'">'+ict(x[1],1,26)+x[2]+'</button>';}).join('')+'</div>';
   if(m==='lvl'){var L=lvl();h='<div class="center fade">'+cat(170,L)+'<h3 style="font-size:24px;margin:6px 0">'+T('¡Moki subió al nivel')+' '+(L+1)+'!</h3><p class="mu" style="font-size:16px">'+T((kM()?LVLK:gM()?LVLG:LVLTXT)[L])+'</p><button class="btn" data-close="1">'+T('¡Vamos!')+'</button></div>';}
   if(m==='delacc'){h='<h3 style="margin-bottom:10px">'+T(AU?'Eliminar mi cuenta':'Borrar mis datos')+'</h3>'+
     '<p style="margin:0 0 10px">'+T(AU?'Se borran para siempre tu cuenta, tus datos guardados en la nube y todo lo que hay en este teléfono: perfil, pesos, comidas, dosis, medidas, ayunos y chats con Moki. No se puede deshacer.':'Se borra para siempre todo lo que la app guardó en este teléfono: perfil, pesos, comidas, dosis, medidas, ayunos y chats con Moki. No se puede deshacer.')+'</p>'+
@@ -1851,7 +1953,7 @@ function vialModal(){
   return '<h3 style="margin-bottom:4px">'+T('Calculadora de viales')+'</h3><div class="mu" style="margin-bottom:12px">'+T('Para medicamento en vial que se mezcla con agua bacteriostática y se aplica con jeringa de insulina U-100.')+'</div>'+
    '<div class="grid2">'+field(T('mg en el vial'),'<input id="v-mg" type="number" step="0.1" inputmode="decimal" value="'+esc(v.mg||'')+'">')+field(T('ml de agua agregada'),'<input id="v-ml" type="number" step="0.1" inputmode="decimal" value="'+esc(v.ml||'')+'">')+
    field(T('Tu dosis en mg'),'<input id="v-dose" type="number" step="0.05" inputmode="decimal" value="'+esc(v.dose||S.tr.mg||'')+'">')+field(T('O unidades a convertir'),'<input id="v-u" type="number" step="1" inputmode="numeric" value="'+esc(v.u||'')+'">')+'</div>'+
-   '<div class="card" id="v-out" style="background:#f6f4fd;box-shadow:none">'+vialCalc()+'</div><p class="mu center" style="font-size:12px">'+T('Solo convierte los números que escribes. No recomienda dosis: la dosis y la mezcla las define tu médico o farmacéutico.')+'</p>';
+   '<div class="card" id="v-out" style="background:rgba(255,255,255,.05);box-shadow:none">'+vialCalc()+'</div><p class="mu center" style="font-size:12px">'+T('Solo convierte los números que escribes. No recomienda dosis: la dosis y la mezcla las define tu médico o farmacéutico.')+'</p>';
 }
 function vialCalc(){
   var v=S.vial||{},mg=num(v.mg,0),ml=num(v.ml,0),dose=num(v.dose!=null?v.dose:S.tr.mg,0),u=num(v.u,0);
@@ -1881,7 +1983,7 @@ var SYMTIPS={'Náuseas':['Come porciones pequeñas y despacio; para cuando te si
 function symTipsModal(){
   var l=tmp.symShow&&tmp.symShow.length?tmp.symShow:SYMS.map(function(s){return s[0];});
   return '<h3 style="margin-bottom:4px">'+T('Qué puede ayudarte')+'</h3><div class="mu" style="margin-bottom:12px">'+T('Consejos generales. Si un síntoma es fuerte o no cede, consulta a tu médico.')+'</div>'+
-   l.filter(function(s){return SYMTIPS[s];}).map(function(s){var e=(SYMS.filter(function(x){return x[0]===s;})[0]||['',''])[1];return '<div class="card" style="box-shadow:none;background:#f6f4fd"><b>'+e+' '+T(s)+'</b><ul style="margin:6px 0 0 18px;padding:0">'+SYMTIPS[s].map(function(t){return '<li style="margin:4px 0">'+T(t)+'</li>';}).join('')+'</ul></div>';}).join('')+
+   l.filter(function(s){return SYMTIPS[s];}).map(function(s){var e=(SYMS.filter(function(x){return x[0]===s;})[0]||['',''])[1];return '<div class="card" style="box-shadow:none;background:var(--sf)"><b>'+e+' '+T(s)+'</b><ul style="margin:6px 0 0 18px;padding:0">'+SYMTIPS[s].map(function(t){return '<li style="margin:4px 0">'+T(t)+'</li>';}).join('')+'</ul></div>';}).join('')+
    '<div class="alert">'+T('Busca atención médica de inmediato si tienes dolor abdominal fuerte que no cede o que va hacia la espalda, vómitos que no paran, signos de deshidratación (boca muy seca, orinas muy poco, mareo al pararte) o una reacción alérgica.')+'</div>'+
    (llm?'<button class="btn sec" data-act="askm" data-qq="'+esc(T('Tengo estos síntomas')+': '+l.map(T).join(', ')+'. '+T('¿Qué me recomiendas comer y hacer hoy?'))+'">'+T('Pregúntale a Moki')+'</button>':'')+'<button class="btn" data-close="1" style="margin-top:8px">'+T('Entendido')+'</button>';
 }
@@ -1898,7 +2000,7 @@ var SUPPQ=['Multivitamínico','Vitamina D','Vitamina B12','Proteína en polvo','
 function suppDone(n){return ((S.suppLog||{})[today()]||[]).indexOf(n)>=0;}
 function suppCard(){
   var L=(S.supp||[]).filter(function(s){return !s.t;});if(!L.length)return'';var done=L.filter(function(s){return suppDone(s.n);}).length;
-  return '<div class="card"><div class="row" style="margin-bottom:10px"><b class="f">💊 '+T('Suplementos de hoy')+' <span class="mu">'+done+'/'+L.length+'</span></b><button class="x" data-m="supp" style="font-size:15px">'+T('Editar')+'</button></div><div class="chips">'+
+  return '<div class="card"><div class="row" style="margin-bottom:10px">'+ict('Suplementos',0,18)+'<b class="f">'+T('Suplementos de hoy')+' <span class="mu">'+done+'/'+L.length+'</span></b><button class="x" data-m="supp" style="font-size:15px">'+T('Editar')+'</button></div><div class="chips">'+
    L.map(function(s){return '<button class="chip'+(suppDone(s.n)?' on':'')+'" data-supp="'+esc(s.n)+'">'+(suppDone(s.n)?'✓ ':'')+esc(T(s.n))+(s.t?' · '+s.t:'')+'</button>';}).join('')+'</div></div>';
 }
 function suppModal(){
@@ -2277,11 +2379,17 @@ function iosx(h){
   IOSR.forEach(function(r){h=h.split(r[0]).join(r[1]);});
   return h.replace(/<button[^>]*data-act="hc(set|store)"[^>]*>[\s\S]*?<\/button>/g,''); // ajustes/instalar Health Connect no existen en iPhone
 }
+// Apariencia: 'dark' (predeterminado), 'light' o 'auto' (como el sistema)
+function applyTheme(){var m=S.theme||'dark',e=document.getElementById('dk');if(e)e.media=m==='dark'?'all':m==='light'?'not all':'(prefers-color-scheme: dark)';
+  var dk=m==='dark'||(m==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);[].forEach.call(document.querySelectorAll('meta[name=theme-color]'),function(x){x.content=dk?'#14121f':'#f6f4fb';});
+  try{var SB=window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.StatusBar;if(SB){SB.setStyle({style:dk?'DARK':'LIGHT'});SB.setBackgroundColor&&SB.setBackgroundColor({color:dk?'#14121f':'#f6f4fb'}).catch(function(){});}}catch(e){}}
+function themeCard(){return '<div class="card"><div class="row" style="margin-bottom:10px">'+ict('Despertar',0,18)+'<b class="f">'+T('Apariencia')+'</b></div><div class="seg seg3" role="radiogroup" aria-label="'+T('Apariencia')+'" style="margin:0">'+[['dark','Oscuro'],['light','Claro'],['auto','Sistema']].map(function(x){var on=(S.theme||'dark')===x[0];return '<button data-theme="'+x[0]+'" role="radio" aria-checked="'+on+'" class="'+(on?'on':'')+'">'+T(x[1])+'</button>';}).join('')+'</div></div>';}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if(S.theme==='auto')applyTheme();});}catch(e){}
 function render(){
-  clearInterval(tick);
+  clearInterval(tick);applyTheme();
   if(!S.onb){ if(!tmp.name&&step===0&&tmp.w==null) startOnbSilent(); document.body.innerHTML=iosx(vOnb()+(modal?vModal():'')); rInit(); return; }
   document.body.innerHTML=iosx('<div class="wrap fade"><div class="langbar">'+langPill()+'</div>'+TABS[tab][1]()+'<div id="st-msg"></div></div>'+
-   '<nav class="nav5" aria-label="'+T('Navegación')+'">'+NAV.map(function(x){return x?'<button data-tab="'+x[0]+'" class="'+(x[0]===tab?'on':'')+'"'+(x[0]===tab?' aria-current="page"':'')+'><span class="ni">'+IC[x[1]]+'</span><span class="nl">'+T(x[2])+'</span></button>':'<button class="navadd" data-m="menu" aria-label="'+T('Registrar')+'"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>';}).join('')+'</nav>'+
+   '<nav class="nav5" aria-label="'+T('Navegación')+'">'+NAV.map(function(x){return x?'<button data-tab="'+x[0]+'" class="'+(x[0]===tab?'on':'')+'"'+(x[0]===tab?' aria-current="page"':'')+'><span class="ni">'+ico({inicio:'Hoy',plan:'Plan',progreso:'Progreso',perfil:'Perfil'}[x[0]],24,'currentColor',x[0]===tab?'solid':'line')+'</span><span class="nl">'+T(x[2])+'</span></button>':'<button class="navadd" data-m="menu" aria-label="'+T('Registrar')+'"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>';}).join('')+'</nav>'+
    '<button class="mokib" data-tab="ia" aria-label="'+T('Hablar con')+' '+(isFem()?'Michi':'Moki')+'"><img src="'+(isFem()?MOCHI.faceF:MOCHI.face)+'" alt=""></button>'+(modal?vModal():'')+(toast?'<div class="toast" id="toast"><span>'+toast+'</span><button data-act="undo">'+T('Deshacer')+'</button></div>':''));
   [].forEach.call(document.querySelectorAll('nav,.mokib'),function(x){x.style.display=(modal||(tab==='ia'&&x.classList.contains('mokib')))?'none':'';});
   if(!$('rl'))RC=null;rInit();if($('cd')||$('fastc')) tick=setInterval(function(){var c=$('cd');if(c)c.textContent=countdown();var f=$('fastc');if(f&&S.fast)f.textContent=fastTxt();},1000);
@@ -2309,6 +2417,7 @@ document.addEventListener('click',function(e){
   if(d.mic){voz(b);return;}
   if(d.ob){obNav(+d.ob);return;}
   if(d.units){setUnits(d.units);return;}
+  if(d.theme){S.theme=d.theme;save();render();return;}
   if(d.lang){S.lang=d.lang;langOpen=false;document.documentElement.lang=S.lang;save();return;}
   if(d.act==='langmenu'){langOpen=!langOpen;render();return;}
   if(langOpen){langOpen=false;render();}
