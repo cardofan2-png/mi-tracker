@@ -5,12 +5,12 @@ on:
   workflow_dispatch:
     inputs:
       mac:
-        description: 'Máquina: macos-15 (ARM) o macos-15-intel si GitHub no tiene ARM disponibles'
-        default: macos-15
+        description: 'Máquina: macos-15-intel (la que GitHub sí asigna a esta cuenta) o macos-15 (ARM)'
+        default: macos-15-intel
 jobs:
   ios:
-    # ponytail: si GitHub no tiene Mac ARM, se relanza a mano con mac=macos-15-intel
-    runs-on: ${{ inputs.mac || 'macos-15' }}
+    # Las Mac ARM (macos-15) nunca se asignan a esta cuenta y la compilación se cancelaba en cola; Intel sí corre.
+    runs-on: ${{ inputs.mac || 'macos-15-intel' }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
