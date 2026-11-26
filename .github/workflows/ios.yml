@@ -11,7 +11,9 @@ jobs:
   ios:
     # Las Mac ARM (macos-15) nunca se asignan a esta cuenta y la compilación se cancelaba en cola; Intel sí corre.
     runs-on: ${{ inputs.mac || 'macos-15-intel' }}
-    timeout-minutes: 30
+    timeout-minutes: 45
+    env:
+      HAS_ASC: ${{ secrets.ASC_KEY_ID != '' }}
     steps:
       - uses: actions/checkout@v4
       # Apple exige Xcode 26 / SDK iOS 26 para subir a App Store Connect desde el 28-abr-2026
@@ -23,11 +25,46 @@ jobs:
       - run: cp node_modules/@capacitor/core/dist/capacitor.js www/
       - run: sed -i '' "s/__VERSION__/1.${{ github.run_number }}-ios/g" www/index.html
       - run: npx cap sync ios
-      # ponytail: compila sin firmar para comprobar que todo enlaza; firma y subida a TestFlight cuando exista la cuenta de Apple Developer
-      - name: Compilar
+      # Sin la llave de App Store Connect en los secretos: solo comprueba que compila (sin firmar).
+      - name: Compilar (sin firmar)
+        if: env.HAS_ASC != 'true'
         run: |
           xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release \
             -destination 'generic/platform=iOS' -derivedDataPath build \
             MARKETING_VERSION=1.${{ github.run_number }} CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             CODE_SIGNING_ALLOWED=NO build | tail -40
           test -d build/Build/Products/Release-iphoneos/App.app && echo "✔ App.app compilada"
+      # Con la llave: firma automática en la nube de Apple y subida a TestFlight.
+      # Secretos: APPLE_TEAM_ID, ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 (contenido del .p8; la llave con rol Admin).
+      - name: Firmar y subir a TestFlight
+        if: env.HAS_ASC == 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          TEAM: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -eo pipefail
+          for v in ASC_ISSUER_ID ASC_KEY_P8 TEAM; do [ -n "${!v}" ] || { echo "::error::Falta el secreto $v"; exit 1; }; done
+          KEY="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"; printf '%s\n' "$ASC_KEY_P8" > "$KEY"
+          AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID")
+          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/MokiFit.xcarchive" "${AUTH[@]}" \
+            DEVELOPMENT_TEAM="$TEAM" CODE_SIGN_STYLE=Automatic \
+            MARKETING_VERSION=1.${{ github.run_number }} CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            archive | tail -40
+          cat > "$RUNNER_TEMP/export.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$TEAM</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/MokiFit.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/out" "${AUTH[@]}" | tail -40
+          rm -f "$KEY"
+          echo "✔ Subida a TestFlight (versión 1.${{ github.run_number }}, compilación ${{ github.run_number }})"
