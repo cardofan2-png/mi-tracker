@@ -54,7 +54,7 @@ const marcas = [
   ['Play: solo permisos de salud usados', man, 'android.permission.health.READ_BLOOD_GLUCOSE" tools:node="remove"'],
   ['Play: sin alarmas exactas', man, 'android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove"'],
   ['Play: se compila el AAB', f('.github/workflows/build.yml'), 'bundleRelease'],
-  ['Video de bienvenida con el nombre Moki en arco', app, 'con el nombre "Moki" apareciendo en arco'],
+  ['Video de bienvenida con halo multilingüe y MF (sin marcas de terceros)', app, 'con el halo "Nuevo cuerpo en construcción" en varios idiomas'],
   ['Play: eliminar cuenta y datos desde la app', app, "a==='delacc'"],
   ['Play: borrar datos en la nube antes que la cuenta', app, "accounts:delete?key="],
   ['Play: política de privacidad publicada', f('www/privacidad.html'), 'Health Connect'],
