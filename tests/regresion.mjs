@@ -93,6 +93,19 @@ marcas.push(
   ['Perfil: ajustes en lista con íconos propios', app, 'function srow(n,t,sub,right,extra,attr)'],
   ['Perfil: tarjeta Premium solo si no es Premium', app, "(MS_AI&&!prem?'<div class=\"card ctile pfpr\""],
 );
+marcas.push(
+  ['Plan › Menú: tercer segmento con ícono propio', app, "['menu','menu','Menú','Comida']"],
+  ['Plan › Menú: enlace #menu', app, "PSUB.menu='menu'"],
+  ['Menú: recetario aparte, cargado solo al abrir', app, "fetch('recetas.json')"],
+  ['Menú: recetario reducido en www/', f('www/recetas.json'), '"id":"P20"'],
+  ['Menú: script que regenera el recetario', f('scripts/recetas.py'), 'traducciones.json'],
+  ['Menú: semana determinista (semana del año + preferencias)', app, 'function mList(ty,mon)'],
+  ['Menú: «Cambiar» guardado por fecha y comida', app, 'S.menuSwap=S.menuSwap||{}'],
+  ['Menú: «Lo comí» registra la porción del plan', app, "a==='recomi'"],
+  ['Menú: postre premio (3 comidas sin pasar la meta)', app, 'function mPremio()'],
+  ['Menú: detalle de receta con dónde comprar', app, 'function recModal()'],
+  ['Menú: fallo de carga sin bucle de reintentos', app, 'function recLoad(){if(REC||RECE)return;'],
+);
 const faltan = marcas.filter(([, src, m]) => !src.includes(m));
 if (/Michi/.test(app) || /Michi/.test(wk)) { console.error('✘ Moki para todos: volvió a aparecer el nombre «Michi» en la app o en la IA'); process.exit(1); }
 if (faltan.length) { console.error('✘ Se perdieron mejoras ya aprobadas:\n' + faltan.map(x => '  - ' + x[0]).join('\n')); process.exit(1); }

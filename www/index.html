@@ -370,6 +370,40 @@ button.card{display:flex;width:100%;text-align:left;border:0;font:inherit;color:
 .seg.seg3{width:100%;display:flex}.seg3 button{flex:1 1 0;min-width:0;padding:9px 4px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
 .ctile{border-color:transparent;color:#fff}.ctile .mu{color:rgba(255,255,255,.78)}.ctile .big,.ctile b,.ctile h3{color:#fff!important}.ctile .pill{background:rgba(255,255,255,.2);color:#fff}.ctile .cd{color:#fff}
 .ctile svg text{fill:rgba(255,255,255,.75)}.ctile polyline{stroke:#fff}.ctile circle[stroke="#5b3df5"]{stroke:#fff;fill:#16a37f}.ctile line[stroke-dasharray="6 5"]{stroke:#bbf7d0}.ctile .grid3 b{color:#fff}
+/* Plan › Menú: recetario semanal */
+.mty{display:flex;align-items:center;gap:8px;min-width:0}
+.mhero{margin-bottom:12px}.mhero .tb{font-size:36px}
+.mdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:0 0 12px}
+.mdy{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 6px;border-radius:14px;background:var(--card);border:1px solid var(--ln);color:var(--tx);min-width:0}
+.mdy span{font-size:12px;font-weight:700;color:var(--mu)}.mdy b{font-size:16px;font-weight:800}
+.mdy:after{content:'';width:5px;height:5px;border-radius:50%;background:transparent}
+.mdy.td:after{background:#ff8a5b}
+.mdy.on{background:var(--p);border-color:transparent;color:#fff}.mdy.on span{color:rgba(255,255,255,.82)}.mdy.on.td:after{background:#fff}
+.mpref{padding:14px 16px}.mpl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);margin:2px 2px 8px}.mpref .chips+.mpl{margin-top:12px}
+.mpref .chip{padding:8px 12px;font-size:13.5px;display:inline-flex;align-items:center;gap:4px}
+.mnu{grid-template-columns:1fr}
+.mcard,.mprem{min-height:0!important;display:flex;flex-direction:column;gap:8px}
+.mcard .tlh,.mprem .tlh{gap:8px}
+.mprem{margin-bottom:12px}
+.msw{padding:7px 12px!important;font-size:13px!important;display:inline-flex;align-items:center;gap:4px;flex:none}
+.mopen{display:flex;flex-direction:column;align-items:flex-start;gap:4px;width:100%;text-align:left;background:none;padding:0;color:inherit;font:inherit;cursor:pointer}
+.mnm{font-size:18px;font-weight:800;line-height:1.25;letter-spacing:-.2px}
+.mkc{font-size:14px}.mkc b{font-weight:800}
+.mmeta{font-size:12.5px;font-weight:600;color:var(--mu);display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
+.tile[style] .mmeta{color:rgba(255,255,255,.88)}
+.rmac{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 0 10px}
+.rmac div{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:8px 2px;text-align:center;min-width:0}
+.rmac b{font-size:16px;font-weight:800}.rmac small{font-size:11px;margin-left:2px;color:var(--mu)}.rmac span{display:block;font-size:11px;color:var(--mu);font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.rinf{margin:0 2px 4px}
+.rlist{padding:4px 16px}.rlist .dl:first-child{border-top:0}
+.rg{white-space:nowrap;font-size:14px!important}
+.pseg button{gap:5px}
+@media(max-width:380px){.pseg .ico{display:none}.pseg button{padding:9px 2px}}
+.mnw{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.rmac span{white-space:nowrap}
+@media(max-width:400px){.rmac{display:flex;flex-wrap:wrap}.rmac div{flex:1 1 28%}}
+.rcomi{display:flex;align-items:center;justify-content:center;gap:8px}
+.rsteps{margin:0 0 4px;padding-left:22px}.rsteps li{margin:0 0 8px;line-height:1.45}
 </style>
 <style id="dk">
 /* Parte 4: tema oscuro (se activa según Perfil › Apariencia) */
@@ -1368,6 +1402,7 @@ var I18N={"Regular":["Fair","Regular"],"Irregular":["Irregular","Irregular"],"Bu
 "Estás en ayuno":["You’re fasting", "Você está em jejum"],
 "Comes en {0}":["You eat in {0}", "Você come em {0}"]
 };
+Object.assign(I18N,{"Menú":["Menu","Cardápio"],"Snack":["Snack","Lanche"],"Postre":["Dessert","Sobremesa"],"Déficit":["Deficit","Déficit"],"Mantenimiento":["Maintenance","Manutenção"],"Volumen":["Bulking","Ganho de massa"],"Cambiar":["Swap","Trocar"],"No hay recetas con estos filtros.":["No recipes match these filters.","Nenhuma receita com esses filtros."],"Costo bajo":["Low cost","Custo baixo"],"Costo medio":["Medium cost","Custo médio"],"Costo alto":["High cost","Custo alto"],"Preparación fácil":["Easy","Fácil"],"Preparación media":["Medium effort","Preparo médio"],"Preparación elaborada":["Elaborate","Elaborada"],"Premio del día":["Treat of the day","Prêmio do dia"],"Disfrutado":["Enjoyed","Aproveitado"],"Desbloqueado":["Unlocked","Desbloqueado"],"¡Disfrutaste tu premio de hoy!":["You enjoyed today’s treat!","Você aproveitou o prêmio de hoje!"],"Te lo ganaste: 3 comidas sin pasarte de tu meta.":["You earned it: 3 meals without going over your goal.","Você mereceu: 3 refeições sem passar da sua meta."],"Bloqueado":["Locked","Bloqueado"],"Registra 3 comidas sin pasarte de tu meta":["Log 3 meals without going over your goal","Registre 3 refeições sem passar da sua meta"],"Hoy llevas {0} de {1} kcal: ya pasaste tu meta. Mañana lo intentamos de nuevo.":["Today you’re at {0} of {1} kcal: you’ve passed your goal. We’ll try again tomorrow.","Hoje você está em {0} de {1} kcal: já passou da meta. Amanhã tentamos de novo."],"Llevas {0} de 3 comidas · {1} de {2} kcal":["{0} of 3 meals · {1} of {2} kcal","{0} de 3 refeições · {1} de {2} kcal"],"No pude cargar las recetas. Revisa tu conexión e inténtalo de nuevo.":["I couldn’t load the recipes. Check your connection and try again.","Não consegui carregar as receitas. Verifique sua conexão e tente de novo."],"Reintentar":["Try again","Tentar de novo"],"Cargando recetas…":["Loading recipes…","Carregando receitas…"],"Menú de la semana":["This week’s menu","Cardápio da semana"],"Total del {0}":["Total for {0}","Total de {0}"],"de {0} kcal de tu meta":["of your {0} kcal goal","da sua meta de {0} kcal"],"Recetas para {0}":["Recipes for {0}","Receitas disponíveis: {0}"],"Recetas de todos los países":["Recipes from every country","Receitas de todos os países"],"Día":["Day","Dia"],"Presupuesto":["Budget","Orçamento"],"Cualquiera":["Any","Qualquer"],"Bajo":["Low","Baixo"],"Hasta medio":["Up to medium","Até médio"],"Dieta":["Diet","Dieta"],"Todas":["All","Todas"],"Vegetariano":["Vegetarian","Vegetariano"],"Sin gluten":["Gluten-free","Sem glúten"],"Sin lácteos":["Dairy-free","Sem lácteos"],"Solo fáciles":["Easy only","Só fáceis"],"Hay pocas recetas con todos tus filtros; incluimos otras parecidas.":["Few recipes match all your filters, so we added similar ones.","Há poucas receitas com todos os seus filtros; incluímos outras parecidas."],"Porciones de tu plan ({0}). Toca una receta para ver ingredientes y pasos. Valores nutricionales: USDA FoodData Central.":["Portions for your plan ({0}). Tap a recipe to see ingredients and steps. Nutrition data: USDA FoodData Central.","Porções do seu plano ({0}). Toque numa receita para ver ingredientes e passos. Valores nutricionais: USDA FoodData Central."],"Supermercados":["Supermarkets","Supermercados"],"Frescos (mercados y fruterías)":["Fresh produce (markets and greengrocers)","Frescos (feiras e hortifrútis)"],"Tiendas especializadas":["Specialty stores","Lojas especializadas"],"Porción {0}":["{0} portion","Porção {0}"],"Ingredientes":["Ingredients","Ingredientes"],"Preparación":["Steps","Modo de preparo"],"Etiquetas":["Tags","Etiquetas"],"Región":["Region","Região"],"Dónde comprar en {0}":["Where to buy in {0}","Onde comprar: {0}"],"Dónde comprar":["Where to buy","Onde comprar"],"Lo comí":["I ate it","Comi"],"Se registra con la porción de tu plan: {0} kcal.":["It’s logged with your plan’s portion: {0} kcal.","É registrado com a porção do seu plano: {0} kcal."],"sin gluten":["gluten-free","sem glúten"],"alto en proteína":["high protein","rico em proteína"],"sin lácteos":["dairy-free","sem lácteos"],"vegetariano":["vegetarian","vegetariano"],"rápido":["quick","rápido"],"apto GLP-1":["GLP-1 friendly","adequado para GLP-1"],"meal prep":["meal prep","marmita"],"para llevar":["to go","para levar"],"alto en fibra":["high fiber","rico em fibra"],"premio":["treat","prêmio"],"rápido (≤15 min)":["quick (≤15 min)","rápido (≤15 min)"],"vegano":["vegan","vegano"]}); // Plan › Menú
 var I18U={};for(var k in I18N)I18U[k.toUpperCase()]=I18N[k];
 function li(){return S.lang==='en'?0:S.lang==='pt'?1:-1;}
 function look(s){var e=I18N[s]||I18U[s];if(!e)return null;var r=e[li()];return I18N[s]?r:r.toUpperCase();}
@@ -1412,8 +1447,8 @@ function tr(txt){
 }
 function trDom(root){
   if(li()<0&&!isFem())return;
-  if(root.nodeType===3){if(!root.parentNode||!root.parentNode.closest||!root.parentNode.closest('.msg:not(.greet),script,style,.rt')){var v=tr(root.nodeValue);if(v!==root.nodeValue)root.nodeValue=v;}return;}
-  if(root.nodeType!==1||root.closest('.msg:not(.greet),script,style,.rt'))return;
+  if(root.nodeType===3){if(!root.parentNode||!root.parentNode.closest||!root.parentNode.closest('.msg:not(.greet),script,style,.rt,.notr')){var v=tr(root.nodeValue);if(v!==root.nodeValue)root.nodeValue=v;}return;}
+  if(root.nodeType!==1||root.closest('.msg:not(.greet),script,style,.rt,.notr'))return;
   var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n,list=[];while((n=w.nextNode()))list.push(n);list.forEach(trDom);
   [].forEach.call(root.querySelectorAll?root.querySelectorAll('[placeholder]'):[],function(e){var v=tr(e.getAttribute('placeholder'));if(v!==e.getAttribute('placeholder'))e.setAttribute('placeholder',v);});
   if(root.hasAttribute&&root.hasAttribute('placeholder'))root.setAttribute('placeholder',tr(root.getAttribute('placeholder')));
@@ -1972,6 +2007,7 @@ function vModal(){
   if(m==='sym') h='<h3 style="margin-bottom:14px">¿Cómo te sientes?</h3><div class="chips" style="margin-bottom:14px">'+SYMS.map(function(s){return '<button class="chip'+((tmp.sym||[]).indexOf(s[0])>=0?' on':'')+'" data-sym="'+s[0]+'">'+s[1]+' '+s[0]+'</button>';}).join('')+'</div>'+
     field('Intensidad: <b id="f-iv">5</b>/10','<input id="f-i" type="range" min="1" max="10" value="5">')+field('Nota','<textarea id="f-n" rows="2" placeholder="Opcional"></textarea>')+'<button class="btn" data-act="sym">Guardar</button><p class="mu center">Si un síntoma es fuerte o no cede, consulta a tu médico.</p>';
   if(m==='sleep') h=sleepModal();
+  if(m==='receta') h=recModal();
   if(m==='meas') h=measModal();
   if(m==='vial') h=vialModal();
   if(m==='symtips') h=symTipsModal();
@@ -2443,11 +2479,99 @@ function scrollChat(){window.scrollTo(0,document.body.scrollHeight);}
 // Navegación (propuesta A «Mi día»): Hoy · Plan · ＋ · Progreso · Yo; Moki (ia) se abre desde su burbuja flotante
 var TABS={inicio:['home',vInicio],plan:['syr',vPlan],progreso:['chart',vProg],perfil:['user',vPerfil],ia:['chat',vIA]};
 var NAV=[['inicio','home','Hoy'],['plan','syr','Plan'],null,['progreso','chart','Progreso'],['perfil','user','Perfil']];
-var PSUB={tratamiento:'trat',ayuno:'ayuno'},planSub='trat'; // los enlaces viejos a Tratamiento/Ayuno abren Plan en esa sección
+var PSUB={tratamiento:'trat',ayuno:'ayuno'},planSub='trat';PSUB.menu='menu'; // los enlaces viejos a Tratamiento/Ayuno abren Plan en esa sección
 function goTab(t){if(PSUB[t]){planSub=PSUB[t];t='plan';}tab=TABS[t]?t:'inicio';}
 goTab(tab);
 function vPlan(){
-  return '<div class="top"><h1>'+T('Plan')+'</h1>'+(planSub==='trat'&&S.tr.stage!=='none'?'<button class="btn sec sm" data-m="tr">'+T('Editar')+'</button>':'')+'</div><div class="seg seg3" role="tablist" aria-label="'+T('Plan')+'" style="margin:0 0 12px">'+[['tratamiento','trat','Tratamiento','Dosis'],['ayuno','ayuno','Ayuno','Ayuno']].map(function(x){var on=planSub===x[1];return '<button role="tab" aria-selected="'+on+'" data-tab="'+x[0]+'" class="'+(on?'on':'')+'">'+ico(x[3],18,'currentColor','line')+' '+T(x[2])+'</button>';}).join('')+'</div>'+(planSub==='ayuno'?vAyuno():vTrat());
+  return '<div class="top"><h1>'+T('Plan')+'</h1>'+(planSub==='trat'&&S.tr.stage!=='none'?'<button class="btn sec sm" data-m="tr">'+T('Editar')+'</button>':'')+'</div><div class="seg seg3 pseg" role="tablist" aria-label="'+T('Plan')+'" style="margin:0 0 12px">'+[['tratamiento','trat','Tratamiento','Dosis'],['ayuno','ayuno','Ayuno','Ayuno'],['menu','menu','Menú','Comida']].map(function(x){var on=planSub===x[1];return '<button role="tab" aria-selected="'+on+'" data-tab="'+x[0]+'" class="'+(on?'on':'')+'">'+ico(x[3],18,'currentColor','line')+' '+T(x[2])+'</button>';}).join('')+'</div>'+(planSub==='menu'?vMenu():planSub==='ayuno'?vAyuno():vTrat());
+}
+/* ---------- Menú: recetario semanal (recetas.json se carga solo al abrir el menú) ---------- */
+// ponytail: Plan › Menú. Datos en www/recetas.json (scripts/recetas.py); pl = [kcal,p,c,g,fib,factor] por Déficit/Mantenimiento/Volumen
+var REC=null,RECI={},RECE=0,MPL=['Déficit','Mantenimiento','Volumen'],MTY=[['D','Desayuno','Café'],['A','Almuerzo','Comida'],['C','Cena','Guiso'],['S','Snack','Frutos secos']],MTYN={D:'Desayuno',A:'Almuerzo',C:'Cena',S:'Snack',P:'Postre'};
+var MDL={es:['L','M','M','J','V','S','D'],en:['M','T','W','T','F','S','S'],pt:['S','T','Q','Q','S','S','D']};
+function recLoad(){if(REC||RECE)return;RECE=1; // RECE: 0 sin cargar, 1 cargando, 2 falló (solo «Reintentar» vuelve a pedirlo)
+  
+  fetch('recetas.json').then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){REC=j;RECE=0;RECI={};j.r.forEach(function(x){RECI[x.id]=x;});if((tab==='plan'&&planSub==='menu')||modal==='receta')render();})
+   .catch(function(){RECE=2;if(tab==='plan'&&planSub==='menu')render();});}
+function mPlan(){return gM()?2:kM()?1:0;} // 0 Déficit (bajar), 1 Mantenimiento, 2 Volumen (ganar)
+function mPais(){var c=pais().c;return REC&&REC.t[c]?c:'';} // fuera de los 8 países: todas las recetas
+function mPaisN(c){try{return new Intl.DisplayNames([S.lang||'es'],{type:'region'}).of(c);}catch(e){return REC.t[c].n;}}
+function mPref(){if(S.menuPref)return S.menuPref;var d=S.diet||[];return {b:'any',d:d.indexOf('veg')>=0||d.indexOf('vegan')>=0?'veg':d.indexOf('gluten')>=0?'gf':d.indexOf('lact')>=0?'lf':'all',e:0};}
+// textos de la receta en el idioma del usuario (si ya están traducidos); si no, español
+function rL(r,k){return (S.lang==='en'||S.lang==='pt')&&r[S.lang]?r[S.lang][k]:null;}
+function rN(r){return rL(r,'n')||(S.lang==='en'?r.ne:S.lang==='pt'?r.np:'')||r.n;}
+function rLx(m,k){var L=REC.L&&REC.L[m],i=li();return i>=0&&L&&L[k]&&L[k][i]||'';}
+function mOk(r,p,c,relax){if(c&&r.ps.indexOf(c)<0)return false;var e=r.et;
+  if(p.d==='veg'&&e.indexOf('vegetariano')<0&&e.indexOf('vegano')<0)return false;
+  if(p.d==='gf'&&e.indexOf('sin gluten')<0)return false;
+  if(p.d==='lf'&&e.indexOf('sin lácteos')<0&&e.indexOf('vegano')<0)return false;
+  if(relax)return true;
+  if(p.b==='low'&&r.co!=='Bajo'||p.b==='mid'&&r.co==='Alto')return false;
+  return !(p.e&&r.pr!=='Fácil');}
+function mHash(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function mRnd(a){return function(){a=(a+0x6D2B79F5)|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
+function wkMon(d){return addDays(d,-((new Date(d+'T12:00:00').getDay()+6)%7));}
+function wkNum(d){var t=new Date(d+'T12:00:00');t.setDate(t.getDate()+3-(t.getDay()+6)%7);var y=new Date(t.getFullYear(),0,4,12);return t.getFullYear()+'-W'+(1+Math.round(((t-y)/864e5-3+(y.getDay()+6)%7)/7));}
+// Opciones de un tipo de comida para la semana: semilla = semana del año + preferencias; primero las de plan_ideal = plan del usuario
+function mList(ty,mon){var p=mPref(),c=mPais(),pl=MPL[mPlan()],all=REC.r.filter(function(r){return r.id.charAt(0)===ty;}),rx=false;
+  var L=all.filter(function(r){return mOk(r,p,c);});
+  if(L.length<3){var L2=all.filter(function(r){return mOk(r,p,c,1);});if(L2.length>L.length){L=L2;rx=true;}}
+  var rnd=mRnd(mHash(wkNum(mon)+'|'+ty+'|'+p.b+'|'+p.d+'|'+(p.e?1:0)+'|'+pl+'|'+c)),sc=function(r){return (r.pi===pl?0:2)+(r.di==='Baja'?1:0);};
+  for(var i=L.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),x=L[i];L[i]=L[j];L[j]=x;}
+  return {L:L.map(function(r,i){return [sc(r),i,r];}).sort(function(a,b){return a[0]-b[0]||a[1]-b[1];}).map(function(x){return x[2];}),rx:rx};}
+// Receta del día (sin repetir en la semana si hay opciones); «Cambiar» rota a la siguiente no usada
+function mPick(ty,ds){var M=mList(ty,wkMon(ds)),L=M.L,i=(new Date(ds+'T12:00:00').getDay()+6)%7;if(!L.length)return {r:null,rx:M.rx};
+  var base=L[i%L.length],n=(S.menuSwap||{})[ds+':'+ty]||0;if(!n||L.length<2)return {r:base,rx:M.rx};
+  var alt=L.slice(7).concat(L.slice(0,7)).filter(function(r){return r!==base;});return {r:alt[(n-1+i)%alt.length],rx:M.rx};}
+// Postre premio: 3 comidas hoy sin pasar la meta de kcal; el postre sale de la semilla del día
+function mPremio(){var t=today(),ms=S.meals.filter(function(m){return m.d===t;}),k=ms.reduce(function(a,m){return a+(m.k||0);},0),P=plan(),p=mPref(),c=mPais();
+  var L=REC.r.filter(function(r){return r.id.charAt(0)==='P'&&mOk(r,p,c,1);});if(!L.length)L=REC.r.filter(function(r){return r.id.charAt(0)==='P';});
+  var r=L[mHash(t+'|premio|'+p.d+'|'+c)%L.length];return {ok:ms.length>=3&&k<=P.kcal,n:ms.length,k:k,P:P,r:r,ya:S.menuPrem===t&&ms.some(function(m){return m.n===rN(r);})};}
+function mInfo(r){return '<span class="mmeta"><span class="mnw">'+ico('Reloj',15,'currentColor','line')+' '+r.tm+' min ·</span> <span class="mnw">'+T('Costo '+r.co.toLowerCase())+' ·</span> <span class="mnw">'+T('Preparación '+r.pr.toLowerCase())+'</span></span>';}
+function mCard(x,ds,pi){var R=mPick(x[0],ds),r=R.r;
+  var head='<div class="tlh"><span class="mty">'+ict(x[2],0,20)+T(x[1])+'</span>'+(r?'<button class="btn sec sm msw" data-mswap="'+ds+':'+x[0]+'">'+ico('Actualizar',16,'currentColor','line')+' '+T('Cambiar')+'</button>':'')+'</div>';
+  if(!r)return '<div class="tile mcard">'+head+'<p class="mu">'+T('No hay recetas con estos filtros.')+'</p></div>';
+  var v=r.pl[pi];
+  return '<div class="tile mcard">'+head+'<button class="mopen" data-m="receta" data-rid="'+r.id+'"><span class="mnm notr">'+esc(rN(r))+'</span><span class="mkc"><b>'+kf(v[0])+' kcal</b> · '+T('Proteína')+' '+Math.round(v[1])+' g</span>'+mInfo(r)+'</button></div>';}
+function mPremCard(pi){var Q=mPremio(),r=Q.r,v=r.pl[pi];
+  if(Q.ok||Q.ya)return '<div class="tile wide mprem" style="background:linear-gradient(135deg,#ff8a5b,#d9468f)"><div class="tlh"><span class="mty">'+ico('Celebrar',22,'#fff')+T('Premio del día')+'</span><span class="tpill">'+T(Q.ya?'Disfrutado':'Desbloqueado')+'</span></div>'+
+    '<button class="mopen" data-m="receta" data-rid="'+r.id+'"><span class="mnm notr">'+esc(rN(r))+'</span><span class="mkc"><b>'+kf(v[0])+' kcal</b> · '+T('Proteína')+' '+Math.round(v[1])+' g</span><span class="mmeta">'+T(Q.ya?'¡Disfrutaste tu premio de hoy!':'Te lo ganaste: 3 comidas sin pasarte de tu meta.')+'</span></button></div>';
+  var over=Q.k>Q.P.kcal;
+  return '<div class="tile wide mprem lk"><div class="tlh"><span class="mty">'+ict('Candado',0,20)+T('Premio del día')+'</span><span class="pill">'+T('Bloqueado')+'</span></div><div class="mnm">'+T('Registra 3 comidas sin pasarte de tu meta')+'</div>'+
+   '<div class="mu" style="margin-top:4px">'+(over?Tf('Hoy llevas {0} de {1} kcal: ya pasaste tu meta. Mañana lo intentamos de nuevo.',[kf(Q.k),kf(Q.P.kcal)]):Tf('Llevas {0} de 3 comidas · {1} de {2} kcal',[Math.min(3,Q.n),kf(Q.k),kf(Q.P.kcal)]))+'</div>'+
+   '<div class="bar" style="height:8px;margin-top:10px"><i style="width:'+(over?100:Math.min(3,Q.n)/3*100)+'%;background:'+(over?'var(--bad)':'linear-gradient(90deg,#ff8a5b,#ffb26b)')+'"></i></div></div>';}
+function mChip(k,v,l){var p=mPref(),on=String(p[k])===String(v);return '<button class="chip'+(on?' on':'')+'" aria-pressed="'+on+'" data-mp="'+k+':'+v+'">'+T(l)+'</button>';}
+function vMenu(){
+  if(!REC){recLoad();return RECE===2?'<div class="card center"><p>'+T('No pude cargar las recetas. Revisa tu conexión e inténtalo de nuevo.')+'</p><button class="btn sm" data-act="recretry">'+T('Reintentar')+'</button></div>':'<div class="card center mu">'+T('Cargando recetas…')+'</div>';}
+  var t=today(),mon=wkMon(t),ds=tmp.mday&&wkMon(tmp.mday)===mon?tmp.mday:t,pi=mPlan(),P=plan(),p=mPref(),c=mPais(),tk=0,tp=0,rx=false,dl=MDL[S.lang]||MDL.es;
+  MTY.forEach(function(x){var R=mPick(x[0],ds);if(R.rx)rx=true;if(R.r){tk+=R.r.pl[pi][0];tp+=R.r.pl[pi][1];}});
+  var dn=new Date(ds+'T12:00:00').toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'short'});
+  return '<div class="tile wide mhero" style="background:linear-gradient(135deg,#16a37f,#0d6b57)"><div class="tlh"><span class="mty">'+ico('Comida',22,'#fff')+T('Menú de la semana')+'</span><span class="tpill">'+T(MPL[pi])+'</span></div>'+
+     '<div class="tm" style="margin-top:10px">'+Tf('Total del {0}',[dn])+'</div><div class="tb" style="margin-top:2px">'+kf(tk)+' kcal</div><div class="tm">'+Tf('de {0} kcal de tu meta',[kf(P.kcal)])+' · '+T('Proteína')+' '+Math.round(tp)+' / '+P.prot+' g</div>'+
+     '<div class="bar" style="height:8px;margin-top:12px;background:rgba(255,255,255,.25)"><i style="width:'+Math.min(100,tk/P.kcal*100)+'%;background:#fff"></i></div>'+
+     '<div class="tm" style="margin-top:10px">'+(c?Tf('Recetas para {0}',[esc(mPaisN(c))]):T('Recetas de todos los países'))+'</div></div>'+
+   '<div class="mdays" role="tablist" aria-label="'+T('Día')+'">'+[0,1,2,3,4,5,6].map(function(i){var d=addDays(mon,i),on=d===ds;return '<button role="tab" aria-selected="'+on+'" class="mdy'+(on?' on':'')+(d===t?' td':'')+'" data-mday="'+d+'" aria-label="'+esc(new Date(d+'T12:00:00').toLocaleDateString(LOC(),{weekday:'long',day:'numeric'}))+'"><span>'+dl[i]+'</span><b>'+(+d.slice(8))+'</b></button>';}).join('')+'</div>'+
+   '<div class="card mpref"><div class="mpl">'+T('Presupuesto')+'</div><div class="chips">'+mChip('b','any','Cualquiera')+mChip('b','low','Bajo')+mChip('b','mid','Hasta medio')+'</div>'+
+     '<div class="mpl">'+T('Dieta')+'</div><div class="chips">'+mChip('d','all','Todas')+mChip('d','veg','Vegetariano')+mChip('d','gf','Sin gluten')+mChip('d','lf','Sin lácteos')+'</div>'+
+     '<div class="chips" style="margin-top:12px">'+'<button class="chip'+(p.e?' on':'')+'" aria-pressed="'+!!p.e+'" data-mp="e:'+(p.e?0:1)+'">'+ico('Listo',16,'currentColor','line')+' '+T('Solo fáciles')+'</button>'+'</div></div>'+
+   (rx?'<p class="mu" style="margin:0 4px 10px">'+T('Hay pocas recetas con todos tus filtros; incluimos otras parecidas.')+'</p>':'')+
+   '<div class="tiles mnu">'+MTY.map(function(x){return mCard(x,ds,pi);}).join('')+'</div>'+
+   '<div style="height:8px"></div>'+mPremCard(pi)+
+   '<p class="mu center" style="margin:4px 8px 0;font-size:12px">'+Tf('Porciones de tu plan ({0}). Toca una receta para ver ingredientes y pasos. Valores nutricionales: USDA FoodData Central.',[T(MPL[pi])])+'</p>';
+}
+function recModal(){var r=REC&&RECI[tmp.rid];if(!r){recLoad();return '<h3>'+T('Cargando recetas…')+'</h3>';}
+  var pi=mPlan(),v=r.pl[pi],f=v[5],c=mPais(),me=rL(r,'me')||[],pa=rL(r,'pa')||r.pa,ch={s:'Supermercados',f:'Frescos (mercados y fruterías)',e:'Tiendas especializadas'};
+  var buy=['s','f','e'].filter(function(k){return r.ca.indexOf({s:'super',f:'fresco',e:'especial'}[k])>=0;}).map(function(k){return '<div class="dl"><div class="f"><b>'+T(ch[k])+'</b>'+(c?'<span class="mu notr">'+esc(REC.t[c][k].join(' · '))+'</span>':'')+'</div></div>';}).join('');
+  return '<div class="mu" style="font-weight:700;padding-right:44px">'+T(MTYN[r.id.charAt(0)])+' · '+Tf('Porción {0}',[T(MPL[pi])])+'</div><h3 class="notr" style="font-size:21px;margin:4px 0 8px">'+esc(rN(r))+'</h3>'+
+   '<p class="notr" style="margin:0 0 12px">'+esc(rL(r,'de')||r.de)+'</p>'+
+   '<div class="rmac">'+[[v[0],'kcal','Calorías'],[v[1],'g','Proteína'],[v[2],'g','Carbos'],[v[3],'g','Grasas'],[v[4],'g','Fibra']].map(function(m){return '<div><b>'+kf(m[0])+'</b><small>'+m[1]+'</small><span>'+T(m[2])+'</span></div>';}).join('')+'</div>'+
+   '<div class="rinf">'+mInfo(r)+'</div>'+
+   '<h2>'+T('Ingredientes')+'</h2><div class="card rlist">'+r.in.map(function(g,j){var nm=rLx('ing',g[0])||g[3]||g[0];return '<div class="dl"><div class="f"><b class="notr">'+esc(nm.charAt(0).toUpperCase()+nm.slice(1))+'</b><span class="mu notr">'+esc(me[j]||g[2])+(f!==1?' (×'+nf(f,1)+')':'')+'</span></div><b class="rg">'+kf(Math.max(1,g[1]*f))+' g</b></div>';}).join('')+'</div>'+
+   '<h2>'+T('Preparación')+'</h2><ol class="rsteps notr">'+pa.map(function(s){return '<li>'+esc(s)+'</li>';}).join('')+'</ol>'+
+   '<h2>'+T('Etiquetas')+'</h2><div class="chips">'+r.et.map(function(e){return '<span class="pill">'+esc(rLx('et',e)||T(e))+'</span>';}).join('')+'</div>'+
+   '<p class="mu" style="margin:12px 4px 0"><b>'+T('Región')+':</b> <span class="notr">'+esc(rLx('rg',r.ro)||r.ro)+'</span></p>'+
+   '<h2>'+(c?Tf('Dónde comprar en {0}',[esc(mPaisN(c))]):T('Dónde comprar'))+'</h2><div class="card rlist">'+buy+'</div>'+
+   '<button class="btn rcomi" data-act="recomi" data-rid="'+r.id+'">'+ico('Listo',20,'#fff','line')+' '+T('Lo comí')+'</button><p class="mu center" style="font-size:12px;margin-top:8px">'+Tf('Se registra con la porción de tu plan: {0} kcal.',[kf(v[0])])+'</p>';
 }
 goTab(tab);
 // iPhone nativo: los textos de Health Connect / Samsung / Google Fit / Play Store pasan a Apple Salud (Android no cambia)
@@ -2513,8 +2637,11 @@ document.addEventListener('click',function(e){
     if(s.read&&s.multi)s.read();
     if(s.multi){tmp[k]=tmp[k]||[];var i=tmp[k].indexOf(v);i>=0?tmp[k].splice(i,1):tmp[k].push(v);if(s.only)tmp[k]=v===s.only?(i>=0?[]:[s.only]):tmp[k].filter(function(x){return x!==s.only;});} else{if(s.read)s.read();tmp[k]=v;}
     render();return;}
+  if(d.mday){tmp.mday=d.mday;render();return;}
+  if(d.mp){var mp=JSON.parse(JSON.stringify(mPref())),kv=d.mp.split(':');mp[kv[0]]=kv[0]==='e'?+kv[1]:kv[1];S.menuPref=mp;save();return;}
+  if(d.mswap){var sw=S.menuSwap=S.menuSwap||{};sw[d.mswap]=(sw[d.mswap]||0)+1;for(var swk in sw)if(swk<addDays(today(),-14))delete sw[swk];save();return;}
   if(d.tab){goTab(d.tab);modal=null;history.replaceState(null,'','#'+tab);render();window.scrollTo(0,0);return;}
-  if(d.m){modal=d.m;tmp.sym=[];tmp.symShow=null;tmp.bt=null;if(d.m==='sleep'){tmp.sq=null;tmp.sh=[];}tmp.mw=tmp.md=null;tmp.am=d.am||'in';if(d.cam){render();pick('ai-file');return;}if(d.voz){render();var mb=document.querySelector('.sheet .mic');if(mb)voz(mb);return;}render();return;}
+  if(d.m){if(d.rid)tmp.rid=d.rid;modal=d.m;tmp.sym=[];tmp.symShow=null;tmp.bt=null;if(d.m==='sleep'){tmp.sq=null;tmp.sh=[];}tmp.mw=tmp.md=null;tmp.am=d.am||'in';if(d.cam){render();pick('ai-file');return;}if(d.voz){render();var mb=document.querySelector('.sheet .mic');if(mb)voz(mb);return;}render();return;}
   if(d.q){ask(d.q,d.kind);return;}
   if(d.lv){lvlRange=+d.lv;render();return;}
   if(d.del){S[d.del].splice(+d.i,1);save();return;}
@@ -2534,6 +2661,8 @@ document.addEventListener('click',function(e){
   if(d.delph!=null){PH.splice(+d.delph,1);savePH();render();return;}
   var a=d.act,ok=true,nextM=null;
   if(a==='aicam'||a==='aigal'){pick(a==='aicam'?'ai-file':'ai-gal');return;}
+  if(a==='recretry'){RECE=0;recLoad();render();return;}
+  if(a==='recomi'){var rr=RECI[d.rid];if(!rr)return;var rv=rr.pl[mPlan()];if(rr.id.charAt(0)==='P')S.menuPrem=today();autoAdd({d:today(),t:nowT(),n:rN(rr),k:Math.round(rv[0]),p:Math.round(rv[1]),c:Math.round(rv[2]),f:Math.round(rv[3]),fi:Math.round(rv[4])});return;}
   if(a==='undo'){S.meals.pop();toast=null;save();return;}
   if(a==='aitest'){var st=$('ai-st');st.textContent=T('Probando…');aiCall([{role:'user',content:'Responde solo con la palabra OK.'}],40).then(function(t){st.textContent='✓ '+T('Conectado')+': '+String(t).trim().slice(0,40);}).catch(function(er){st.textContent='✕ '+((er&&er.message)||T('No se pudo conectar.'));});return;}
   if(a==='usesug'){RC.cur=rW(+d.kg);RC.touched=false;rGo(RC.cur,true);rShow();if(STEPS[step].live)STEPS[step].live();return;}
